@@ -45,7 +45,7 @@ const Pagination = ({currentPage, from, to, total, lastPage, links, onUpdatePage
                             до
                             <span className="font-medium"> {to} </span>
                             з
-                            <span className="font-medium">{total}</span>
+                            <span className="font-medium"> {total} </span>
                         </p>
                     </div>
                     <div>

@@ -1,48 +1,52 @@
 import {useState} from "react";
-import axiosClient from "../axios-client.ts";
 import {useStateContext} from "../../contexts/ContextProvider.tsx";
+import {login} from "../apiServices/authApiServices.ts";
+import Spinner from "../components/Spinner.tsx";
 
 const Login = () => {
-    const [credentials, setCredentials] = useState( {email: '', password: ''})
+    const [credentials, setCredentials] = useState({email: '', password: ''})
+    const [isLoading, setIsLoading] = useState(false);
     const {setUser, setToken} = useStateContext();
-    const [errors, setErrors] = useState({ email: [], password: [] });
+    const [errors, setErrors] = useState({email: [], password: []});
     const [allertError, setAllertError] = useState('');
     const clearErrors = (field: string) => {
         setAllertError('');
-        setErrors({ ...errors, [field]: [] });
+        setErrors({...errors, [field]: []});
     };
-    const onSubmit = (e: { preventDefault: () => void; }) => {
+    const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        axiosClient.post('/login', credentials)
-            .then(({data}) => {
-                console.log('data', data)
-                setUser(data.user);
-                setToken(data.access_token)
-
-            })
-            .catch(error => {
-                const resp = error.response
-                console.log(resp)
-                if (resp && resp.status === 422) {
-                    const {email, password} = resp.data.errors;
-                    setErrors(prevErrors => ({
-                        ...prevErrors,
-                        ...(email ? {email} : {}),
-                        ...(password ? {password} : {})
-                    }));
-                }
-                if (resp && resp.status !== 422) {
-                    const {error} = resp.data;
-                    setAllertError(error);
-                }
-            })
+        try {
+            setIsLoading(true);
+            const {data} = await login(credentials);
+            setUser(data.user);
+            setToken(data.access_token)
+            setIsLoading(false)
+        } catch (error) {
+            // @ts-ignore
+            const resp = error.response;
+            setIsLoading(false);
+            if (resp && resp.status === 422) {
+                const {email, password} = resp.data.errors;
+                setErrors(prevErrors => ({
+                    ...prevErrors,
+                    ...(email ? {email} : {}),
+                    ...(password ? {password} : {})
+                }));
+            }
+            if (resp && resp.status !== 422) {
+                const {error} = resp.data;
+                setAllertError(error);
+            }
+        }
     }
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <h2 className="mt-10 text-center text-xl font-medium leading-9 tracking-tight text-gray-900">Вас вітає ІС "Центр дошкільного розвитку"</h2>
-                <p className="mt-10 text-center text-sm leading-9 tracking-tight text-gray-900">Спочатку необхідно авторизуватись</p>
+                <h2 className="mt-10 text-center text-xl font-medium leading-9 tracking-tight text-gray-900">Вас вітає
+                    ІС "Центр дошкільного розвитку"</h2>
+                <p className="mt-10 text-center text-sm leading-9 tracking-tight text-gray-900">Спочатку необхідно
+                    авторизуватись</p>
             </div>
             {allertError !== '' ?
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
@@ -56,7 +60,7 @@ const Login = () => {
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form onSubmit={onSubmit} className="space-y-6" action="#" method="POST">
                     <div>
-                    <label htmlFor="email"
+                        <label htmlFor="email"
                                className="block text-sm font-medium leading-6 text-gray-900">Email</label>
                         <div className="mt-2">
                             <input id="email" name="email" type="email"
@@ -100,8 +104,13 @@ const Login = () => {
 
                     <div>
                         <button type="submit"
+                                disabled={isLoading}
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Увійти
+                            {isLoading ? (
+                                <Spinner />
+                            ) : (
+                                "Увійти"
+                            )}
                         </button>
                     </div>
                 </form>

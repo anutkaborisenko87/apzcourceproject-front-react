@@ -1,12 +1,13 @@
 import {createBrowserRouter} from "react-router-dom";
 import Login from "./views/Login.tsx";
-import Users from "./views/Users.tsx";
 import NotFound from "./views/NotFound.tsx";
 import DefaultLayout from "./components/DefaultLayout.tsx";
 import GuestLayout from "./components/GuestLayout.tsx";
 import Dashboard from "./views/Dashboard.tsx";
 import UserProfile from "./views/UserProfile.tsx";
 import Employees from "./views/Employees.tsx";
+import UsersView from "./views/UsersView.tsx";
+import EmployeesView from "./views/EmployeesView.tsx";
 
 const router = createBrowserRouter([
     {
@@ -23,11 +24,11 @@ const router = createBrowserRouter([
             },
             {
                 path: 'users',
-                element: <Users/>
+                element: <UsersView/>
             },
             {
                 path: '/employees',
-                element: <Employees/>
+                element: <EmployeesView/>
             },
         ]
     },
