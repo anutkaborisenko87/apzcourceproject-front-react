@@ -61,36 +61,6 @@ const EmployeeFormPart = ({
                 )}
             </div>
 
-
-            {/* номер телефону */}
-            <div className="sm:col-span-3">
-                <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">
-                    Номер телефону
-                </label>
-                <div className="mt-2">
-                    <input
-                        type="phone"
-                        name="phone"
-                        id="phone"
-                        value={employeeFormData?.phone ?? ''}
-                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
-                            employeeErrors.phone?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
-                        }`}
-                        onChange={e => {
-                            clearEmployeeErrors('phone');
-                            setEmployeeFormData(employeeFormData => ({...employeeFormData, phone: e.target.value}));
-                        }}
-                    />
-                </div>
-                {employeeErrors.phone.length > 0 && (
-                    <div className="text-red-500 text-xs">
-                        {employeeErrors.phone.map((error, index) => (
-                            <p key={index}>{error}</p>
-                        ))}
-                    </div>
-                )}
-            </div>
-
             {/*Номер контракту*/}
             <div className="sm:col-span-3">
                 <label htmlFor="contract_number" className="block text-sm font-medium leading-6 text-gray-900">
@@ -119,9 +89,65 @@ const EmployeeFormPart = ({
                     </div>
                 )}
             </div>
-
+            {/* Дата прийняття на роботу */}
+            <div className="sm:col-span-full">
+                <label htmlFor="employment_date" className="block text-sm font-medium leading-6 text-gray-900">
+                    Дата прийняття на роботу
+                </label>
+                <div className="mt-2">
+                    <input
+                        type="date"
+                        name="employment_date"
+                        max={maxDate}
+                        id="employment_date"
+                        value={employeeFormData?.employment_date ?? ''}
+                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
+                            employeeErrors.employment_date?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
+                        }`}
+                        onChange={e => {
+                            clearEmployeeErrors('employment_date');
+                            setEmployeeFormData(employeeFormData => ({...employeeFormData, employment_date: e.target.value}));
+                        }}
+                    />
+                </div>
+                {employeeErrors.employment_date.length > 0 && (
+                    <div className="text-red-500 text-xs">
+                        {employeeErrors.employment_date.map((error, index) => (
+                            <p key={index}>{error}</p>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {/* номер телефону */}
+            <div className="sm:col-span-3">
+                <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">
+                    Номер телефону
+                </label>
+                <div className="mt-2">
+                    <input
+                        type="phone"
+                        name="phone"
+                        id="phone"
+                        value={employeeFormData?.phone ?? ''}
+                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
+                            employeeErrors.phone?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
+                        }`}
+                        onChange={e => {
+                            clearEmployeeErrors('phone');
+                            setEmployeeFormData(employeeFormData => ({...employeeFormData, phone: e.target.value}));
+                        }}
+                    />
+                </div>
+                {employeeErrors.phone.length > 0 && (
+                    <div className="text-red-500 text-xs">
+                        {employeeErrors.phone.map((error, index) => (
+                            <p key={index}>{error}</p>
+                        ))}
+                    </div>
+                )}
+            </div>
             {/* Паспортні дані  */}
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-3">
                 <label htmlFor="passport_data" className="block text-sm font-medium leading-6 text-gray-900">
                     Паспортні дані
                 </label>
@@ -150,7 +176,7 @@ const EmployeeFormPart = ({
             </div>
 
             {/* Банківські дані */}
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-3">
                 <label htmlFor="bank_account" className="block text-sm font-medium leading-6 text-gray-900">
                     Акаунт у банку
                 </label>
@@ -178,7 +204,7 @@ const EmployeeFormPart = ({
                 )}
             </div>
 
-            <div className="col-span-full">
+            <div className="sm:col-span-3">
                 <label htmlFor="bank_title" className="block text-sm font-medium leading-6 text-gray-900">
                     Назва банку
                 </label>
@@ -206,7 +232,7 @@ const EmployeeFormPart = ({
                 )}
             </div>
 
-            <div className="sm:col-span-2 sm:col-start-1">
+            <div className="sm:col-span-3 sm:col-start-1">
                 <label htmlFor="EDRPOU_bank_code" className="block text-sm font-medium leading-6 text-gray-900">
                     ЄДРПОУ
                 </label>
@@ -233,7 +259,7 @@ const EmployeeFormPart = ({
                     </div>
                 )}
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
                 <label htmlFor="code_IBAN" className="block text-sm font-medium leading-6 text-gray-900">
                     Код IBAN
                 </label>
@@ -262,7 +288,7 @@ const EmployeeFormPart = ({
             </div>
 
             {/* Номер медичної карти */}
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
                 <label htmlFor="medical_card_number" className="block text-sm font-medium leading-6 text-gray-900">
                     Номер медичної карти
                 </label>
@@ -290,35 +316,6 @@ const EmployeeFormPart = ({
                 )}
             </div>
 
-            {/* Дата прийняття на роботу */}
-            <div className="sm:col-span-2">
-                <label htmlFor="employment_date" className="block text-sm font-medium leading-6 text-gray-900">
-                    Дата прийняття на роботу
-                </label>
-                <div className="mt-2">
-                    <input
-                        type="date"
-                        name="employment_date"
-                        max={maxDate}
-                        id="employment_date"
-                        value={employeeFormData?.employment_date ?? ''}
-                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
-                            employeeErrors.employment_date?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
-                        }`}
-                        onChange={e => {
-                            clearEmployeeErrors('employment_date');
-                            setEmployeeFormData(employeeFormData => ({...employeeFormData, employment_date: e.target.value}));
-                        }}
-                    />
-                </div>
-                {employeeErrors.employment_date.length > 0 && (
-                    <div className="text-red-500 text-xs">
-                        {employeeErrors.employment_date.map((error, index) => (
-                            <p key={index}>{error}</p>
-                        ))}
-                    </div>
-                )}
-            </div>
         </>
     );
 };

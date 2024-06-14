@@ -2,7 +2,7 @@ import {NavLink, Navigate, Outlet} from "react-router-dom";
 import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import {useEffect} from "react";
 import NotificationComponent from "./NotificationComponent.tsx";
-import {UserGroupIcon, UserCircleIcon, ArrowUturnRightIcon, WalletIcon} from '@heroicons/react/24/outline';
+import {UserGroupIcon, UserCircleIcon, ArrowUturnRightIcon, WalletIcon, UsersIcon} from '@heroicons/react/24/outline';
 import {getLoggedUserInfo, logoutUser} from "../apiServices/authApiServices.ts";
 
 const DefaultLayout = () => {
@@ -57,6 +57,11 @@ const DefaultLayout = () => {
                                      className={({isActive}) => classNames(`flex py-2.5 px-4 rounded transition duration-200 ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'}`)}>
                                 <WalletIcon className="w-6 mr-2"/>
                                 Співробітники
+                            </NavLink>
+                            <NavLink to="/parrents"
+                                     className={({isActive}) => classNames(`flex py-2.5 px-4 rounded transition duration-200 ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'}`)}>
+                                <UsersIcon className="w-6 mr-2"/>
+                                Батьки
                             </NavLink>
                         </nav>
                     </div>

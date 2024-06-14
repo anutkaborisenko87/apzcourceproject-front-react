@@ -1,8 +1,8 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
 import {useState} from "react";
-import UsersNotActive from "../components/UserNotActive.tsx";
 import EmployeesActive from "../components/EmployeesActive.tsx";
 import EmployeesWorking from "../components/EmployeesWorking.tsx";
+import EmployeesNotActive from "../components/EmployeesNotActive.tsx";
 
 const EmployeesView = () => {
     const bredcrumpsRoutes = [{path: '/eployees', displayName: "Співробітники"}];
@@ -47,13 +47,12 @@ const EmployeesView = () => {
                         Працюючі
                     </button>
                 </li>
-                {/* Добавьте остальные вкладки по аналогии */}
             </ul>
 
             {/*<!--Tabs content-->*/}
             <div className="mb-6">
                 {activeTab === 'active' && <EmployeesActive/>}
-                {activeTab === 'notActive' && <UsersNotActive/>}
+                {activeTab === 'notActive' && <EmployeesNotActive/>}
                 {activeTab === 'working' && <EmployeesWorking/>}
             </div>
         </>

@@ -5,9 +5,9 @@ import DefaultLayout from "./components/DefaultLayout.tsx";
 import GuestLayout from "./components/GuestLayout.tsx";
 import Dashboard from "./views/Dashboard.tsx";
 import UserProfile from "./views/UserProfile.tsx";
-import Employees from "./views/Employees.tsx";
 import UsersView from "./views/UsersView.tsx";
 import EmployeesView from "./views/EmployeesView.tsx";
+import ParrentsView from "./views/ParrentsView.tsx";
 
 const router = createBrowserRouter([
     {
@@ -27,8 +27,12 @@ const router = createBrowserRouter([
                 element: <UsersView/>
             },
             {
-                path: '/employees',
+                path: 'employees',
                 element: <EmployeesView/>
+            },
+            {
+                path: 'parrents',
+                element: <ParrentsView/>
             },
         ]
     },

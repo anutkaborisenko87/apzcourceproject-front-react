@@ -1,10 +1,10 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
 import {useState} from "react";
-import UsersActive from "../components/UsersActive.tsx";
-import UsersNotActive from "../components/UserNotActive.tsx";
+import ParrentsActive from "../components/ParrentsActive.tsx";
+import ParrentsNotActive from "../components/ParrentsNotActive.tsx";
 
-const UsersView = () => {
-    const bredcrumpsRoutes = [{path: '/users', displayName: "Користувачі"}];
+const ParrentsView = () => {
+    const bredcrumpsRoutes = [{path: '/parrents', displayName: "Батьки"}];
     const [activeTab, setActiveTab] = useState('active');
     return (
         <>
@@ -38,11 +38,11 @@ const UsersView = () => {
 
             {/*<!--Tabs content-->*/}
             <div className="mb-6">
-                {activeTab === 'active' && <UsersActive/>}
-                {activeTab === 'notActive' && <UsersNotActive/>}
+                {activeTab === 'active' && <ParrentsActive/>}
+                {activeTab === 'notActive' && <ParrentsNotActive/>}
             </div>
         </>
     );
 };
 
-export default UsersView;
+export default ParrentsView;

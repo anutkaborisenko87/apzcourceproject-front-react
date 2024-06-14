@@ -117,7 +117,7 @@ const UserFormPart = ({      userFormData,
             </div>
 
             {/* Email */}
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-3">
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                     Email
                 </label>
@@ -294,7 +294,7 @@ const UserFormPart = ({      userFormData,
             </div>
 
             {/* Дата народження */}
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-full">
                 <label htmlFor="birthdate" className="block text-sm font-medium leading-6 text-gray-900">
                     Дата народження
                 </label>

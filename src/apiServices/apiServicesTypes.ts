@@ -29,6 +29,24 @@ export type EmployeeData = {
     employment_date?: string;
 }
 
+export type ParrentData = {
+    phone?: string;
+    work_place?: string;
+    passport_data?: string;
+    marital_status?: string;
+    children?: ParrentChildData[];
+}
+
+export type ParrentChildData = {
+    child_id: number;
+    relations: string;
+}
+
+export type ParrentFormData = {
+    user: UserFormData,
+    parrent: ParrentData
+}
+
 export type EmployeeFormData = {
     user: UserFormData,
     employee: EmployeeData
