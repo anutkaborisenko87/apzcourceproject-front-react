@@ -23,7 +23,7 @@ const ParrentFormPart = ({
                          }: FormParProps) => {
     const [inputValue, setInputValue] = useState("");
     const [selectedChild, setSelectedChild] = useState("");
-    const removeChild = (index) => {
+    const removeChild = (index: any) => {
         setParrentFormData(parrentFormData => {
             return {
                 ...parrentFormData,
@@ -39,16 +39,17 @@ const ParrentFormPart = ({
             const selectedChildData = children.find((child) => {
                return child.id == selectedChild
             });
+            // @ts-ignore
             setParrentFormData((parrentFormData) => {
                 const existingChild = parrentFormData.children.find(
-                    (child) => child.child_id === selectedChildData.id
+                    (child: { child_id: any; }) => child.child_id === selectedChildData.id
                 );
 
                 if (existingChild) {
                     // Если ребенок уже есть в массиве, обновите его свойство 'relations'
                     return {
                         ...parrentFormData,
-                        children: parrentFormData.children.map((child) =>
+                        children: parrentFormData.children.map((child: { child_id: any; }) =>
                             child.child_id === selectedChildData.id
                                 ? {...child, relations: inputValue}
                                 : child

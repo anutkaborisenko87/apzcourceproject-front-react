@@ -1,76 +1,41 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
-import {
-    deleteUser,
-    getNotActiveUsersList,
-    reactivateUser
-} from "../apiServices/usersApiServices.ts";
 import UsersTable from "./UsersTable.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {axiosNotActiveUsers} from "../store/userSlice.ts";
+import {useStateContext} from "../../contexts/ContextProvider.tsx";
 
 const UsersNotActive = () => {
-
-    const {setNotification} = useStateContext();
-    const [users, setUsers] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [paginationData, setPaginationData] = useState({
-        to: 0,
-        from: 0,
-        total: 0,
-        links: [],
-        last_page: 0,
-        current_page: 1,
+    const dispatch = useDispatch();
+    const isLoading = useSelector(state => state.users.status === 'loading');
+    const notification = useSelector(state => state.users.notification);
+    // @ts-ignore
+    const { setNotification } = useStateContext();
+    const paginationData = useSelector(state => {
+        return {
+            to: state.users?.users.to ?? 0,
+            from: state.users?.users.from ?? 0,
+            total: state.users?.users.total ?? 0,
+            links: state.users?.users.links ?? [],
+            last_page: state.users?.users.last_page ?? 0,
+            current_page: state.users?.users.current_page ?? 1
+        }
 
     });
     useEffect(() => {
-        getUsers();
-    }, []);
-
-    const reactivatingUser = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете активувати цього користувача?")) {
-            try {
-                setIsLoading(true);
-                await reactivateUser(userId);
-                getUsers(paginationData.current_page);
-                setNotification({type: "success", message:"Користувача активовано!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
+        if (notification.type !== '' && notification.message !== '') {
+            setNotification(notification)
         }
+    }, [notification]);
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(axiosNotActiveUsers());
+    }, [dispatch]);
 
-    }
-    const deletitingUser = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете видалити цього користувача?")) {
-            try {
-                setIsLoading(true);
-                await deleteUser(userId);
-                setIsLoading(false);
-                getUsers(paginationData.current_page);
-                setNotification({type: "success", message:"Користувача видалено!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
-        }
 
-    }
-    const getUsers = async (page?: number) => {
-        try {
-            setIsLoading(true);
-            let result = await getNotActiveUsersList(page);
-            setIsLoading(false);
-            setUsers(result.data);
-            const paginationData = {...result};
-            delete paginationData.data;
-            setPaginationData(paginationData);
-        } catch (error) {
-            setIsLoading(false);
-        }
-    }
-    const changePage = (page: number) => {
-        getUsers(page);
-
+    const changePage = async (page: number) => {
+        // @ts-ignore
+        await dispatch(axiosNotActiveUsers(page));
     }
     return (
         <div className="container mx-auto">
@@ -84,15 +49,8 @@ const UsersNotActive = () => {
                     <div className="flex justify-between mb-4">
                         <h2 className="text-2xl font-bold">Неактивні користувачі</h2>
                     </div>
-                    <div className="overflow-x-auto">
-                        {users.length === 0
-                            ?
-                            <p>Тут поки що немає нічого </p>
-                            :
-                            <UsersTable usersList={users} onActivateReativateUser={reactivatingUser} onDeleteUser={deletitingUser} tableType={'notActive'}/>
-                        }
+                    <UsersTable tableType={'notActive'} page={paginationData?.current_page}/>
 
-                    </div>
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}
                                 from={paginationData?.from}

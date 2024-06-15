@@ -105,7 +105,7 @@ const EmployeesActive = () => {
                     </div>
                     <div className="container mx-auto mt-10">
 
-                        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                        <Modal onClose={handleCloseModal}>
                             <AddUpdateEmployeeForm employee={employeeToUpdate} onCloseModal={handleCloseModal} onSubmitForm={onSubmitform}/>
                         </Modal>
                     </div>

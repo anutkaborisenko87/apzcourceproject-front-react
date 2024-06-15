@@ -1,20 +1,21 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect} from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {openCloseModal} from "../store/modalSlice.ts";
 
 type ModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
     children: ReactNode;
 };
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({  children }) => {
+    const dispatch = useDispatch();
+    const isOpen = useSelector(state => state.modal.isOpen);
     if (!isOpen) return null;
-
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
             <div className="relative mx-auto p-5 border w-6/12 max-h-90 shadow-lg rounded-md bg-white">
                 <button
                     className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-                    onClick={onClose}
+                    onClick={() => dispatch(openCloseModal({open: false}))}
                 >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                         <path

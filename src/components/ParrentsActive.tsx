@@ -1,90 +1,54 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
 import Modal from "../components/Modal.tsx";
 import {useStateContext} from "../../contexts/ContextProvider.tsx";
-import {deactivateEmployee, deleteEmployeeInfo} from "../apiServices/employeesApiServices.ts";
-import {deactivateParrent, deleteParrentInfo, getActiveParrentsList} from "../apiServices/parrentApiService.ts";
 import ParrentsTable from "./ParrentsTable.tsx";
 import AddUpdateParrentForm from "./AddUpdatParrentForm.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {axiosActiveParrents, axiosGetParrentInfo, getParrentToUpdate} from "../store/parrentsSlice.ts";
+import {openCloseModal} from "../store/modalSlice.ts";
 
 const ParrentsActive = () => {
-
-    const {setNotification} = useStateContext();
-    const [parrents, setParrents] = useState([]);
-    const [parrentToUpdate, setParrentToUpdate] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [paginationData, setPaginationData] = useState({
-        to: 0,
-        from: 0,
-        total: 0,
-        links: [],
-        last_page: 0,
-        current_page: 1,
+    const dispatch = useDispatch();
+    // @ts-ignore
+    const { setNotification } = useStateContext();
+    // @ts-ignore
+    const notification = useSelector(state => state.parrents.notification);
+    // @ts-ignore
+    const isLoading = useSelector(state => state.parrents.status === 'loading');
+    const paginationData = useSelector(state => {
+        return {
+            to: state.parrents?.parrents.to ?? 0,
+            from: state.parrents?.parrents.from ?? 0,
+            total: state.parrents?.parrents.total ?? 0,
+            links: state.parrents?.parrents.links ?? [],
+            last_page: state.parrents?.parrents.last_page ?? 0,
+            current_page: state.parrents?.parrents.current_page ?? 1
+        }
 
     });
     useEffect(() => {
-        getParrents();
-    }, []);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+        if (notification.type !== '' && notification.message !== '') {
+            setNotification(notification)
+        }
+    }, [notification]);
+    useEffect(() => {
+       // @ts-ignore
+        dispatch(axiosActiveParrents());
+    }, [dispatch]);
 
-    const handleOpenModal = (userId?: number) => {
-        if (userId) setParrentToUpdate({id: userId});
-        setIsModalOpen(true);
+
+    const handleOpenModal = async () => {
+        // @ts-ignore
+        await dispatch(axiosGetParrentInfo());
+        await (getParrentToUpdate(null));
+        dispatch(openCloseModal({open: true}));
     };
 
-    const handleCloseModal = () => {
-        setParrentToUpdate(null);
-        setIsModalOpen(false);
-    };
-    const deactivatingParrent = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете деактивувати цього батька?")) {
-            try {
-                setIsLoading(true);
-                await deactivateParrent(userId);
-                getParrents(paginationData.current_page);
-                setNotification({type: "success", message:"Батька деактивовано!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
-        }
-
-    }
-    const deletingParrent = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете видалити цього батька?")) {
-            try {
-                setIsLoading(true);
-                await deleteParrentInfo(userId);
-                setIsLoading(false);
-                getParrents(paginationData.current_page);
-                setNotification({type: "success", message:"Співробітника видалено!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
-        }
-
-    }
-    const getParrents = async (page?: number) => {
-        try {
-            setIsLoading(true);
-            let result = await getActiveParrentsList(page);
-            setIsLoading(false);
-            setParrents(result.data);
-            const paginationData = {...result};
-            delete paginationData.data;
-            setPaginationData(paginationData);
-        } catch (error) {
-            setIsLoading(false);
-        }
-    }
     const changePage = (page: number) => {
-        getParrents(page);
+        // @ts-ignore
+        dispatch(axiosActiveParrents(page));
 
-    }
-    const onSubmitform = () => {
-        getParrents();
-        handleCloseModal();
     }
     return (
         <div className="container mx-auto">
@@ -106,23 +70,12 @@ const ParrentsActive = () => {
                     </div>
                     <div className="container mx-auto mt-10">
 
-                        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                            <AddUpdateParrentForm parrent={parrentToUpdate} onCloseModal={handleCloseModal} onSubmitForm={onSubmitform}/>
+                        <Modal>
+                            <AddUpdateParrentForm/>
                         </Modal>
                     </div>
-                    <div className="overflow-x-auto">
-                        {parrents.length === 0
-                            ?
-                            <p>Тут поки що немає нічого </p>
-                            :
-                            <ParrentsTable  parrentsList={parrents} tableType={'active'}
-                                            onActivateReativateParrent={deactivatingParrent}
-                                            onDeleteParrent={deletingParrent}
-                                            onOpenModal={handleOpenModal}
-                            />
-                        }
+                    <ParrentsTable  page={paginationData?.current_page} tableType={'active'} />
 
-                    </div>
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}
                                 from={paginationData?.from}

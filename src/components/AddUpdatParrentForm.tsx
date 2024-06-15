@@ -1,133 +1,78 @@
 import {useEffect, useState} from "react";
-import {getRolesList} from "../apiServices/rolesApiServices.ts";
 import Spinner from "./Spinner.tsx";
 import UserFormPart from "./UserFormPart.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import ParrentFormPart from "./ParrentFormPart.tsx";
-import {createParrentInfo, getParrentInfo, updateParrentInfo} from "../apiServices/parrentApiService.ts";
 import {getChildrenListForSelect} from "../apiServices/childrenApiService.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {axiosCreateParrentInfo, axiosUpdateParrentInfo, cleanParrentErrors} from "../store/parrentsSlice.ts";
+import {axiosGetRolesList} from "../store/rolesSlice.ts";
+import {openCloseModal} from "../store/modalSlice.ts";
 
-type ParrentType = {
-    id: number,
-}
 
-type FormProps = {
-    parrent?: ParrentType,
-    onCloseModal: () => void
-    onSubmitForm: () => void
-}
-export default function AddUpdateParrentForm({parrent, onCloseModal, onSubmitForm}: FormProps) {
-    const {setNotification} = useStateContext();
-    const [roles, setRoles] = useState([]);
+export default function AddUpdateParrentForm() {
+    // @ts-ignore
+    const parrent = useSelector(state => state.parrents.parrentToUpdate);
+    // @ts-ignore
+    const parrentInfo = useSelector(state => state.parrents.parrent);
+    // @ts-ignore
+    const isModalOpen = useSelector(state => state.modal.isOpen);
+    // @ts-ignore
+    const roles = useSelector(state => state.roles.roles);
     const [childrenList, setChildrenList] = useState([]);
-    const [formLoading, setFormLoading] = useState(false);
+    // @ts-ignore
+    const formLoading = useSelector(state => state.parrents.statusForm === 'loading');;
     const today = new Date();
     const maxDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
-    const [errors, setErrors] = useState({
-        first_name: [],
-        last_name: [],
-        patronymic_name: [],
-        email: [],
-        role: [],
-        city: [],
-        street: [],
-        house_number: [],
-        apartment_number: [],
-        birth_date: []
-    });
-    const [parrentErrors, setParrentErrors] = useState({
-        phone: [],
-        work_place: [],
-        passport_data: [],
-        marital_status: [],
-        children: []
-    });
-    const [allertError, setAllertError] = useState('');
+    // @ts-ignore
+    const errors = useSelector(state => state.parrents.userValidationErrors);
+    // @ts-ignore
+    const parrentErrors = useSelector(state => state.parrents.parrentValidationErrors);
+    // @ts-ignore
+    const allertError = useSelector(state => state.parrents.error);
 
     const [userFormData, setUserFormData] = useState({
-        first_name: '',
-        last_name: '',
-        patronymic_name: '',
-        email: '',
-        role: '',
-        city: '',
-        street: '',
-        house_number: '',
-        apartment_number: '',
-        birth_date: '',
-        user_id: ''
+        first_name: parrentInfo?.first_name ?? '',
+        last_name: parrentInfo?.last_name ?? '',
+        patronymic_name: parrentInfo?.patronymic_name ?? '',
+        email: parrentInfo?.email ?? '',
+        role: parrentInfo?.role ?? '',
+        city: parrentInfo?.city ?? '',
+        street: parrentInfo?.street ?? '',
+        house_number: parrentInfo?.house_number ?? '',
+        apartment_number: parrentInfo?.apartment_number ?? '',
+        birth_date: parrentInfo?.birth_date ?? '',
+        user_id: parrentInfo?.user_id ?? ''
     });
-
+    const dispatch = useDispatch();
     const [parrentFormData, setParrentFormData] = useState({
-        phone: '',
-        work_place: '',
-        passport_data: '',
-        marital_status: '',
-        children: []
+        phone: parrentInfo?.phone ?? '',
+        work_place: parrentInfo?.work_place ?? '',
+        passport_data: parrentInfo?.passport_data ?? '',
+        marital_status: parrentInfo?.marital_status ?? '',
+        children: parrentInfo?.children ?? []
     });
     const clearErrors = (field: string) => {
-        setAllertError('');
-        setErrors({...errors, [field]: []});
+        // @ts-ignore
+        dispatch(cleanParrentErrors());
+        dispatch(cleanParrentErrors({field}));
     };
     const clearParrentErrors = (field: string) => {
-        setAllertError('');
-        setParrentErrors({...parrentErrors, [field]: []});
+        // @ts-ignore
+        dispatch(cleanParrentErrors());
+        dispatch(cleanParrentErrors({field}));
     };
-    const safeValue = (value, defaultValue = '') => value !== null ? value : defaultValue;
-    const getParrent = async () => {
-        setFormLoading(true);
-        try {
-            const parrentData = await getParrentInfo(parrent?.id);
-            console.log('parrentData', parrentData)
-            setUserFormData({
-                first_name: safeValue(parrentData.first_name),
-                last_name: safeValue(parrentData.last_name),
-                patronymic_name: safeValue(parrentData.patronymic_name),
-                email: safeValue(parrentData.email),
-                role: parrentData.role ? parrentData.role.id : safeValue(parrentData.role),
-                city: safeValue(parrentData.city),
-                street: safeValue(parrentData.street),
-                house_number: safeValue(parrentData.house_number),
-                apartment_number: safeValue(parrentData.apartment_number),
-                birth_date: safeValue(parrentData.birth_date),
-                user_id: safeValue(parrentData.user_id)
-            });
-            setParrentFormData({
-                phone: safeValue(parrentData.phone),
-                passport_data: safeValue(parrentData.passport_data),
-                work_place: safeValue(parrentData.work_place),
-                marital_status: safeValue(parrentData.marital_status),
-                children: parrentData.children ?? [],
-            });
-            setFormLoading(false);
-        } catch (error) {
-            setNotification({type: "error", message: "Щось пішло не так!"});
-            setFormLoading(false);
-            console.error(error)
-        }
 
-    }
-    const getRoles = async () => {
-        try {
-            const roles = await getRolesList();
-            setRoles(roles);
-        } catch (e) {
-            setNotification({type: "error", message: "Щось пішло не так!"});
-            console.error(e)
-        }
-    }
     const getChildrenList = async () => {
         try {
             const childrenList = await getChildrenListForSelect();
             setChildrenList(childrenList);
         } catch (e) {
-            setNotification({type: "error", message: "Щось пішло не так!"});
             console.error(e)
         }
     }
 
-    const submitForm = (ev) => {
+    const submitForm = (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
         if (!parrent) {
             createParrent();
@@ -135,102 +80,29 @@ export default function AddUpdateParrentForm({parrent, onCloseModal, onSubmitFor
             updateParrent();
         }
     }
-    const cleanObject = (object) => {
+    const cleanObject = (object: ArrayLike<unknown> | { [s: string]: unknown; }) => {
         return Object.fromEntries(
             Object.entries(object).filter(([_, v]) => v != null && v !== '')
         );
     }
     const createParrent = async () => {
-        setFormLoading(true);
         const userData = cleanObject(userFormData);
         const parrentData = cleanObject(parrentFormData);
-        try {
-            const data = await createParrentInfo({user: userData, parrent: parrentData});
-            onSubmitForm();
-            let userName = `${data.last_name} ${data.first_name}  ${data.patronymic_name ?? ''}`;
-            setNotification({type: "success", message: `Батька ${userName} додано!`});
-            setFormLoading(false);
-        } catch ({response}) {
-            if (response && response.status === 422) {
-                const errors = response.data.errors;
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    first_name: errors['user.first_name'] || [],
-                    last_name: errors['user.last_name'] || [],
-                    patronymic_name: errors['user.patronymic_name'] || [],
-                    email: errors['user.email'] || [],
-                    role: errors['user.role'] || [],
-                    city: errors['user.city'] || [],
-                    street: errors['user.street'] || [],
-                    house_number: errors['user.house_number'] || [],
-                    apartment_number: errors['user.apartment_number'] || [],
-                    birth_date: errors['user.birth_date'] || [],
-                }));
-                setParrentErrors(prevErrors => ({
-                    ...prevErrors,
-                    phone: errors['parrent.phone'] || [],
-                    passport_data: errors['parrent.passport_data'] || [],
-                    work_place: errors['parrent.bank_account'] || [],
-                    marital_status: errors['parrent.marital_status'] || [],
-                    children: errors['parrent.children'] || [],
-                }));
-            }
-            if (response && response.status !== 422) {
-                const {error} = response.data;
-                setAllertError(error);
-            }
-            setFormLoading(false);
-        }
+        // @ts-ignore
+        await dispatch(axiosCreateParrentInfo({user: userData, parrent: parrentData}));
     }
     const updateParrent = async () => {
-        setFormLoading(true);
         const userData = cleanObject(userFormData);
         const parrentData = cleanObject(parrentFormData);
-        try {
-            const data = await updateParrentInfo(parrent?.id, {user: userData, parrent: parrentData});
-            onSubmitForm();
-            let userName = `${data.last_name} ${data.first_name}  ${data.patronymic_name ?? ''}`;
-            setNotification({type: "success", message: `Інформацію про батька ${userName} оновлено!`});
-            setFormLoading(false);
-        } catch ({response}) {
-            if (response && response.status === 422) {
-                const errors = response.data.errors;
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    first_name: errors['user.first_name'] || [],
-                    last_name: errors['user.last_name'] || [],
-                    patronymic_name: errors['user.patronymic_name'] || [],
-                    email: errors['user.email'] || [],
-                    role: errors['user.role'] || [],
-                    city: errors['user.city'] || [],
-                    street: errors['user.street'] || [],
-                    house_number: errors['user.house_number'] || [],
-                    apartment_number: errors['user.apartment_number'] || [],
-                    birth_date: errors['user.birth_date'] || [],
-                }));
-                setParrentErrors(prevErrors => ({
-                    ...prevErrors,
-                    phone: errors['parrent.phone'] || [],
-                    passport_data: errors['parrent.passport_data'] || [],
-                    work_place: errors['parrent.bank_account'] || [],
-                    marital_status: errors['parrent.marital_status'] || [],
-                    children: errors['parrent.children'] || [],
-                }));
-            }
-            if (response && response.status !== 422) {
-                const {error} = response.data;
-                setAllertError(error);
-            }
-            setFormLoading(false);
-        }
+        // @ts-ignore
+        await dispatch(axiosUpdateParrentInfo({parrentId: parrent?.id, parrentFormData: {user: userData, parrent: parrentData}}));
+
     }
     useEffect(() => {
-        if (parrent) {
-            getParrent();
-        }
-        getRoles();
+        // @ts-ignore
+        dispatch(axiosGetRolesList())
         getChildrenList();
-    }, []);
+    }, [dispatch, isModalOpen]);
     return (
         <form onSubmit={submitForm}>
             <div className="space-y-12">
@@ -254,7 +126,7 @@ export default function AddUpdateParrentForm({parrent, onCloseModal, onSubmitFor
 
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        {allertError !== '' ?
+                        {allertError !== null ?
                             <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p className="font-bold">Помилка!</p>
                                 <p>{allertError}</p>
@@ -282,7 +154,7 @@ export default function AddUpdateParrentForm({parrent, onCloseModal, onSubmitFor
             </div>
 
             <div className="mt-6 flex items-center justify-end gap-x-6">
-                <button onClick={onCloseModal} type="button" className="text-sm font-semibold leading-6 text-gray-900"
+                <button onClick={() => dispatch(openCloseModal({open: false}))} type="button" className="text-sm font-semibold leading-6 text-gray-900"
                         disabled={formLoading}>
                     Скасувати
                 </button>
