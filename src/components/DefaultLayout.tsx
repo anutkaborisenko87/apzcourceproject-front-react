@@ -6,10 +6,11 @@ import {UserGroupIcon, UserCircleIcon, ArrowUturnRightIcon, WalletIcon, UsersIco
 import {getLoggedUserInfo, logoutUser} from "../apiServices/authApiServices.ts";
 
 const DefaultLayout = () => {
+    // @ts-ignore
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ');
     }
-
+    // @ts-ignore
     const {user, token, notification, setToken, setUser} = useStateContext();
     if (!token) {
         return <Navigate to="/login"/>
@@ -17,9 +18,12 @@ const DefaultLayout = () => {
     const logout = async () => {
         try {
             await logoutUser();
+            // @ts-ignore
             setToken(null);
+            // @ts-ignore
             setUser(null);
         } catch (error) {
+            // @ts-ignore
             console.log(error.response);
         }
     }
@@ -28,7 +32,9 @@ const DefaultLayout = () => {
         getLoggedUserInfo().then((data) => {
             setUser(data?.user);
         }).catch((error) => {
+            // @ts-ignore
             setToken(null);
+            // @ts-ignore
             setUser(null);
             console.error(error)
         })

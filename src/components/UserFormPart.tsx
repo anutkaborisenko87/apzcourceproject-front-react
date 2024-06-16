@@ -20,13 +20,20 @@ type FormParProps = {
     maxDate: Date
 }
 
-const UserFormPart = ({      userFormData,
-                             setUserFormData,
-                             clearErrors,
-                             errors,
-                             roles,
-                             maxDate
-                         }): FormParProps  => {
+const UserFormPart = ({    // @ts-ignore
+                          userFormData,
+                          // @ts-ignore
+                          setUserFormData,
+                          // @ts-ignore
+                          clearErrors,
+                          // @ts-ignore
+                          errors,
+                          // @ts-ignore
+                          roles,
+                          // @ts-ignore
+                          maxDate
+                      }): FormParProps => {
+    // @ts-ignore
     return (
         <>
 
@@ -46,13 +53,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('last_name');
-                            setUserFormData(userFormData => ({ ...userFormData, last_name: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, last_name: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.last_name.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.last_name.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.last_name.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -75,13 +85,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('first_name');
-                            setUserFormData(userFormData => ({ ...userFormData, first_name: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, first_name: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.first_name.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.first_name.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.first_name.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -104,13 +117,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('patronymic_name');
-                            setUserFormData(userFormData => ({ ...userFormData, patronymic_name: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, patronymic_name: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.patronymic_name.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.patronymic_name.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.patronymic_name.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -133,13 +149,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('email');
-                            setUserFormData(userFormData => ({ ...userFormData, email: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, email: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.email.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.email.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.email.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -158,12 +177,14 @@ const UserFormPart = ({      userFormData,
                         value={userFormData?.role ?? ''}
                         onChange={e => {
                             clearErrors('role');
-                            setUserFormData(userFormData => ({ ...userFormData, role: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, role: e.target.value}));
                         }}
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                     >
                         <option>не назначено</option>
                         {roles.length > 0 &&
+                            // @ts-ignore
                             roles.map((role) => (
                                 <option key={role.id} value={role.id}>{role.name}</option>
                             ))}
@@ -171,7 +192,9 @@ const UserFormPart = ({      userFormData,
                 </div>
                 {errors.role.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.role.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.role.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -194,13 +217,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('city');
-                            setUserFormData(userFormData => ({ ...userFormData, city: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, city: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.city.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.city.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.city.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -223,13 +249,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('street');
-                            setUserFormData(userFormData => ({ ...userFormData, street: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, street: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.street.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.street.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.street.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -252,13 +281,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('house_number');
-                            setUserFormData(userFormData => ({ ...userFormData, house_number: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, house_number: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.house_number.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.house_number.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.house_number.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -281,13 +313,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('apartment_number');
-                            setUserFormData(userFormData => ({ ...userFormData, apartment_number: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, apartment_number: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.apartment_number.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.apartment_number.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.apartment_number.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>
@@ -311,13 +346,16 @@ const UserFormPart = ({      userFormData,
                         }`}
                         onChange={e => {
                             clearErrors('birth_date');
-                            setUserFormData(userFormData => ({ ...userFormData, birth_date: e.target.value }));
+                            // @ts-ignore
+                            setUserFormData(userFormData => ({...userFormData, birth_date: e.target.value}));
                         }}
                     />
                 </div>
                 {errors.birth_date.length > 0 && (
                     <div className="text-red-500 text-xs">
-                        {errors.birth_date.map((error, index) => (
+                        {
+                            // @ts-ignore
+                            errors.birth_date.map((error, index) => (
                             <p key={index}>{error}</p>
                         ))}
                     </div>

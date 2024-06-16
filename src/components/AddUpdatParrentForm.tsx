@@ -98,6 +98,7 @@ export default function AddUpdateParrentForm() {
         }
 
     }, [dispatch, isModalOpen]);
+
     return (
         <form onSubmit={submitForm}>
             <div className="space-y-12">
@@ -129,6 +130,7 @@ export default function AddUpdateParrentForm() {
                             : ''
 
                         }
+                        {/*// @ts-ignore*/}
                         <UserFormPart userFormData={userFormData}
                                       setUserFormData={setUserFormData}
                                       errors={errors}
@@ -136,10 +138,13 @@ export default function AddUpdateParrentForm() {
                                       maxDate={maxDate}
                                       roles={roles}
                         />
+                        {/*// @ts-ignore*/}
                         <ParrentFormPart
                             parrentErrors={parrentErrors}
+                            // @ts-ignore
                             parrentFormData={parrentFormData}
                             children={childrenList}
+                            // @ts-ignore
                             setParrentFormData={setParrentFormData}
                             clearParrentErrors={clearErrors}/>
 

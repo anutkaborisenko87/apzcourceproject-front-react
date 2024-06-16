@@ -10,11 +10,17 @@ const ParrentsNotActive = () => {
     const isLoading = useSelector(state => state.parrents.status === 'loading');
     const paginationData = useSelector(state => {
         return {
+            // @ts-ignore
             to: state.parrents?.parrents.to ?? 0,
+            // @ts-ignore
             from: state.parrents?.parrents.from ?? 0,
+            // @ts-ignore
             total: state.parrents?.parrents.total ?? 0,
+            // @ts-ignore
             links: state.parrents?.parrents.links ?? [],
+            // @ts-ignore
             last_page: state.parrents?.parrents.last_page ?? 0,
+            // @ts-ignore
             current_page: state.parrents?.parrents.current_page ?? 1
         }
 

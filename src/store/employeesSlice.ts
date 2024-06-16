@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {EmployeeFormData, ParrentFormData} from "../apiServices/apiServicesTypes.ts";
+import {EmployeeFormData} from "../apiServices/apiServicesTypes.ts";
 import {openCloseModal} from "./modalSlice.ts";
 import {
     addNewEmployeeInfo,
@@ -33,6 +33,7 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
 
 export const axiosGetEmployeeInfo = createAsyncThunk(
     'employees/axiosGetEmployeeInfo',
+    // @ts-ignore
     async function (employeeId?: number, {rejectWithValue}) {
         try {
             if (!employeeId) return null;
@@ -72,6 +73,7 @@ export const axiosFireEmployee = createAsyncThunk(
         dispatch
     }) {
         try {
+            // @ts-ignore
             const resp = await fireEmployee(employeeId, payload);
             if (tableType == 'active') {
                 dispatch(axiosActiveEmployees());
@@ -381,9 +383,11 @@ const employeesSlice = createSlice({
         builder.addCase(axiosFireEmployee.rejected, (state, action) => {
             // @ts-ignore
             state.statusForm = 'failed';
+            console.log('error', action)
             // @ts-ignore
-            state.error = action.payload;
-            state.notification = {type: "error", message: `Щось пішло не так!`};
+            state.error = action.payload?.response?.data?.error;
+            // @ts-ignore
+            state.notification = {type: "error", message: action.payload?.response?.data?.error};
         });
         builder.addCase(axiosDeleteEmployee.pending, (state) => {
             // @ts-ignore

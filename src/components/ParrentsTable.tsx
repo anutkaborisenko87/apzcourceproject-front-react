@@ -17,6 +17,7 @@ const ParrentsTable = ({
                            tableType,
                            page
                        }: PropsType) => {
+    // @ts-ignore
     const parrentsList = useSelector(state => state.parrents?.parrents?.data ?? []);
     const dispatch = useDispatch();
     const onDeletingParrent = async (parrentId: React.Key | null | undefined) => {
@@ -104,7 +105,7 @@ const ParrentsTable = ({
                         </thead>
                         <tbody>
 
-                        {parrentsList.map((parrent) => {
+                        {parrentsList.map((parrent: any) => {
                             return (
                                 <tr key={parrent?.id} className="hover:bg-gray-100">
                                     <td className="py-2 px-4 border-b">{parrent?.last_name ?? ''} {parrent?.first_name ?? ''} {parrent?.patronymic_name ?? ''}</td>

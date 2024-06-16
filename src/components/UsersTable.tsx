@@ -8,13 +8,13 @@ import {
     getUserToUpdate
 } from "../store/userSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
-import {Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal} from "react";
 
 type PropsType = {
     tableType: string;
     page: number;
 }
 const UsersTable = ({tableType, page}: PropsType) => {
+    // @ts-ignore
     const usersList = useSelector(state => state.users?.users?.data ?? []);
     const dispatch = useDispatch();
     const ondeletingUser = async (userId: React.Key | null | undefined) => {
@@ -87,15 +87,16 @@ const UsersTable = ({tableType, page}: PropsType) => {
                         <tbody>
 
                         {usersList.map((user: {
-                                user_id: Key | null | undefined;
-                                last_name: any;
-                                first_name: any;
-                                patronymic_name: any;
-                                email: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined;
-                                city: any;
-                                street: any;
-                                house_number: any;
-                                apartment_number: any;
+                                birthdate: string;
+                                user_id: number;
+                                last_name: string | null;
+                                first_name:  string | null;
+                                patronymic_name:  string | null;
+                                email: string;
+                                city:  string | null;
+                                street:  string | null;
+                                house_number:  string | null;
+                                apartment_number:  string | null;
                                 user_category: string;
                             }) => {
                                 return (

@@ -18,6 +18,7 @@ export default function AddUpdateEmployeeForm({tableType} : {tableType: string})
     const dispatch = useDispatch();
     // @ts-ignore
     const employee = useSelector(state => state.employees.employeeToUpdate);
+    // @ts-ignore
     const firingEmployee = useSelector(state => state.employees.firingEmployee);
     // @ts-ignore
     const employeeInfo = useSelector(state => state.employees.employee);
@@ -176,6 +177,7 @@ export default function AddUpdateEmployeeForm({tableType} : {tableType: string})
                             </>
                             :
                             <>
+                                {/*// @ts-ignore*/}
                                 <UserFormPart userFormData={userFormData}
                                               setUserFormData={setUserFormData}
                                               errors={errors}
@@ -184,11 +186,14 @@ export default function AddUpdateEmployeeForm({tableType} : {tableType: string})
                                               roles={roles}
                                 />
                                 <EmployeeFormPart
+                                    // @ts-ignore
                                     clearEmployeeErrors={clearErrors}
                                     employeeErrors={employeeErrors}
+                                    // @ts-ignore
                                     employeeFormData={employeeFormData}
                                     maxDate={maxDate}
                                     positons={positions}
+                                    // @ts-ignore
                                     setEmployeeFormData={setEmployeeFormData}
                                 />
                             </>

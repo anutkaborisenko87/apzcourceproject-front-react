@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
 import Modal from "../components/Modal.tsx";
 import EmployeesTable from "./EmployeesTable.tsx";
@@ -13,11 +13,17 @@ const EmployeesActive = () => {
     const isLoading = useSelector(state => state.employees.status === 'loading');
     const paginationData = useSelector(state => {
         return {
+            // @ts-ignore
             to: state.employees?.employees.to ?? 0,
+            // @ts-ignore
             from: state.employees?.employees.from ?? 0,
+            // @ts-ignore
             total: state.employees?.employees.total ?? 0,
+            // @ts-ignore
             links: state.employees?.employees.links ?? [],
+            // @ts-ignore
             last_page: state.employees?.employees.last_page ?? 0,
+            // @ts-ignore
             current_page: state.employees?.employees.current_page ?? 1
         }
 

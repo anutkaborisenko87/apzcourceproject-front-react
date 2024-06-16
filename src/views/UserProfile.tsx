@@ -1,18 +1,18 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
-import {useEffect, useState} from "react";
-import {getProfileInfo} from "../apiServices/profileApiServices.ts";
+import {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {axiosGetProfile} from "../store/profileSlice.ts";
 
 const UserProfile = () => {
-    const [profile, setProfile] = useState(null);
-
+    const dispatch = useDispatch();
+    // @ts-ignore
+    const profile = useSelector(state => state.profile.profile);
     const bredcrumpsRoutes = [{path: '/profile', displayName: "Профіль"}];
     useEffect(() => {
-        getProfileInfo().then((data) => {
-            setProfile(data);
-        }).catch((error) => {
-            console.error('profile', error)
-        })
-    }, []);
+       // @ts-ignore
+        dispatch(axiosGetProfile());
+    }, [dispatch]);
+
     return (
         <>
             <Breadcrumbs routes={bredcrumpsRoutes}/>
@@ -47,7 +47,7 @@ const UserProfile = () => {
                                 {profile?.city ? profile?.city : ''}
                                 {profile?.street ? `, ${profile?.street}` : ''}
                                 {profile?.house_number ? `, ${profile?.house_number}` : ''}
-                                {profile?.house_number ? `, ${profile?.house_number}` : ''}
+                                {profile?.apartment_number ? `, ${profile?.apartment_number}` : ''}
                             </dd>
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

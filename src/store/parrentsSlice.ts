@@ -34,8 +34,10 @@ export const axiosNotActiveParrents = createAsyncThunk(
     }
 );
 
+
 export const axiosGetParrentInfo = createAsyncThunk(
     'parrents/axiosGetParrentInfo',
+    // @ts-ignore
     async function (parrentId?: number, {rejectWithValue}) {
         try {
             if (!parrentId) return null;

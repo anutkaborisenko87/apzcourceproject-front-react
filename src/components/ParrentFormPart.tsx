@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 type FormParProps = {
     parrentFormData: ParrentFormData;
     setParrentFormData: () => void;
-    clearParrentErrors: () => void;
+    clearParrentErrors: (maritalStatus: string) => void;
     parrentErrors: {
         phone: [],
         work_place: [],
@@ -24,10 +24,12 @@ const ParrentFormPart = ({
     const [inputValue, setInputValue] = useState("");
     const [selectedChild, setSelectedChild] = useState("");
     const removeChild = (index: any) => {
-        setParrentFormData(parrentFormData => {
+
+        // @ts-ignore
+        setParrentFormData((parrentFormData: any) => {
             return {
                 ...parrentFormData,
-                children: parrentFormData.children.filter((child) => child.child_id !== index)
+                children: parrentFormData.children.filter((child: { child_id: any; }) => child.child_id !== index)
             }
         });
         setInputValue('');
@@ -37,11 +39,13 @@ const ParrentFormPart = ({
 
         if (selectedChild && inputValue) {
             const selectedChildData = children.find((child) => {
+                // @ts-ignore
                return child.id == selectedChild
             });
             // @ts-ignore
             setParrentFormData((parrentFormData) => {
                 const existingChild = parrentFormData.children.find(
+                    // @ts-ignore
                     (child: { child_id: any; }) => child.child_id === selectedChildData.id
                 );
 
@@ -50,6 +54,7 @@ const ParrentFormPart = ({
                     return {
                         ...parrentFormData,
                         children: parrentFormData.children.map((child: { child_id: any; }) =>
+                            // @ts-ignore
                             child.child_id === selectedChildData.id
                                 ? {...child, relations: inputValue}
                                 : child
@@ -62,7 +67,9 @@ const ParrentFormPart = ({
                         children: [
                             ...parrentFormData.children,
                             {
+                                // @ts-ignore
                                 child_id: selectedChildData.id,
+                                // @ts-ignore
                                 child_name: selectedChildData.label,
                                 relations: inputValue,
                             },
@@ -85,12 +92,14 @@ const ParrentFormPart = ({
                         type="phone"
                         name="phone"
                         id="phone"
+                        // @ts-ignore
                         value={parrentFormData?.phone ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             parrentErrors.phone?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
                             clearParrentErrors('phone');
+                            // @ts-ignore
                             setParrentFormData(parrentFormData => ({...parrentFormData, phone: e.target.value}));
                         }}
                     />
@@ -114,12 +123,14 @@ const ParrentFormPart = ({
                         type="text"
                         name="work_place"
                         id="work_place"
+                        // @ts-ignore
                         value={parrentFormData?.work_place ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             parrentErrors.work_place?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
                             clearParrentErrors('work_place');
+                            // @ts-ignore
                             setParrentFormData(parrentFormData => ({
                                 ...parrentFormData,
                                 work_place: e.target.value
@@ -146,12 +157,14 @@ const ParrentFormPart = ({
                         type="text"
                         name="passport_data"
                         id="passport_data"
+                        // @ts-ignore
                         value={parrentFormData?.passport_data ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             parrentErrors.passport_data?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
                             clearParrentErrors('passport_data');
+                            // @ts-ignore
                             setParrentFormData(parrentFormData => ({
                                 ...parrentFormData,
                                 passport_data: e.target.value
@@ -178,12 +191,14 @@ const ParrentFormPart = ({
                         id="marital_status"
                         name="marital_status"
                         type="marital_status"
+                        // @ts-ignore
                         value={parrentFormData?.marital_status ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             parrentErrors.marital_status?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
                             clearParrentErrors('marital_status');
+                            // @ts-ignore
                             setParrentFormData(parrentFormData => ({
                                 ...parrentFormData,
                                 marital_status: e.target.value
@@ -201,7 +216,10 @@ const ParrentFormPart = ({
             </div>
             {/* Діти батька */}
             <div className="sm:col-span-full">
-                {parrentFormData.children.length > 0 ?
+                {
+                    // @ts-ignore
+                    parrentFormData.children.length > 0 ?
+                        // @ts-ignore
                     parrentFormData.children.map(child => {
                         return (<div key={child.child_id}
                             className="w-2/5 p-2 border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
@@ -232,6 +250,7 @@ const ParrentFormPart = ({
                             <option>не назначати</option>
                             {
                                 children.map((child) => (
+                                    // @ts-ignore
                                     <option key={child.id} value={child.id}>{child.label}</option>
                                 ))
                             }

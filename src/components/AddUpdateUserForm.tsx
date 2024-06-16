@@ -1,4 +1,3 @@
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import {useEffect, useState} from "react";
 import Spinner from "./Spinner.tsx";
 import UserFormPart from "./UserFormPart.tsx";
@@ -108,6 +107,7 @@ export default function AddUpdateUserForm() {
                             : ''
 
                         }
+                        {/*// @ts-ignore*/}
                         <UserFormPart userFormData={userFormData}
                                       setUserFormData={setUserFormData}
                                       errors={errors}

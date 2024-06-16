@@ -1,4 +1,4 @@
-import { ReactNode, useEffect} from 'react';
+import { ReactNode} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {openCloseModal} from "../store/modalSlice.ts";
 
@@ -8,6 +8,7 @@ type ModalProps = {
 
 const Modal: React.FC<ModalProps> = ({  children }) => {
     const dispatch = useDispatch();
+    // @ts-ignore
     const isOpen = useSelector(state => state.modal.isOpen);
     if (!isOpen) return null;
     return (

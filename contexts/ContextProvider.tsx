@@ -23,6 +23,7 @@ const StateContext = createContext<StateContextType>({
     notification: {type: '', message: ''},
     setUser: () => {},
     setToken: () => {},
+    // @ts-ignore
     setNotification: () => {},
 });
 
@@ -54,6 +55,7 @@ export const ContextProvider = ({children}: { children: ReactNode }) => {
     }
     return (
         <StateContext.Provider value={{
+            // @ts-ignore
             user,
             token,
             notification,

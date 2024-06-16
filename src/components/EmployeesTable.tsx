@@ -17,6 +17,7 @@ const EmployeesTable = ({
                             page
                         }: PropsType) => {
     const dispatch = useDispatch();
+    // @ts-ignore
     const employeesList = useSelector(state => state.employees?.employees?.data ?? []);
     const onDeletingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього співробітника?")) {
@@ -88,7 +89,9 @@ const EmployeesTable = ({
                         </thead>
                         <tbody>
 
-                        {employeesList.map((employee) => {
+                        {
+                            // @ts-ignore
+                            employeesList.map((employee) => {
                                 return (
                                     <tr key={employee?.id} className="hover:bg-gray-100">
                                         <td className="py-2 px-4 border-b">{employee?.last_name ?? ''} {employee?.first_name ?? ''} {employee?.patronymic_name ?? ''}</td>
@@ -100,6 +103,7 @@ const EmployeesTable = ({
                                                 tableType === 'active' ?
                                                     <button className="text-blue-500 hover:text-blue-700 mr-2"
                                                             onClick={async () => {
+                                                                // @ts-ignore
                                                                 await dispatch(axiosGetEmployeeInfo(employee?.id))
                                                                 dispatch(getEmployeeToUpdate({id: employee?.id}))
                                                                 dispatch(openCloseModal({open: true}))
@@ -124,19 +128,29 @@ const EmployeesTable = ({
                                                         >
                                                             <MinusCircleIcon className="w-6"/>
                                                         </button>
-                                                        <button className="text-purple-500 hover:text-purple-700"
-                                                                onClick={async () => {
-                                                                    // @ts-ignore
-                                                                    await dispatch(axiosGetEmployeeInfo(employee?.id))
-                                                                    dispatch(getEmployeeToFire({id: employee?.id}))
-                                                                    dispatch(openCloseModal({open: true}))
-                                                                }}
-                                                                title="Звільнити співробітника"
-                                                        >
-                                                            <XMarkIcon className="w-6"/>
-                                                        </button>
+                                                        {
+                                                            employee?.employment_date !== null
+                                                                ?
+                                                                <button
+                                                                    className="text-purple-500 hover:text-purple-700"
+                                                                    onClick={async () => {
+                                                                        // @ts-ignore
+                                                                        await dispatch(axiosGetEmployeeInfo(employee?.id))
+                                                                        dispatch(getEmployeeToFire({id: employee?.id}))
+                                                                        dispatch(openCloseModal({open: true}))
+                                                                    }}
+                                                                    title="Звільнити співробітника"
+                                                                ><XMarkIcon className="w-6"/>
+                                                                </button>
+                                                                :
+                                                                <button
+                                                                    className="text-purple-500 disabled:text-gray-700"
+                                                                    disabled={true}
+                                                                    title="Співробітника неможливо звільнити"
+                                                                ><XMarkIcon className="w-6"/>
+                                                                </button>
+                                                        }
                                                     </>
-
                                                     :
                                                     <></>
 

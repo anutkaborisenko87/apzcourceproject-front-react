@@ -6,14 +6,21 @@ import {axiosNotActiveUsers} from "../store/userSlice.ts";
 
 const UsersNotActive = () => {
     const dispatch = useDispatch();
+    // @ts-ignore
     const isLoading = useSelector(state => state.users.status === 'loading');
     const paginationData = useSelector(state => {
         return {
+            // @ts-ignore
             to: state.users?.users.to ?? 0,
+            // @ts-ignore
             from: state.users?.users.from ?? 0,
+            // @ts-ignore
             total: state.users?.users.total ?? 0,
+            // @ts-ignore
             links: state.users?.users.links ?? [],
+            // @ts-ignore
             last_page: state.users?.users.last_page ?? 0,
+            // @ts-ignore
             current_page: state.users?.users.current_page ?? 1
         }
 

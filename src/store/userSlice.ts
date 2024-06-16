@@ -103,7 +103,9 @@ export const axiosUpdateUserInfo = createAsyncThunk(
     async function ({userId, userFormData}: {userId: number, userFormData: UserFormData}, {rejectWithValue, dispatch}) {
           try {
             const resp = await updateUserInfo(userId, userFormData);
-            dispatch(openCloseModal({open: false}))
+            dispatch(openCloseModal({open: false}));
+            // @ts-ignore
+              dispatch(getUserToUpdate())
             dispatch(axiosActiveUsers())
             return resp;
         } catch (error) {
@@ -146,7 +148,14 @@ const setFormErrors = (state: { validationErrors: { first_name: any; last_name: 
 const userSlice = createSlice({
     name: 'users',
     initialState: {
-        users: [],
+        users: {
+            data:[],
+            links:[],
+            to: 0,
+            from: 0,
+            last_page: 0,
+            current_page: 1
+        },
         userToUpdate: null,
         user: null,
         status: null,

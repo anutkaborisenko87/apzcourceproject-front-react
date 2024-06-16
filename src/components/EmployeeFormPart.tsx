@@ -38,9 +38,12 @@ const EmployeeFormPart = ({
                     <select
                         id="position_id"
                         name="position_id"
+                        // @ts-ignore
                         value={employeeFormData?.position_id ?? ''}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('position_id');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, position_id: e.target.value}));
                         }}
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -48,6 +51,7 @@ const EmployeeFormPart = ({
                         <option>не назначено</option>
                         {positons.length > 0 &&
                             positons.map((positon) => (
+                                // @ts-ignore
                                 <option key={positon.id} value={positon.id}>{positon.title}</option>
                             ))}
                     </select>
@@ -71,12 +75,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="contract_number"
                         id="contract_number"
+                        // @ts-ignore
                         value={employeeFormData?.contract_number ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.contract_number?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('contract_number');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, contract_number: e.target.value}));
                         }}
                     />
@@ -100,12 +107,15 @@ const EmployeeFormPart = ({
                         name="employment_date"
                         max={maxDate}
                         id="employment_date"
+                        // @ts-ignore
                         value={employeeFormData?.employment_date ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.employment_date?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('employment_date');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, employment_date: e.target.value}));
                         }}
                     />
@@ -128,12 +138,15 @@ const EmployeeFormPart = ({
                         type="phone"
                         name="phone"
                         id="phone"
+                        // @ts-ignore
                         value={employeeFormData?.phone ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.phone?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('phone');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, phone: e.target.value}));
                         }}
                     />
@@ -156,12 +169,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="passport_data"
                         id="passport_data"
+                        // @ts-ignore
                         value={employeeFormData?.passport_data ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.passport_data?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('passport_data');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, passport_data: e.target.value}));
                         }}
                     />
@@ -185,12 +201,15 @@ const EmployeeFormPart = ({
                         id="bank_account"
                         name="bank_account"
                         type="bank_account"
+                        // @ts-ignore
                         value={employeeFormData?.bank_account ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.bank_account?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('bank_account');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, bank_account: e.target.value}));
                         }}
                     />
@@ -213,12 +232,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="bank_title"
                         id="bank_title"
+                        // @ts-ignore
                         value={employeeFormData?.bank_title ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.bank_title?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('bank_title');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, bank_title: e.target.value}));
                         }}
                     />
@@ -241,12 +263,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="EDRPOU_bank_code"
                         id="EDRPOU_bank_code"
+                        // @ts-ignore
                         value={employeeFormData?.EDRPOU_bank_code ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.EDRPOU_bank_code?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('EDRPOU_bank_code');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, street: e.target.value}));
                         }}
                     />
@@ -268,12 +293,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="code_IBAN"
                         id="code_IBAN"
+                        // @ts-ignore
                         value={employeeFormData?.code_IBAN ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.code_IBAN?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('code_IBAN');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, code_IBAN: e.target.value}));
                         }}
                     />
@@ -297,12 +325,15 @@ const EmployeeFormPart = ({
                         type="text"
                         name="medical_card_number"
                         id="medical_card_number"
+                        // @ts-ignore
                         value={employeeFormData?.medical_card_number ?? ''}
                         className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
                             employeeErrors.medical_card_number?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
                         }`}
                         onChange={e => {
+                            // @ts-ignore
                             clearEmployeeErrors('medical_card_number');
+                            // @ts-ignore
                             setEmployeeFormData(employeeFormData => ({...employeeFormData, medical_card_number: e.target.value}));
                         }}
                     />
