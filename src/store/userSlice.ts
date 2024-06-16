@@ -181,6 +181,9 @@ const userSlice = createSlice({
               state.error = null
             }
 
+        },
+        cleanUserNotification: (state) => {
+            state.notification = {type: '', message: ''}
         }
     },
     extraReducers: builder => {
@@ -323,6 +326,7 @@ const userSlice = createSlice({
 
 export const {
     getUserToUpdate,
+    cleanUserNotification,
     cleanErrors
 } = userSlice.actions;
 

@@ -1,7 +1,8 @@
 import axiosClient from "../axios-client.ts";
-export const getChildrenListForSelect = async () => {
+export const getChildrenListForSelect = async (parrentId?: number) => {
     try {
-        const {data} = await axiosClient.get('/children/for-select');
+        const url = parrentId ? `/children/for-select/${parrentId}` : `/children/for-select`;
+        const {data} = await axiosClient.get(url);
         return data;
     } catch (error) {
         throw error;

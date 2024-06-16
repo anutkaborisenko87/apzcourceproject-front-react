@@ -1,18 +1,16 @@
 import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
 import Modal from "../components/Modal.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import AddUpdateUserForm from "../components/AddUpdateUserForm.tsx";
 import UsersTable from "./UsersTable.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {axiosActiveUsers, axiosGetUserInfo, getUserToUpdate} from "../store/userSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
+import TabsForms from "./TabsForms.tsx";
 
 const UsersActive = () => {
+    const user = useSelector(state => state.users.userToUpdate);
     const dispatch = useDispatch();
-    // @ts-ignore
-    const { setNotification } = useStateContext();
-    const notification = useSelector(state => state.users.notification);
     const isLoading = useSelector(state => state.users.status === 'loading');
     const paginationData = useSelector(state => {
 
@@ -26,11 +24,6 @@ const UsersActive = () => {
         }
 
     });
-    useEffect(() => {
-        if (notification.type !== '' && notification.message !== '') {
-            setNotification(notification)
-        }
-    }, [notification]);
     useEffect(() => {
         // @ts-ignore
         dispatch(axiosActiveUsers());
@@ -67,7 +60,12 @@ const UsersActive = () => {
                     </div>
                     <div className="container mx-auto mt-10">
                         <Modal>
-                            <AddUpdateUserForm/>
+                            { user ?
+                                <AddUpdateUserForm/>
+                                :
+                                <TabsForms/>
+                            }
+
                         </Modal>
                     </div>
 

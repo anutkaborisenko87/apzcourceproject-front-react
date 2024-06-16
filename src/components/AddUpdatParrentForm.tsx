@@ -2,11 +2,11 @@ import {useEffect, useState} from "react";
 import Spinner from "./Spinner.tsx";
 import UserFormPart from "./UserFormPart.tsx";
 import ParrentFormPart from "./ParrentFormPart.tsx";
-import {getChildrenListForSelect} from "../apiServices/childrenApiService.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {axiosCreateParrentInfo, axiosUpdateParrentInfo, cleanParrentErrors} from "../store/parrentsSlice.ts";
 import {axiosGetRolesList} from "../store/rolesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
+import {axiosChildrenSelectList} from "../store/childrenListSlice.ts";
 
 
 export default function AddUpdateParrentForm() {
@@ -18,9 +18,10 @@ export default function AddUpdateParrentForm() {
     const isModalOpen = useSelector(state => state.modal.isOpen);
     // @ts-ignore
     const roles = useSelector(state => state.roles.roles);
-    const [childrenList, setChildrenList] = useState([]);
     // @ts-ignore
-    const formLoading = useSelector(state => state.parrents.statusForm === 'loading');;
+    const childrenList = useSelector(state => state.childrenList.childrenforSelect);
+    // @ts-ignore
+    const formLoading = useSelector(state => state.parrents.statusForm === 'loading');
     const today = new Date();
     const maxDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
@@ -57,20 +58,7 @@ export default function AddUpdateParrentForm() {
         dispatch(cleanParrentErrors());
         dispatch(cleanParrentErrors({field}));
     };
-    const clearParrentErrors = (field: string) => {
-        // @ts-ignore
-        dispatch(cleanParrentErrors());
-        dispatch(cleanParrentErrors({field}));
-    };
 
-    const getChildrenList = async () => {
-        try {
-            const childrenList = await getChildrenListForSelect();
-            setChildrenList(childrenList);
-        } catch (e) {
-            console.error(e)
-        }
-    }
 
     const submitForm = (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
@@ -101,7 +89,14 @@ export default function AddUpdateParrentForm() {
     useEffect(() => {
         // @ts-ignore
         dispatch(axiosGetRolesList())
-        getChildrenList();
+        if (!parrent) {
+            // @ts-ignore
+            dispatch(axiosChildrenSelectList());
+        } else {
+            // @ts-ignore
+            dispatch(axiosChildrenSelectList(parrent.id));
+        }
+
     }, [dispatch, isModalOpen]);
     return (
         <form onSubmit={submitForm}>
@@ -146,7 +141,7 @@ export default function AddUpdateParrentForm() {
                             parrentFormData={parrentFormData}
                             children={childrenList}
                             setParrentFormData={setParrentFormData}
-                            clearParrentErrors={clearParrentErrors}/>
+                            clearParrentErrors={clearErrors}/>
 
                     </div>
                 </div>

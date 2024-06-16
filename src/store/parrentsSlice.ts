@@ -215,6 +215,9 @@ const parrentSlice = createSlice({
             } else {
                 state.error = null
             }
+        },
+        cleanParrentNotification: (state) => {
+            state.notification = {type: '', message: ''}
         }
     },
     extraReducers: builder => {
@@ -377,6 +380,7 @@ const parrentSlice = createSlice({
 
 export const {
     getParrentToUpdate,
+    cleanParrentNotification,
     cleanParrentErrors
 } = parrentSlice.actions;
 

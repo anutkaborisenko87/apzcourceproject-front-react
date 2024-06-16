@@ -11,7 +11,7 @@ import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from
 
 type PropsType = {
     tableType: string;
-    page: string;
+    page: number;
 }
 const ParrentsTable = ({
                            tableType,

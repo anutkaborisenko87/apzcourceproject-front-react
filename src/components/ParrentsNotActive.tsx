@@ -1,6 +1,5 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import ParrentsTable from "./ParrentsTable.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {axiosNotActiveParrents} from "../store/parrentsSlice.ts";
@@ -8,11 +7,7 @@ import {axiosNotActiveParrents} from "../store/parrentsSlice.ts";
 const ParrentsNotActive = () => {
     const dispatch = useDispatch();
     // @ts-ignore
-    const {setNotification} = useStateContext();
-    // @ts-ignore
     const isLoading = useSelector(state => state.parrents.status === 'loading');
-    // @ts-ignore
-    const notification = useSelector(state => state.parrents.notification);
     const paginationData = useSelector(state => {
         return {
             to: state.parrents?.parrents.to ?? 0,
@@ -24,11 +19,6 @@ const ParrentsNotActive = () => {
         }
 
     });
-    useEffect(() => {
-        if (notification.type !== '' && notification.message !== '') {
-            setNotification(notification)
-        }
-    }, [notification]);
     useEffect(() => {
         // @ts-ignore
         dispatch(axiosNotActiveParrents());

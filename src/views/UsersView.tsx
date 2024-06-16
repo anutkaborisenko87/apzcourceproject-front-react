@@ -1,11 +1,21 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import UsersActive from "../components/UsersActive.tsx";
 import UsersNotActive from "../components/UserNotActive.tsx";
-
+import {useSelector} from "react-redux";
+import {useStateContext} from "../../contexts/ContextProvider.tsx";
 const UsersView = () => {
     const bredcrumpsRoutes = [{path: '/users', displayName: "Користувачі"}];
     const [activeTab, setActiveTab] = useState('active');
+    // @ts-ignore
+    const notification = useSelector(state => state.users.notification);
+    // @ts-ignore
+    const { setNotification } = useStateContext();
+    useEffect(() => {
+        if (notification.type !== '' && notification.message !== '') {
+            setNotification(notification)
+        }
+    }, [notification]);
     return (
         <>
             <Breadcrumbs routes={bredcrumpsRoutes}/>

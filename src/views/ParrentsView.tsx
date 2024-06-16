@@ -1,11 +1,22 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import ParrentsActive from "../components/ParrentsActive.tsx";
 import ParrentsNotActive from "../components/ParrentsNotActive.tsx";
+import {useStateContext} from "../../contexts/ContextProvider.tsx";
+import {useSelector} from "react-redux";
 
 const ParrentsView = () => {
     const bredcrumpsRoutes = [{path: '/parrents', displayName: "Батьки"}];
     const [activeTab, setActiveTab] = useState('active');
+    // @ts-ignore
+    const { setNotification } = useStateContext();
+    // @ts-ignore
+    const notification = useSelector(state => state.parrents.notification);
+    useEffect(() => {
+        if (notification.type !== '' && notification.message !== '') {
+            setNotification(notification)
+        }
+    }, [notification]);
     return (
         <>
             <Breadcrumbs routes={bredcrumpsRoutes}/>

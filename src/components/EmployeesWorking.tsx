@@ -1,93 +1,33 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
-import Modal from "../components/Modal.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
-import {
-    deactivateEmployee,
-    deleteEmployeeInfo,
-    getWorkingEmployeesList
-} from "../apiServices/employeesApiServices.ts";
 import EmployeesTable from "./EmployeesTable.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {axiosWorkingEmployeesList} from "../store/employeesSlice.ts";
+import Modal from "./Modal.tsx";
 import AddUpdateEmployeeForm from "./AddUpdatEmployeeForm.tsx";
 
 const EmployeesWorking = () => {
-
-    const {setNotification} = useStateContext();
-    const [employees, setEmployees] = useState([]);
-    const [employeeToUpdate, setEmployeeToUpdate] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [paginationData, setPaginationData] = useState({
-        to: 0,
-        from: 0,
-        total: 0,
-        links: [],
-        last_page: 0,
-        current_page: 1,
+    const dispatch = useDispatch();
+    // @ts-ignore
+    const isLoading = useSelector(state => state.employees.status === 'loading');
+    const paginationData = useSelector(state => {
+        return {
+            to: state.employees?.employees.to ?? 0,
+            from: state.employees?.employees.from ?? 0,
+            total: state.employees?.employees.total ?? 0,
+            links: state.employees?.employees.links ?? [],
+            last_page: state.employees?.employees.last_page ?? 0,
+            current_page: state.employees?.employees.current_page ?? 1
+        }
 
     });
     useEffect(() => {
-        getEmployees();
-    }, []);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleOpenModal = (userId?: number) => {
-        if (userId) setEmployeeToUpdate({id: userId});
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setEmployeeToUpdate(null);
-        setIsModalOpen(false);
-    };
-    const deactivatingEmployee = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете деактивувати цього співробітника?")) {
-            try {
-                setIsLoading(true);
-                await deactivateEmployee(userId);
-                getEmployees(paginationData.current_page);
-                setNotification({type: "success", message:"Співробітника деактивовано!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
-        }
-
-    }
-    const deletingEmployee = async (userId:number) => {
-        if (confirm("Ви впевнені, що хочете видалити цього співробітника?")) {
-            try {
-                setIsLoading(true);
-                await deleteEmployeeInfo(userId);
-                setIsLoading(false);
-                getEmployees(paginationData.current_page);
-                setNotification({type: "success", message:"Співробітника видалено!"});
-            } catch (e) {
-                setIsLoading(false);
-                setNotification({type: "error", message:"Щось пішло не так!"});
-            }
-        }
-
-    }
-    const getEmployees = async (page?: number) => {
-        try {
-            setIsLoading(true);
-            let result = await getWorkingEmployeesList(page);
-            setIsLoading(false);
-            setEmployees(result.data);
-            const paginationData = {...result};
-            delete paginationData.data;
-            setPaginationData(paginationData);
-        } catch (error) {
-            setIsLoading(false);
-        }
-    }
+        // @ts-ignore
+        dispatch(axiosWorkingEmployeesList());
+    }, [dispatch]);
     const changePage = (page: number) => {
-        getEmployees(page);
-
-    }
-    const onSubmitform = () => {
-        getEmployees();
-        handleCloseModal();
+        // @ts-ignore
+        dispatch(axiosWorkingEmployeesList(page));
     }
     return (
         <div className="container mx-auto">
@@ -99,23 +39,14 @@ const EmployeesWorking = () => {
                 :
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <div className="container mx-auto mt-10">
-                        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                            <AddUpdateEmployeeForm employee={employeeToUpdate} onCloseModal={handleCloseModal} onSubmitForm={onSubmitform}/>
+                        <Modal>
+                            <AddUpdateEmployeeForm tableType={'working'}/>
                         </Modal>
                     </div>
-                    <div className="overflow-x-auto">
-                        {employees.length === 0
-                            ?
-                            <p>Тут поки що немає нічого </p>
-                            :
-                            <EmployeesTable  employeesList={employees} tableType={'active'}
-                                             onActivateReativateEmployee={deactivatingEmployee}
-                                             onDeleteEmployee={deletingEmployee}
-                                             onOpenModal={handleOpenModal}
-                            />
-                        }
 
-                    </div>
+                    <EmployeesTable page={paginationData?.current_page} tableType={'working'}
+                    />
+
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}
                                 from={paginationData?.from}

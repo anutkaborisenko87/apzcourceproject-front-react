@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import Pagination from "../components/Pagination.tsx";
 import Modal from "../components/Modal.tsx";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 import ParrentsTable from "./ParrentsTable.tsx";
 import AddUpdateParrentForm from "./AddUpdatParrentForm.tsx";
 import {useDispatch, useSelector} from "react-redux";
@@ -10,10 +9,6 @@ import {openCloseModal} from "../store/modalSlice.ts";
 
 const ParrentsActive = () => {
     const dispatch = useDispatch();
-    // @ts-ignore
-    const { setNotification } = useStateContext();
-    // @ts-ignore
-    const notification = useSelector(state => state.parrents.notification);
     // @ts-ignore
     const isLoading = useSelector(state => state.parrents.status === 'loading');
     const paginationData = useSelector(state => {
@@ -27,11 +22,6 @@ const ParrentsActive = () => {
         }
 
     });
-    useEffect(() => {
-        if (notification.type !== '' && notification.message !== '') {
-            setNotification(notification)
-        }
-    }, [notification]);
     useEffect(() => {
        // @ts-ignore
         dispatch(axiosActiveParrents());

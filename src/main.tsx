@@ -9,10 +9,10 @@ import store from "./store";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <ContextProvider>
-            <Provider store={store}>
+        <Provider store={store}>
+            <ContextProvider>
                 <RouterProvider router={router}/>
-            </Provider>
-        </ContextProvider>
+            </ContextProvider>
+        </Provider>
     </React.StrictMode>,
 )

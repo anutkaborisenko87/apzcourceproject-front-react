@@ -3,14 +3,10 @@ import Pagination from "../components/Pagination.tsx";
 import UsersTable from "./UsersTable.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {axiosNotActiveUsers} from "../store/userSlice.ts";
-import {useStateContext} from "../../contexts/ContextProvider.tsx";
 
 const UsersNotActive = () => {
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.users.status === 'loading');
-    const notification = useSelector(state => state.users.notification);
-    // @ts-ignore
-    const { setNotification } = useStateContext();
     const paginationData = useSelector(state => {
         return {
             to: state.users?.users.to ?? 0,
@@ -22,17 +18,11 @@ const UsersNotActive = () => {
         }
 
     });
-    useEffect(() => {
-        if (notification.type !== '' && notification.message !== '') {
-            setNotification(notification)
-        }
-    }, [notification]);
+
     useEffect(() => {
         // @ts-ignore
         dispatch(axiosNotActiveUsers());
     }, [dispatch]);
-
-
     const changePage = async (page: number) => {
         // @ts-ignore
         await dispatch(axiosNotActiveUsers(page));

@@ -1,12 +1,23 @@
 import Breadcrumbs from "../components/Breadcrumbs.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import EmployeesActive from "../components/EmployeesActive.tsx";
 import EmployeesWorking from "../components/EmployeesWorking.tsx";
 import EmployeesNotActive from "../components/EmployeesNotActive.tsx";
+import {useStateContext} from "../../contexts/ContextProvider.tsx";
+import {useSelector} from "react-redux";
 
 const EmployeesView = () => {
+    // @ts-ignore
+    const {setNotification} = useStateContext();
+    // @ts-ignore
+    const notification = useSelector(state => state.employees.notification);
     const bredcrumpsRoutes = [{path: '/eployees', displayName: "Співробітники"}];
     const [activeTab, setActiveTab] = useState('active');
+    useEffect(() => {
+        if (notification.type !== '' && notification.message !== '') {
+            setNotification(notification)
+        }
+    }, [notification]);
     return (
         <>
             <Breadcrumbs routes={bredcrumpsRoutes}/>

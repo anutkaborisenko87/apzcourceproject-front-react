@@ -1,4 +1,9 @@
 import {createContext, ReactNode, useContext, useState} from "react";
+import {useDispatch} from "react-redux";
+import {cleanEmployeeNotification} from "../src/store/employeesSlice.ts";
+import {cleanChildrenNotification} from "../src/store/childrenListSlice.ts";
+import {cleanParrentNotification} from "../src/store/parrentsSlice.ts";
+import {cleanUserNotification} from "../src/store/userSlice.ts";
 type UserType = {
     id: number;
     name: string;
@@ -23,6 +28,7 @@ const StateContext = createContext<StateContextType>({
 
 
 export const ContextProvider = ({children}: { children: ReactNode }) => {
+    const dispatch = useDispatch();
     const [user, setUser] = useState<UserType | null>(null);
     const [notification, _setNotification] = useState({type: '', message: ''})
     const [token, _setToken] = useState(localStorage.getItem('react_front_access_token'));
@@ -39,6 +45,11 @@ export const ContextProvider = ({children}: { children: ReactNode }) => {
         _setNotification({type, message});
         setTimeout(() => {
             _setNotification({type: '', message: ''});
+            dispatch(cleanEmployeeNotification());
+            dispatch(cleanChildrenNotification());
+            dispatch(cleanParrentNotification());
+            dispatch(cleanUserNotification());
+
         }, 5000)
     }
     return (

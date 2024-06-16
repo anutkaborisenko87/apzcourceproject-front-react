@@ -61,7 +61,18 @@ export const addNewEmployeeInfo = async (payload?: EmployeeFormData) => {
     }
 }
 
-export const updateEmployeeInfo = async (employeeId: number,payload?: EmployeeFormData) => {
+export const fireEmployee = async (employeeId: number, payload?: {employee_hired: string}) => {
+    const url = `/employees/${employeeId}/fire-employee`;
+    // eslint-disable-next-line no-useless-catch
+    try {
+        const {data} = await axiosClient.post(url, payload);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateEmployeeInfo = async (employeeId: number, payload?: EmployeeFormData) => {
     const url = `/employees/${employeeId}/update`;
 
     // eslint-disable-next-line no-useless-catch
