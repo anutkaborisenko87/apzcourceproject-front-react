@@ -37,8 +37,24 @@ export type ParrentData = {
     children?: ParrentChildData[];
 }
 
+export type ChildData = {
+    group_id?: number;
+    mental_helth?: string;
+    birth_certificate?: string;
+    medical_card_number?: string;
+    social_status?: string;
+    enrollment_date?: string;
+    graduation_date?: string;
+    parrents?: ChildParrentData[];
+}
+
 export type ParrentChildData = {
     child_id: number;
+    relations: string;
+}
+
+export type ChildParrentData = {
+    parrent_id: number;
     relations: string;
 }
 
@@ -50,4 +66,9 @@ export type ParrentFormData = {
 export type EmployeeFormData = {
     user: UserFormData,
     employee: EmployeeData
+}
+
+export type ChildFormData = {
+    user: UserFormData,
+    child: ChildData
 }

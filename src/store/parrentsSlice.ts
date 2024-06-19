@@ -15,8 +15,8 @@ import {openCloseModal} from "./modalSlice.ts";
 
 export const axiosParrentsSelect = createAsyncThunk(
     'parrents/axiosParrentsSelect',
-    async function () {
-        return await getSelectList();
+    async function (childID?: number) {
+        return await getSelectList(childID);
     }
 );
 

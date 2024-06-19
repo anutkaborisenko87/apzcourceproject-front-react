@@ -106,7 +106,8 @@ const UsersTable = ({tableType, page}: PropsType) => {
                                         <td className="py-2 px-4 border-b">{user?.birthdate ?? ''}</td>
                                         <td className="py-2 px-4 border-b">{user?.user_category === "employee" ? <Link
                                             to="/employees">співробітники</Link> : (user?.user_category === "parent" ? <Link
-                                            to="/parrents">батьки</Link> : (user?.user_category === "children" ? "діти" : "адмін. персонал"))}</td>
+                                            to="/parrents">батьки</Link> : (user?.user_category === "children" ? <Link
+                                                to="/children">діти</Link> : "адмін. персонал"))}</td>
                                         <td className="py-2 px-4 border-b">
 
                                             {

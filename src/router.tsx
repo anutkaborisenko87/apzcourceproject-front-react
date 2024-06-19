@@ -8,6 +8,7 @@ import UserProfile from "./views/UserProfile.tsx";
 import UsersView from "./views/UsersView.tsx";
 import EmployeesView from "./views/EmployeesView.tsx";
 import ParrentsView from "./views/ParrentsView.tsx";
+import ChildrenView from "./views/ChildrenView.tsx";
 
 const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             {
                 path: 'parrents',
                 element: <ParrentsView/>
+            },
+            {
+                path: 'children',
+                element: <ChildrenView/>
             },
         ]
     },

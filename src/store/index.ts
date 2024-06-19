@@ -7,6 +7,7 @@ import employeesReducer from "./employeesSlice.ts";
 import childrenListReducer from "./childrenListSlice.ts";
 import positionsReducer from "./positionsSlice.ts";
 import profileReducer from "./profileSlice.ts";
+import groupsReducer from "./groupsSlice.ts";
 export default configureStore({
     reducer: {
         users: userReducer,
@@ -17,5 +18,6 @@ export default configureStore({
         employees: employeesReducer,
         positions: positionsReducer,
         profile: profileReducer,
+        groups: groupsReducer,
     }
 })

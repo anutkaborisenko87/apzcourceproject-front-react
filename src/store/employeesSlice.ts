@@ -377,13 +377,14 @@ const employeesSlice = createSlice({
             // @ts-ignore
             state.statusForm = 'resolved';
             state.error = null;
+            state.firingEmployee = null
+            state.employee = null
             let userName = `${action.payload.last_name} ${action.payload.first_name}  ${action.payload.patronymic_name ?? ''}`;
             state.notification = {type: "success", message: `Співробітника ${userName} звільнено!`};
         });
         builder.addCase(axiosFireEmployee.rejected, (state, action) => {
             // @ts-ignore
             state.statusForm = 'failed';
-            console.log('error', action)
             // @ts-ignore
             state.error = action.payload?.response?.data?.error;
             // @ts-ignore
@@ -431,6 +432,7 @@ const employeesSlice = createSlice({
             // @ts-ignore
             state.statusForm = 'resolved';
             state.error = null;
+            state.employee = null;
             let userName = `${action.payload.last_name} ${action.payload.first_name}  ${action.payload.patronymic_name ?? ''}`;
             state.notification = {type: "success", message: `Інформацію про співробітника ${userName} оновлено!`};
         });
