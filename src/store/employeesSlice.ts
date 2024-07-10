@@ -5,7 +5,7 @@ import {
     addNewEmployeeInfo,
     deactivateEmployee, deleteEmployeeInfo, fireEmployee,
     getActiveEmployeesList, getEmployeeInfo,
-    getNotActiveEmployeesList,
+    getNotActiveEmployeesList, getTeachersList,
     getWorkingEmployeesList, reactivateEmployee, updateEmployeeInfo
 } from "../apiServices/employeesApiServices.ts";
 
@@ -14,6 +14,14 @@ export const axiosActiveEmployees = createAsyncThunk(
     'employees/axiosActiveEmployees',
     async function (page?: number) {
         return await getActiveEmployeesList(page);
+    }
+);
+
+
+export const axiosTeachers = createAsyncThunk(
+    'employees/axiosTeachers',
+    async function () {
+        return await getTeachersList();
     }
 );
 
@@ -34,9 +42,22 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
 export const axiosGetEmployeeInfo = createAsyncThunk(
     'employees/axiosGetEmployeeInfo',
     // @ts-ignore
-    async function (employeeId?: number, {rejectWithValue}) {
+    async function ({employeeId, type }: {employeeId?: number, type?: string }, {rejectWithValue, dispatch}) {
+        // @ts-ignore
+        dispatch(cleanEmployeeErrors());
+        if (!employeeId && !type) {
+            dispatch(getEmployeeToUpdate(null));
+            dispatch(getEmployeeToFire(null));
+        }
         try {
             if (!employeeId) return null;
+            if (type === 'fire') {
+                dispatch(getEmployeeToFire({id: employeeId}));
+                dispatch(getEmployeeToUpdate(null));
+            } else {
+                dispatch(getEmployeeToFire(null));
+                dispatch(getEmployeeToUpdate({id: employeeId}));
+            }
             return await getEmployeeInfo(employeeId);
         } catch (error) {
             return rejectWithValue(error);
@@ -68,10 +89,14 @@ export const axiosDeactivateEmployee = createAsyncThunk(
 
 export const axiosFireEmployee = createAsyncThunk(
     'employees/axiosFireEmployee',
-    async function ({employeeId, tableType, payload}: { employeeId: number, tableType: string, payload?: {date_dismissal: string }}, {
-        rejectWithValue,
-        dispatch
-    }) {
+    async function ({employeeId, tableType, payload}: {
+        employeeId: number,
+        tableType: string,
+        payload?: { date_dismissal: string }
+    }, {
+                        rejectWithValue,
+                        dispatch
+                    }) {
         try {
             // @ts-ignore
             const resp = await fireEmployee(employeeId, payload);
@@ -165,7 +190,34 @@ export const axiosUpdateEmployeeInfo = createAsyncThunk(
     }
 );
 
-const setFormErrors = (state: { userValidationErrors: { first_name: any; last_name: any; patronymic_name: any; email: any; role: any; city: any; street: any; house_number: any; apartment_number: any; birth_date: any; }; employeeValidationErrors: { position_id: any; phone: any; contract_number: any; passport_data: any; bank_account: any; bank_title: any; EDRPOU_bank_code: any; code_IBAN: any; medical_card_number: any; employment_date: any; }; error: any; statusForm: string; }, action: { payload: { response: any; }; }) => {
+const setFormErrors = (state: {
+    userValidationErrors: {
+        first_name: any;
+        last_name: any;
+        patronymic_name: any;
+        email: any;
+        role: any;
+        city: any;
+        street: any;
+        house_number: any;
+        apartment_number: any;
+        birth_date: any;
+    };
+    employeeValidationErrors: {
+        position_id: any;
+        phone: any;
+        contract_number: any;
+        passport_data: any;
+        bank_account: any;
+        bank_title: any;
+        EDRPOU_bank_code: any;
+        code_IBAN: any;
+        medical_card_number: any;
+        employment_date: any;
+    };
+    error: any;
+    statusForm: string;
+}, action: { payload: { response: any; }; }) => {
     const {response} = action.payload
     // @ts-ignore
     if (response.status === 422) {
@@ -176,10 +228,10 @@ const setFormErrors = (state: { userValidationErrors: { first_name: any; last_na
             email: response?.data?.errors['user.email'] ?? [],
             role: response?.data?.errors['user.role'] ?? [],
             city: response?.data?.errors['user.city'] ?? [],
-            street: response?.data?.errors['user.street'] ??  [],
+            street: response?.data?.errors['user.street'] ?? [],
             house_number: response?.data?.errors['user.house_number'] ?? [],
-            apartment_number:  response?.data?.errors['user.apartment_number'] ?? [],
-            birth_date:  response?.data?.errors['user.birth_date'] ?? []
+            apartment_number: response?.data?.errors['user.apartment_number'] ?? [],
+            birth_date: response?.data?.errors['user.birth_date'] ?? []
         }
         state.employeeValidationErrors = {
             position_id: response?.data?.errors['employee.position_id'] ?? [],
@@ -194,6 +246,30 @@ const setFormErrors = (state: { userValidationErrors: { first_name: any; last_na
             employment_date: response?.data?.errors['employee.employment_date'] ?? [],
         }
     } else {
+        state.userValidationErrors = {
+            first_name: [],
+            last_name: [],
+            patronymic_name: [],
+            email: [],
+            role: [],
+            city: [],
+            street: [],
+            house_number: [],
+            apartment_number: [],
+            birth_date: []
+        };
+        state.employeeValidationErrors = {
+            position_id: [],
+            phone: [],
+            contract_number: [],
+            passport_data: [],
+            bank_account: [],
+            bank_title: [],
+            EDRPOU_bank_code: [],
+            code_IBAN: [],
+            medical_card_number: [],
+            employment_date: [],
+        };
         state.error = response.data.error;
     }
 
@@ -254,8 +330,33 @@ const employeesSlice = createSlice({
                 // @ts-ignore
                 if (state.employeeValidationErrors[action.payload.field]) state.employeeValidationErrors[action.payload.field] = [];
             } else {
-                state.error = null
+                state.userValidationErrors = {
+                    first_name: [],
+                    last_name: [],
+                    patronymic_name: [],
+                    email: [],
+                    role: [],
+                    city: [],
+                    street: [],
+                    house_number: [],
+                    apartment_number: [],
+                    birth_date: []
+                };
+                state.employeeValidationErrors = {
+                    position_id: [],
+                    phone: [],
+                    contract_number: [],
+                    passport_data: [],
+                    bank_account: [],
+                    bank_title: [],
+                    EDRPOU_bank_code: [],
+                    code_IBAN: [],
+                    medical_card_number: [],
+                    employment_date: [],
+                };
             }
+            state.error = null
+
         },
         cleanEmployeeNotification: (state) => {
             state.notification = {type: '', message: ''}
@@ -274,6 +375,23 @@ const employeesSlice = createSlice({
             state.error = null;
         });
         builder.addCase(axiosWorkingEmployeesList.rejected, (state, action) => {
+            // @ts-ignore
+            state.status = 'failed';
+            // @ts-ignore
+            state.error = action.payload;
+        });
+        builder.addCase(axiosTeachers.pending, (state) => {
+            // @ts-ignore
+            state.status = 'loading';
+            state.error = null;
+        });
+        builder.addCase(axiosTeachers.fulfilled, (state, action) => {
+            state.employees = action.payload;
+            // @ts-ignore
+            state.status = 'resolved';
+            state.error = null;
+        });
+        builder.addCase(axiosTeachers.rejected, (state, action) => {
             // @ts-ignore
             state.status = 'failed';
             // @ts-ignore
@@ -433,6 +551,7 @@ const employeesSlice = createSlice({
             state.statusForm = 'resolved';
             state.error = null;
             state.employee = null;
+            state.employeeToUpdate = null;
             let userName = `${action.payload.last_name} ${action.payload.first_name}  ${action.payload.patronymic_name ?? ''}`;
             state.notification = {type: "success", message: `Інформацію про співробітника ${userName} оновлено!`};
         });

@@ -4,7 +4,7 @@ import {
     axiosDeleteEmployee,
     axiosDeactivateEmployee,
     axiosReactivateEmployee,
-    axiosGetEmployeeInfo, getEmployeeToUpdate, getEmployeeToFire
+    axiosGetEmployeeInfo,
 } from "../store/employeesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 
@@ -104,9 +104,8 @@ const EmployeesTable = ({
                                                     <button className="text-blue-500 hover:text-blue-700 mr-2"
                                                             onClick={async () => {
                                                                 // @ts-ignore
-                                                                await dispatch(axiosGetEmployeeInfo(employee?.id))
-                                                                dispatch(getEmployeeToUpdate({id: employee?.id}))
-                                                                dispatch(openCloseModal({open: true}))
+                                                                await dispatch(axiosGetEmployeeInfo({employeeId: employee?.id, type: 'update'}));
+                                                                dispatch(openCloseModal({open: true}));
                                                             }}
                                                             title="Редагувати інформацію про співробітника"
                                                     >
@@ -135,8 +134,7 @@ const EmployeesTable = ({
                                                                     className="text-purple-500 hover:text-purple-700"
                                                                     onClick={async () => {
                                                                         // @ts-ignore
-                                                                        await dispatch(axiosGetEmployeeInfo(employee?.id))
-                                                                        dispatch(getEmployeeToFire({id: employee?.id}))
+                                                                        await dispatch(axiosGetEmployeeInfo({employeeId: employee?.id, type: 'fire'}))
                                                                         dispatch(openCloseModal({open: true}))
                                                                     }}
                                                                     title="Звільнити співробітника"

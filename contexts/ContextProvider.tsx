@@ -4,6 +4,7 @@ import {cleanEmployeeNotification} from "../src/store/employeesSlice.ts";
 import {cleanChildrenNotification} from "../src/store/childrenListSlice.ts";
 import {cleanParrentNotification} from "../src/store/parrentsSlice.ts";
 import {cleanUserNotification} from "../src/store/userSlice.ts";
+import {cleanGroupNotification} from "../src/store/groupsSlice.ts";
 type UserType = {
     id: number;
     name: string;
@@ -50,6 +51,7 @@ export const ContextProvider = ({children}: { children: ReactNode }) => {
             dispatch(cleanChildrenNotification());
             dispatch(cleanParrentNotification());
             dispatch(cleanUserNotification());
+            dispatch(cleanGroupNotification());
 
         }, 5000)
     }

@@ -1,7 +1,7 @@
 import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
 import {useDispatch, useSelector} from "react-redux";
 import {openCloseModal} from "../store/modalSlice.ts";
-import {axiosChildInfo, axiosDeleteChildInfo, getChildToUpdate} from "../store/childrenListSlice.ts";
+import {axiosChildInfo, axiosDeleteChildInfo} from "../store/childrenListSlice.ts";
 
 type PropsType = {
     tableType: string;
@@ -122,7 +122,6 @@ const ChildrenTable = ({
                                                     onClick={async () => {
                                                         // @ts-ignore
                                                         await dispatch(axiosChildInfo(child?.id));
-                                                        dispatch(getChildToUpdate({id: child?.id}));
                                                         dispatch(openCloseModal({open: true}))
                                                     }}
                                             >

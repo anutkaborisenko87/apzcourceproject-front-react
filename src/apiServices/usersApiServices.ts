@@ -1,9 +1,9 @@
 import axiosClient from "../axios-client.ts";
 import {UserFormData} from "./apiServicesTypes.ts";
 
-export const getUsersList = async (page?: number) => {
-    const url = page ? `/users/active?page=${page}` : `/users/active`;
-
+export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}:{page?: number, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+    let url = page ? `/users/active?page=${page}` : `/users/active`;
+    url = formatUrlString({url, per_page, sort_by, sort_direction, search_by, search_term})
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -13,9 +13,9 @@ export const getUsersList = async (page?: number) => {
     }
 }
 
-export const getNotActiveUsersList = async (page?: number) => {
-    const url = page ? `/users/not_active?page=${page}` : `/users/not_active`;
-
+export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}:{page?: number, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+    let url = page ? `/users/not_active?page=${page}` : `/users/not_active`;
+    url = formatUrlString({url, per_page, sort_by, sort_direction, search_by, search_term})
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -82,4 +82,26 @@ export const getUserInfo = async (userId: number) => {
     } catch (e) {
         throw e;
     }
+}
+
+const formatUrlString = ({url, per_page, sort_by, sort_direction, search_by, search_term}:{url: string, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+    let respUrl = url;
+    if (per_page) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`
+    }
+    if (sort_by) {
+        console.log('sort_by', sort_by)
+        respUrl = respUrl.includes('?') ? `${respUrl}&sort_by=${sort_by}` : `${respUrl}?sort_by=${sort_by}`
+        console.log('respUrl', respUrl)
+    }
+    if (sort_direction) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`
+    }
+    if (search_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&search_by=${search_by}` : `${respUrl}?search_by=${search_by}`
+    }
+    if (search_term) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`
+    }
+    return respUrl;
 }

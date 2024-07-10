@@ -9,6 +9,15 @@ export const getChildrenListForSelect = async (parrentId?: number) => {
         throw error;
     }
 }
+export const getChildrenListForGroupSelect = async () => {
+    try {
+        const url = `/children/for-group-select`;
+        const {data} = await axiosClient.get(url);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
 export const getAllChildrenList = async (page?: number) => {
     try {
         const url = page ? `/children/all?page=${page}` : `/children/all`;

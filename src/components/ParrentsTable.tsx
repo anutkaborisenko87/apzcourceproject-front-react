@@ -4,7 +4,7 @@ import {
     axiosDeactivateParrent,
     axiosDeleteParrent,
     axiosGetParrentInfo,
-    axiosReactivateParrent, getParrentToUpdate
+    axiosReactivateParrent,
 } from "../store/parrentsSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
@@ -131,7 +131,6 @@ const ParrentsTable = ({
                                                             onClick={ async () => {
                                                                 // @ts-ignore
                                                                 await dispatch(axiosGetParrentInfo(parrent?.id));
-                                                                dispatch(getParrentToUpdate({id: parrent?.id}));
                                                                 dispatch(openCloseModal({open: true}))
                                                             }}
                                                     >

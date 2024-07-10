@@ -4,7 +4,10 @@ import Modal from "../components/Modal.tsx";
 import EmployeesTable from "./EmployeesTable.tsx";
 import AddUpdateEmployeeForm from "./AddUpdatEmployeeForm.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {axiosActiveEmployees, axiosGetEmployeeInfo, getEmployeeToUpdate} from "../store/employeesSlice.ts";
+import {
+    axiosActiveEmployees,
+    axiosGetEmployeeInfo,
+} from "../store/employeesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 
 const EmployeesActive = () => {
@@ -32,10 +35,9 @@ const EmployeesActive = () => {
         // @ts-ignore
         dispatch(axiosActiveEmployees());
     }, [dispatch]);
-    const handleOpenModal = async () => {
+    const handleOpenEmployeeModal = async () => {
         // @ts-ignore
-        await dispatch(axiosGetEmployeeInfo());
-        await (getEmployeeToUpdate(null));
+        await dispatch(axiosGetEmployeeInfo({employeeId: false, type: false }));
         dispatch(openCloseModal({open: true}));
     };
     const changePage = async (page: number) => {
@@ -54,7 +56,7 @@ const EmployeesActive = () => {
                         <h2 className="text-2xl font-bold">Активні співробітники</h2>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                            onClick={() => handleOpenModal()}
+                            onClick={() => handleOpenEmployeeModal()}
                         >
                             Додати співробітника
                         </button>

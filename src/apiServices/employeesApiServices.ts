@@ -13,6 +13,18 @@ export const getActiveEmployeesList = async (page?: number) => {
     }
 }
 
+export const getTeachersList = async () => {
+    const url = `/employees/teachers`;
+
+    // eslint-disable-next-line no-useless-catch
+    try {
+        const {data} = await axiosClient.get(url);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const getNotActiveEmployeesList = async (page?: number) => {
     const url = page ? `/employees/not_active?page=${page}` : `/employees/not_active`;
 

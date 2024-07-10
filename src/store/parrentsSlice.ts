@@ -38,9 +38,12 @@ export const axiosNotActiveParrents = createAsyncThunk(
 export const axiosGetParrentInfo = createAsyncThunk(
     'parrents/axiosGetParrentInfo',
     // @ts-ignore
-    async function (parrentId?: number, {rejectWithValue}) {
+    async function (parrentId?: number, {rejectWithValue, dispatch}) {
+        // @ts-ignore
+        dispatch(cleanParrentErrors());
         try {
             if (!parrentId) return null;
+            dispatch(getParrentToUpdate({id: parrentId}));
             return await getParrentInfo(parrentId);
         } catch (error) {
             return rejectWithValue(error);
@@ -139,7 +142,23 @@ export const axiosUpdateParrentInfo = createAsyncThunk(
     }
 );
 
-const setFormErrors = (state: { userValidationErrors: { first_name: any; last_name: any; patronymic_name: any; email: any; role: any; city: any; street: any; house_number: any; apartment_number: any; birth_date: any; }; parrentValidationErrors: { phone: any; work_place: any; passport_data: any; marital_status: any; children: any; }; error: any; statusForm: string; }, action: { payload: { response: any; }; }) => {
+const setFormErrors = (state: {
+    userValidationErrors: {
+        first_name: any;
+        last_name: any;
+        patronymic_name: any;
+        email: any;
+        role: any;
+        city: any;
+        street: any;
+        house_number: any;
+        apartment_number: any;
+        birth_date: any;
+    };
+    parrentValidationErrors: { phone: any; work_place: any; passport_data: any; marital_status: any; children: any; };
+    error: any;
+    statusForm: string;
+}, action: { payload: { response: any; }; }) => {
     const {response} = action.payload
     // @ts-ignore
     if (response.status === 422) {
@@ -150,10 +169,10 @@ const setFormErrors = (state: { userValidationErrors: { first_name: any; last_na
             email: response?.data?.errors['user.email'] ?? [],
             role: response?.data?.errors['user.role'] ?? [],
             city: response?.data?.errors['user.city'] ?? [],
-            street: response?.data?.errors['user.street'] ??  [],
+            street: response?.data?.errors['user.street'] ?? [],
             house_number: response?.data?.errors['user.house_number'] ?? [],
-            apartment_number:  response?.data?.errors['user.apartment_number'] ?? [],
-            birth_date:  response?.data?.errors['user.birth_date'] ?? []
+            apartment_number: response?.data?.errors['user.apartment_number'] ?? [],
+            birth_date: response?.data?.errors['user.birth_date'] ?? []
         }
         state.parrentValidationErrors = {
             phone: response?.data?.errors['parrent.phone'] ?? [],
@@ -215,6 +234,25 @@ const parrentSlice = createSlice({
                 // @ts-ignore
                 if (state.parrentValidationErrors[action.payload.field]) state.parrentValidationErrors[action.payload.field] = [];
             } else {
+                state.userValidationErrors = {
+                    first_name: [],
+                    last_name: [],
+                    patronymic_name: [],
+                    email: [],
+                    role: [],
+                    city: [],
+                    street: [],
+                    house_number: [],
+                    apartment_number: [],
+                    birth_date: []
+                };
+                state.parrentValidationErrors = {
+                    phone: [],
+                    work_place: [],
+                    passport_data: [],
+                    marital_status: [],
+                    children: []
+                };
                 state.error = null
             }
         },
@@ -373,6 +411,8 @@ const parrentSlice = createSlice({
             state.error = null;
             let userName = `${action.payload.last_name} ${action.payload.first_name}  ${action.payload.patronymic_name ?? ''}`;
             state.notification = {type: "success", message: `Інформацію про батька ${userName} оновлено!`};
+            state.parrentToUpdate = null;
+            state.parrent = null;
         });
         // @ts-ignore
         builder.addCase(axiosUpdateParrentInfo.rejected, setFormErrors);

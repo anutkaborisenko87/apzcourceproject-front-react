@@ -6,7 +6,7 @@ import {openCloseModal} from "../store/modalSlice.ts";
 import {
     axiosChildInfo,
     axiosChildrenAllList,
-    axiosForEnrolmentChildrenList, axiosGraduatedChildrenList, axiosInTrainingChildrenList,
+    axiosForEnrolmentChildrenList, axiosGraduatedChildrenList, axiosInTrainingChildrenList, cleanChildErrors,
     getChildToUpdate
 } from "../store/childrenListSlice.ts";
 import ChildrenTable from "./ChildrenTable.tsx";
@@ -62,6 +62,8 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
     const handleOpenModal = async () => {
         // @ts-ignore
         await dispatch(axiosChildInfo());
+        // @ts-ignore
+        dispatch(cleanChildErrors());
         dispatch(getChildToUpdate(null));
         dispatch(openCloseModal({open: true}));
     };

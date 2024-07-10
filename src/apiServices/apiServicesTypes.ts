@@ -59,16 +59,40 @@ export type ChildParrentData = {
 }
 
 export type ParrentFormData = {
-    user: UserFormData,
-    parrent: ParrentData
+    user: UserFormData;
+    parrent: ParrentData;
 }
 
 export type EmployeeFormData = {
-    user: UserFormData,
-    employee: EmployeeData
+    user: UserFormData;
+    employee: EmployeeData;
 }
 
 export type ChildFormData = {
-    user: UserFormData,
-    child: ChildData
+    user: UserFormData;
+    child: ChildData;
+}
+
+export type GroupFormData = {
+    title?: string;
+    children?: [];
+    teachers?: GroupTeacherType[];
+    educationalPrograms?: GroupEducationalProgramType[];
+}
+
+export type GroupTeacherType = {
+    employee_id?: number;
+    date_start?: string;
+    date_finish?: string;
+}
+
+export type GroupEducationalProgramType = {
+    ed_prog_id?: number;
+    date_start?: string;
+    date_finish?: string;
+}
+
+export type GroupInfoPayload = {
+    from?: string;
+    to?: string;
 }

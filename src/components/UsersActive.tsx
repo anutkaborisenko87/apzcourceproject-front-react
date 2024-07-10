@@ -15,6 +15,7 @@ const UsersActive = () => {
     // @ts-ignore
     const isLoading = useSelector(state => state.users.status === 'loading');
     const paginationData = useSelector(state => {
+
         return {
             // @ts-ignore
             to: state.users.users.to ?? 0,
@@ -27,12 +28,14 @@ const UsersActive = () => {
             // @ts-ignore
             last_page: state.users?.users.last_page ?? 0,
             // @ts-ignore
-            current_page: state.users?.users.current_page ?? 1
+            current_page: state.users?.users.current_page ?? 1,
+            // @ts-ignore
+            per_page: state.users?.users.per_page ?? 10
         }
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosActiveUsers());
+        dispatch(axiosActiveUsers({}));
     }, [dispatch]);
 
     const handleOpenModal = async () => {
@@ -43,8 +46,9 @@ const UsersActive = () => {
     };
 
     const changePage = (page: number) => {
+
         // @ts-ignore
-        dispatch(axiosActiveUsers(page));
+        dispatch(axiosActiveUsers({page: page, per_page: paginationData.per_page}));
     }
     return (
         <div className="container mx-auto">
@@ -75,8 +79,7 @@ const UsersActive = () => {
                         </Modal>
                     </div>
 
-                    <UsersTable page={paginationData?.current_page} tableType={'active'}
-                    />
+                    <UsersTable  tableType={'active'} />
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

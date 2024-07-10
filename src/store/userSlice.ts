@@ -11,30 +11,49 @@ import {
 } from "../apiServices/usersApiServices.ts";
 import {UserFormData} from "../apiServices/apiServicesTypes.ts";
 import {openCloseModal} from "./modalSlice.ts";
+
 export const axiosActiveUsers = createAsyncThunk(
     'users/axiosActiveUsers',
-    async function (page?: number) {
-        return await getUsersList(page);
+    async function ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+        page?: number,
+        per_page?: string,
+        sort_by?: string,
+        sort_direction?: string,
+        search_by?: string,
+        search_term?: string
+    }) {
+
+        return await getUsersList({page, per_page, sort_by, sort_direction, search_by, search_term});
     }
 );
 export const axiosNotActiveUsers = createAsyncThunk(
     'users/axiosNotActiveUsers',
-    async function (page?: number) {
-        return await getNotActiveUsersList(page);
+    async function ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+        page?: number,
+        per_page?: string,
+        sort_by?: string,
+        sort_direction?: string,
+        search_by?: string,
+        search_term?: string
+    }) {
+        return await getNotActiveUsersList({page, per_page, sort_by, sort_direction, search_by, search_term});
     }
 );
 export const axiosDeactivateUser = createAsyncThunk(
     'users/axiosDeactivateUser',
-    async function ({userId, page, tableType}: { userId: number, page: number, tableType: string }, {
+    async function ({userId, tableType}: { userId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {users} = getState();
             const resp = await deactivateUser(userId);
             if (tableType == 'active') {
-                dispatch(axiosActiveUsers(page))
+                dispatch(axiosActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             } else {
-                dispatch(axiosNotActiveUsers(page))
+                dispatch(axiosNotActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             }
             return resp;
         } catch (error) {
@@ -46,16 +65,19 @@ export const axiosDeactivateUser = createAsyncThunk(
 
 export const axiosDeleteUser = createAsyncThunk(
     'users/axiosDeleteUser',
-    async function ({userId, page, tableType}: { userId: number, page: number, tableType: string }, {
+    async function ({userId, tableType}: { userId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
+        // @ts-ignore
+        const {users} = getState();
         try {
             const resp = await deleteUser(userId);
             if (tableType == 'active') {
-                dispatch(axiosActiveUsers(page))
+                dispatch(axiosActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             } else {
-                dispatch(axiosNotActiveUsers(page))
+                dispatch(axiosNotActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             }
             return resp;
         } catch (error) {
@@ -66,16 +88,19 @@ export const axiosDeleteUser = createAsyncThunk(
 );
 export const axiosReactivateUser = createAsyncThunk(
     'users/axiosReactivateUser',
-    async function ({userId, page, tableType}: { userId: number, page: number, tableType: string }, {
+    async function ({userId, tableType}: { userId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
+        // @ts-ignore
+        const {users} = getState();
         try {
             const resp = await reactivateUser(userId);
             if (tableType == 'active') {
-                dispatch(axiosActiveUsers(page))
+                dispatch(axiosActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             } else {
-                dispatch(axiosNotActiveUsers(page))
+                dispatch(axiosNotActiveUsers({page: users.users.current_page, per_page: users.users.per_page}))
             }
             return resp;
         } catch (error) {
@@ -88,7 +113,7 @@ export const axiosCreateNewUser = createAsyncThunk(
     async function (userFormData: UserFormData, {rejectWithValue, dispatch}) {
         try {
             const resp = await createNewUser(userFormData);
-            dispatch(axiosActiveUsers())
+            dispatch(axiosActiveUsers({}))
             dispatch(openCloseModal({open: false}))
             return resp;
         } catch (error) {
@@ -100,13 +125,16 @@ export const axiosCreateNewUser = createAsyncThunk(
 
 export const axiosUpdateUserInfo = createAsyncThunk(
     'users/axiosUpdateUserInfo',
-    async function ({userId, userFormData}: {userId: number, userFormData: UserFormData}, {rejectWithValue, dispatch}) {
-          try {
+    async function ({userId, userFormData}: { userId: number, userFormData: UserFormData }, {
+        rejectWithValue,
+        dispatch
+    }) {
+        try {
             const resp = await updateUserInfo(userId, userFormData);
             dispatch(openCloseModal({open: false}));
             // @ts-ignore
-              dispatch(getUserToUpdate())
-            dispatch(axiosActiveUsers())
+            dispatch(getUserToUpdate())
+            dispatch(axiosActiveUsers({}))
             return resp;
         } catch (error) {
             return rejectWithValue(error)
@@ -121,7 +149,22 @@ export const axiosGetUserInfo = createAsyncThunk(
     }
 );
 
-const setFormErrors = (state: { validationErrors: { first_name: any; last_name: any; patronymic_name: any; email: any; role: any; city: any; street: any; house_number: any; apartment_number: any; birth_date: any; }; error: any; statusForm: string; }, action: { payload: { response: any; }; }) => {
+const setFormErrors = (state: {
+    validationErrors: {
+        first_name: any;
+        last_name: any;
+        patronymic_name: any;
+        email: any;
+        role: any;
+        city: any;
+        street: any;
+        house_number: any;
+        apartment_number: any;
+        birth_date: any;
+    };
+    error: any;
+    statusForm: string;
+}, action: { payload: { response: any; }; }) => {
     const {response} = action.payload
     // @ts-ignore
     if (response.status === 422) {
@@ -132,10 +175,10 @@ const setFormErrors = (state: { validationErrors: { first_name: any; last_name: 
             email: response?.data?.errors?.email ?? [],
             role: response?.data?.errors?.role ?? [],
             city: response?.data?.errors?.city ?? [],
-            street: response?.data?.errors?.street ??  [],
+            street: response?.data?.errors?.street ?? [],
             house_number: response?.data?.errors?.house_number ?? [],
-            apartment_number:  response?.data?.errors?.apartment_number ?? [],
-            birth_date:  response?.data?.errors?.birth_date ?? []
+            apartment_number: response?.data?.errors?.apartment_number ?? [],
+            birth_date: response?.data?.errors?.birth_date ?? []
         }
     } else {
         state.error = response.data.error;
@@ -149,12 +192,17 @@ const userSlice = createSlice({
     name: 'users',
     initialState: {
         users: {
-            data:[],
-            links:[],
+            data: [],
+            links: [],
             to: 0,
             from: 0,
             last_page: 0,
-            current_page: 1
+            current_page: 1,
+            per_page: 10,
+            sort_by: 'user_id',
+            sort_direction: 'asc',
+            search_by: null,
+            search_term: null
         },
         userToUpdate: null,
         user: null,
@@ -187,9 +235,13 @@ const userSlice = createSlice({
                 // @ts-ignore
                 state.validationErrors[action.payload.field] = []
             } else {
-              state.error = null
+                state.error = null
             }
 
+        },
+        setSearchableColumn: (state, action) => {
+            // @ts-ignore
+            state.users.search_by = action.payload.columnName;
         },
         cleanUserNotification: (state) => {
             state.notification = {type: '', message: ''}
@@ -334,6 +386,7 @@ const userSlice = createSlice({
 });
 
 export const {
+    setSearchableColumn,
     getUserToUpdate,
     cleanUserNotification,
     cleanErrors

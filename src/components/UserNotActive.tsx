@@ -28,11 +28,11 @@ const UsersNotActive = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosNotActiveUsers());
+        dispatch(axiosNotActiveUsers({}));
     }, [dispatch]);
     const changePage = async (page: number) => {
         // @ts-ignore
-        await dispatch(axiosNotActiveUsers(page));
+        await dispatch(axiosNotActiveUsers({page: page}));
     }
     return (
         <div className="container mx-auto">
@@ -46,7 +46,7 @@ const UsersNotActive = () => {
                     <div className="flex justify-between mb-4">
                         <h2 className="text-2xl font-bold">Неактивні користувачі</h2>
                     </div>
-                    <UsersTable tableType={'notActive'} page={paginationData?.current_page}/>
+                    <UsersTable tableType={'notActive'} />
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

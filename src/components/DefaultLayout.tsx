@@ -7,7 +7,7 @@ import {
     UserCircleIcon,
     ArrowUturnRightIcon,
     WalletIcon,
-    UsersIcon,
+    UsersIcon, BriefcaseIcon,
     AcademicCapIcon
 } from '@heroicons/react/24/outline';
 import {getLoggedUserInfo, logoutUser} from "../apiServices/authApiServices.ts";
@@ -80,6 +80,11 @@ const DefaultLayout = () => {
                                      className={({isActive}) => classNames(`flex py-2.5 px-4 rounded transition duration-200 ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'}`)}>
                                 <AcademicCapIcon className="w-6 mr-2"/>
                                 Діти
+                            </NavLink>
+                            <NavLink to="/groups"
+                                     className={({isActive}) => classNames(`flex py-2.5 px-4 rounded transition duration-200 ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'}`)}>
+                                <BriefcaseIcon className="w-6 mr-2"/>
+                                Групи
                             </NavLink>
                         </nav>
                     </div>

@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
     createChildInfo, deleteChildInfo,
     getAllChildrenList,
-    getChildInfo,
+    getChildInfo, getChildrenListForGroupSelect,
     getChildrenListForSelect,
     getForEnrolmentChildrenList,
     getGraduatedChildrenList,
@@ -12,11 +12,17 @@ import {
 import {ChildFormData} from "../apiServices/apiServicesTypes.ts";
 import {openCloseModal} from "./modalSlice.ts";
 
-
 export const axiosChildrenSelectList = createAsyncThunk(
     'children/axiosChildrenSelectList',
     async function (parentId?: number) {
         return await getChildrenListForSelect(parentId);
+    }
+);
+
+export const axiosChildrenListForGroupSelect = createAsyncThunk(
+    'children/axiosChildrenListForGroupSelect',
+    async function () {
+        return await getChildrenListForGroupSelect();
     }
 );
 export const axiosChildrenAllList = createAsyncThunk(
@@ -46,9 +52,12 @@ export const axiosGraduatedChildrenList = createAsyncThunk(
 export const axiosChildInfo = createAsyncThunk(
     'children/axiosChildInfo',
     // @ts-ignore
-    async function (childId?: number, {rejectWithValue}) {
+    async function (childId?: number, {rejectWithValue, dispatch}) {
          try {
              if (!childId) return null;
+             dispatch(getChildToUpdate({id: childId}));
+             // @ts-ignore
+             dispatch(cleanChildErrors());
              return await getChildInfo(childId);
          } catch (error) {
             return rejectWithValue(error);
@@ -228,6 +237,28 @@ const childrenListSlice = createSlice({
                 // @ts-ignore
                 if (state.childValidationErrors[action.payload.field]) state.childValidationErrors[action.payload.field] = [];
             } else {
+                state.userValidationErrors = {
+                    first_name: [],
+                    last_name: [],
+                    patronymic_name: [],
+                    email: [],
+                    role: [],
+                    city: [],
+                    street: [],
+                    house_number: [],
+                    apartment_number: [],
+                    birth_date: []
+                }
+                state.childValidationErrors = {
+                    group_id: [],
+                    mental_helth: [],
+                    birth_certificate: [],
+                    medical_card_number: [],
+                    social_status: [],
+                    enrollment_date: [],
+                    graduation_date: [],
+                    parrents: []
+                }
                 state.error = null
             }
         },
@@ -245,6 +276,23 @@ const childrenListSlice = createSlice({
             state.error = null;
         });
         builder.addCase(axiosChildrenSelectList.rejected, (state, action) => {
+            // @ts-ignore
+            state.status = 'failed';
+            // @ts-ignore
+            state.error = action.payload;
+        });
+        builder.addCase(axiosChildrenListForGroupSelect.pending, (state) => {
+            // @ts-ignore
+            state.status = 'loading';
+            state.error = null;
+        });
+        builder.addCase(axiosChildrenListForGroupSelect.fulfilled, (state, action) => {
+            state.childrenforSelect = action.payload;
+            // @ts-ignore
+            state.status = 'resolved';
+            state.error = null;
+        });
+        builder.addCase(axiosChildrenListForGroupSelect.rejected, (state, action) => {
             // @ts-ignore
             state.status = 'failed';
             // @ts-ignore
@@ -320,18 +368,18 @@ const childrenListSlice = createSlice({
         });
         builder.addCase(axiosChildInfo.pending, (state) => {
             // @ts-ignore
-            state.status = 'loading';
+            state.statusForm = 'loading';
             state.error = null;
         });
         builder.addCase(axiosChildInfo.fulfilled, (state, action) => {
             state.child = action.payload;
             // @ts-ignore
-            state.status = 'resolved';
+            state.statusForm = 'resolved';
             state.error = null;
         });
         builder.addCase(axiosChildInfo.rejected, (state, action) => {
             // @ts-ignore
-            state.status = 'failed';
+            state.statusForm = 'failed';
             // @ts-ignore
             state.error = action.payload;
         });

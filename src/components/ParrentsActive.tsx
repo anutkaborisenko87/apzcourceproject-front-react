@@ -4,7 +4,7 @@ import Modal from "../components/Modal.tsx";
 import ParrentsTable from "./ParrentsTable.tsx";
 import AddUpdateParrentForm from "./AddUpdatParrentForm.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {axiosActiveParrents, axiosGetParrentInfo, getParrentToUpdate} from "../store/parrentsSlice.ts";
+import {axiosActiveParrents, axiosGetParrentInfo} from "../store/parrentsSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 
 const ParrentsActive = () => {
@@ -37,7 +37,6 @@ const ParrentsActive = () => {
     const handleOpenModal = async () => {
         // @ts-ignore
         await dispatch(axiosGetParrentInfo());
-        await (getParrentToUpdate(null));
         dispatch(openCloseModal({open: true}));
     };
 
