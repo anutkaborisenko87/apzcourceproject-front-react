@@ -1,9 +1,23 @@
 import axiosClient from "../axios-client.ts";
 import {UserFormData} from "./apiServicesTypes.ts";
 
-export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}:{page?: number, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+    page?: number,
+    per_page?: string,
+    sort_by?: string,
+    sort_direction?: string,
+    search_by?: string,
+    search_term?: string
+}) => {
     let url = page ? `/users/active?page=${page}` : `/users/active`;
-    url = formatUrlString({url, per_page, sort_by, sort_direction, search_by, search_term})
+    url = formatUrlString({
+        url,
+        per_page,
+        user_sort_by: sort_by,
+        sort_direction,
+        user_search_by: search_by,
+        search_term
+    })
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -13,9 +27,23 @@ export const getUsersList = async ({page, per_page, sort_by, sort_direction, sea
     }
 }
 
-export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}:{page?: number, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+    page?: number,
+    per_page?: string,
+    sort_by?: string,
+    sort_direction?: string,
+    search_by?: string,
+    search_term?: string
+}) => {
     let url = page ? `/users/not_active?page=${page}` : `/users/not_active`;
-    url = formatUrlString({url, per_page, sort_by, sort_direction, search_by, search_term})
+    url = formatUrlString({
+        url,
+        per_page,
+        user_sort_by: sort_by,
+        sort_direction,
+        user_search_by: search_by,
+        search_term
+    })
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -25,7 +53,7 @@ export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direc
     }
 }
 
-export const deactivateUser = async (userId:number) => {
+export const deactivateUser = async (userId: number) => {
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(`/users/${userId}/deactivate`);
@@ -35,7 +63,7 @@ export const deactivateUser = async (userId:number) => {
     }
 }
 
-export const reactivateUser = async (userId:number) => {
+export const reactivateUser = async (userId: number) => {
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(`/users/${userId}/reactivate`);
@@ -45,7 +73,7 @@ export const reactivateUser = async (userId:number) => {
     }
 }
 
-export const deleteUser = async (userId:number) => {
+export const deleteUser = async (userId: number) => {
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.delete(`/users/${userId}/delete`);
@@ -84,24 +112,29 @@ export const getUserInfo = async (userId: number) => {
     }
 }
 
-const formatUrlString = ({url, per_page, sort_by, sort_direction, search_by, search_term}:{url: string, per_page?: string, sort_by?: string, sort_direction?: string, search_by?: string, search_term?: string}) => {
+const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_search_by, search_term}: {
+    url: string,
+    per_page?: string,
+    user_sort_by?: string,
+    sort_direction?: string,
+    user_search_by?: string,
+    search_term?: string
+}) => {
     let respUrl = url;
     if (per_page) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`
+        respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`;
     }
-    if (sort_by) {
-        console.log('sort_by', sort_by)
-        respUrl = respUrl.includes('?') ? `${respUrl}&sort_by=${sort_by}` : `${respUrl}?sort_by=${sort_by}`
-        console.log('respUrl', respUrl)
+    if (user_sort_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&user_sort_by=${user_sort_by}` : `${respUrl}?sort_by=${user_sort_by}`;
     }
     if (sort_direction) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`
+        respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`;
     }
-    if (search_by) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&search_by=${search_by}` : `${respUrl}?search_by=${search_by}`
+    if (user_search_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&user_search_by=${user_search_by}` : `${respUrl}?user_search_by=${user_search_by}`;
     }
     if (search_term) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`
+        respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`;
     }
     return respUrl;
 }

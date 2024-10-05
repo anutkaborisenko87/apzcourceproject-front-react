@@ -24,24 +24,26 @@ const UsersTable = ({tableType}: PropsType) => {
     // @ts-ignore
     const usersList = useSelector(state => state.users?.users?.data ?? []);
     const dispatch = useDispatch();
+
     // @ts-ignore
     const perPage = useSelector(state => state.users?.users?.per_page ?? 10);
     // @ts-ignore
     const currPage = useSelector(state => state.users?.users?.current_page ?? 1);
     // @ts-ignore
-    const sarchBy = useSelector(state => state.users?.users?.search_by);
+    const sarchBy = useSelector(state => state.users?.users?.user_search_by);
     // @ts-ignore
     const sarchTerm = useSelector(state => state.users?.users?.search_term);
+    // @ts-ignore
+    const sortBy = useSelector(state => state.users?.users?.user_sort_by);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.users?.users?.sort_direction);
+
     const ondeletingUser = async (userId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього користувача?")) {
             // @ts-ignore
             await dispatch(axiosDeleteUser({userId, tableType}));
         }
     }
-    // @ts-ignore
-    const sortBy = useSelector(state => state.users?.users?.sort_by);
-    // @ts-ignore
-    const sortDirection = useSelector(state => state.users?.users?.sort_direction);
     const onDeacttivatingUser = async (userId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете деактивувати цього користувача?")) {
             // @ts-ignore
@@ -353,13 +355,14 @@ const UsersTable = ({tableType}: PropsType) => {
                                     patronymic_name: string | null;
                                     email: string;
                                     city: string | null;
+                                    founded?: boolean;
                                     street: string | null;
                                     house_number: string | null;
                                     apartment_number: string | null;
                                     user_category: string;
                                 }) => {
                                     return (
-                                        <tr key={user?.user_id} className="hover:bg-gray-100">
+                                        <tr key={user?.user_id} className={`${user?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100' } `}>
                                             <td className="py-2 px-4 border-b">{user?.last_name ?? ''} {user?.first_name ?? ''} {user?.patronymic_name ?? ''}</td>
                                             <td className="py-2 px-4 border-b">{user?.email}</td>
                                             <td className="py-2 px-4 border-b">{user?.birthdate ?? ''}</td>

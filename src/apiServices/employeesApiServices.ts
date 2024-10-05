@@ -1,9 +1,37 @@
 import axiosClient from "../axios-client.ts";
 import {EmployeeFormData} from "./apiServicesTypes.ts";
 
-export const getActiveEmployeesList = async (page?: number) => {
-    const url = page ? `/employees/active?page=${page}` : `/employees/active`;
-
+export const getActiveEmployeesList = async ({
+                                                 page,
+                                                 per_page,
+                                                 user_sort_by,
+                                                 employee_sort_by,
+                                                 sort_direction,
+                                                 user_search_by,
+                                                 employee_search_by,
+                                                 search_term
+                                             }:
+{
+    page? : number,
+    per_page?: string,
+    user_sort_by?: string,
+    employee_sort_by?: string,
+    sort_direction?: string,
+    user_search_by?: string,
+    employee_search_by?: string,
+    search_term?: string
+}) => {
+    let url = page ? `/employees/active?page=${page}` : `/employees/active`;
+    url = formatUrlString({
+        url,
+        per_page,
+        user_sort_by,
+        employee_sort_by,
+        sort_direction,
+        user_search_by,
+        employee_search_by,
+        search_term
+    });
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -25,9 +53,37 @@ export const getTeachersList = async () => {
     }
 }
 
-export const getNotActiveEmployeesList = async (page?: number) => {
-    const url = page ? `/employees/not_active?page=${page}` : `/employees/not_active`;
-
+export const getNotActiveEmployeesList = async ({
+                                                    page,
+                                                    per_page,
+                                                    user_sort_by,
+                                                    employee_sort_by,
+                                                    sort_direction,
+                                                    user_search_by,
+                                                    employee_search_by,
+                                                    search_term
+                                                }:
+                                                    {
+                                                        page? : number,
+                                                        per_page?: string,
+                                                        user_sort_by?: string,
+                                                        employee_sort_by?: string,
+                                                        sort_direction?: string,
+                                                        user_search_by?: string,
+                                                        employee_search_by?: string,
+                                                        search_term?: string
+                                                    }) => {
+    let url = page ? `/employees/not_active?page=${page}` : `/employees/not_active`;
+    url = formatUrlString({
+        url,
+        per_page,
+        user_sort_by,
+        employee_sort_by,
+        sort_direction,
+        user_search_by,
+        employee_search_by,
+        search_term
+    });
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -37,9 +93,37 @@ export const getNotActiveEmployeesList = async (page?: number) => {
     }
 }
 
-export const getWorkingEmployeesList = async (page?: number) => {
-    const url = page ? `/employees/working?page=${page}` : `/employees/working`;
-
+export const getWorkingEmployeesList = async ({
+                                                  page,
+                                                  per_page,
+                                                  user_sort_by,
+                                                  employee_sort_by,
+                                                  sort_direction,
+                                                  user_search_by,
+                                                  employee_search_by,
+                                                  search_term
+                                              }:
+                                                  {
+                                                      page? : number,
+                                                      per_page?: string,
+                                                      user_sort_by?: string,
+                                                      employee_sort_by?: string,
+                                                      sort_direction?: string,
+                                                      user_search_by?: string,
+                                                      employee_search_by?: string,
+                                                      search_term?: string
+                                                  }) => {
+    let url = page ? `/employees/working?page=${page}` : `/employees/working`;
+    url = formatUrlString({
+        url,
+        per_page,
+        user_sort_by,
+        employee_sort_by,
+        sort_direction,
+        user_search_by,
+        employee_search_by,
+        search_term
+    });
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -63,7 +147,6 @@ export const getEmployeeInfo = async (employeeId?: number) => {
 
 export const addNewEmployeeInfo = async (payload?: EmployeeFormData) => {
     const url = `/employees/create`;
-
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.post(url, payload);
@@ -73,7 +156,7 @@ export const addNewEmployeeInfo = async (payload?: EmployeeFormData) => {
     }
 }
 
-export const fireEmployee = async (employeeId: number, payload?: {employee_hired: string}) => {
+export const fireEmployee = async (employeeId: number, payload?: { employee_hired: string }) => {
     const url = `/employees/${employeeId}/fire-employee`;
     // eslint-disable-next-line no-useless-catch
     try {
@@ -86,7 +169,6 @@ export const fireEmployee = async (employeeId: number, payload?: {employee_hired
 
 export const updateEmployeeInfo = async (employeeId: number, payload?: EmployeeFormData) => {
     const url = `/employees/${employeeId}/update`;
-
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.put(url, payload);
@@ -130,4 +212,48 @@ export const reactivateEmployee = async (employeeId: number) => {
     } catch (error) {
         throw error;
     }
+}
+
+const formatUrlString = ({
+                             url,
+                             per_page,
+                             user_sort_by,
+                             employee_sort_by,
+                             sort_direction,
+                             user_search_by,
+                             employee_search_by,
+                             search_term
+                         }: {
+    url: string,
+    per_page?: string,
+    user_sort_by?: string,
+    employee_sort_by?: string,
+    sort_direction?: string,
+    user_search_by?: string,
+    employee_search_by?: string,
+    search_term?: string
+}) => {
+    let respUrl = url;
+    if (per_page) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`;
+    }
+    if (user_sort_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&user_sort_by=${user_sort_by}` : `${respUrl}?user_sort_by=${user_sort_by}`;
+    }
+    if (employee_sort_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&employee_sort_by=${employee_sort_by}` : `${respUrl}?employee_sort_by=${employee_sort_by}`;
+    }
+    if (sort_direction) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`;
+    }
+    if (user_search_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&user_search_by=${user_search_by}` : `${respUrl}?user_search_by=${user_search_by}`
+    }
+    if (employee_search_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&employee_search_by=${employee_search_by}` : `${respUrl}?employee_search_by=${employee_search_by}`
+    }
+    if (search_term) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`
+    }
+    return respUrl;
 }

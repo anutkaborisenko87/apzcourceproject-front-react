@@ -1,176 +1,559 @@
-import {MinusCircleIcon, PencilSquareIcon, TrashIcon, UserPlusIcon, XMarkIcon} from "@heroicons/react/24/outline";
+import {
+    ChevronUpDownIcon,
+    ChevronUpIcon,
+    MinusCircleIcon,
+    PencilSquareIcon,
+    TrashIcon,
+    UserPlusIcon, XCircleIcon,
+    XMarkIcon
+} from "@heroicons/react/24/outline";
 import {useDispatch, useSelector} from "react-redux";
 import {
     axiosDeleteEmployee,
     axiosDeactivateEmployee,
     axiosReactivateEmployee,
     axiosGetEmployeeInfo,
+    axiosActiveEmployees,
+    axiosWorkingEmployeesList,
+    axiosNotActiveEmployees,
+    setUserSearchableColumn, setEmployeeSearchableColumn,
 } from "../store/employeesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
+import SearchComponent from "./SearchComponent.tsx";
 
 type PropsType = {
     tableType: string;
-    page: number;
 }
-const EmployeesTable = ({
-                            tableType,
-                            page
-                        }: PropsType) => {
+const EmployeesTable = ({tableType}: PropsType) => {
     const dispatch = useDispatch();
     // @ts-ignore
     const employeesList = useSelector(state => state.employees?.employees?.data ?? []);
+    // @ts-ignore
+    const perPage = useSelector(state => state.employees?.employees?.per_page ?? 10);
+    // @ts-ignore
+    const currPage = useSelector(state => state.employees?.employees?.current_page ?? 1);
+    // @ts-ignore
+    const userSortBy = useSelector(state => state.employees?.employees?.user_sort_by ?? null);
+    // @ts-ignore
+    const employeeSortBy = useSelector(state => state.employees?.employees?.employee_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.employees?.employees?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const userSearchBy = useSelector(state => state.employees?.employees?.user_search_by ?? null);
+    // @ts-ignore
+    const employeeSearchBy = useSelector(state => state.employees?.employees?.employee_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.employees?.employees?.search_term ?? null);
     const onDeletingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього співробітника?")) {
             // @ts-ignore
-            await dispatch(axiosDeleteEmployee({employeeId, page, tableType}));
+            await dispatch(axiosDeleteEmployee({employeeId, tableType}));
         }
     }
     const onDeacttivatingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете деактивувати цього співробітника?")) {
             // @ts-ignore
-            await dispatch(axiosDeactivateEmployee({employeeId, page, tableType}));
+            await dispatch(axiosDeactivateEmployee({employeeId, tableType}));
         }
 
     }
     const onReacttivatingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете активувати цього співробітника?")) {
             // @ts-ignore
-            await dispatch(axiosReactivateEmployee({employeeId, page, tableType}));
+
+            await dispatch(axiosReactivateEmployee({employeeId, tableType}));
         }
 
+    }
+    const changePerPage = async (e: any) => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            await dispatch(axiosActiveEmployees({
+                page: 1,
+                per_page: e.target.value,
+                user_sort_by: userSortBy,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            await dispatch(axiosWorkingEmployeesList({
+                page: 1,
+                per_page: e.target.value,
+                user_sort_by: userSortBy,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else {
+            // @ts-ignore
+            await dispatch(axiosNotActiveEmployees({
+                page: 1,
+                per_page: e.target.value,
+                user_sort_by: userSortBy,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        }
+
+    }
+    const beginSearchBy = async ({user_search_by, employee_search_by}: {
+        user_search_by?: string | null,
+        employee_search_by?: string | null
+    }) => {
+        if (user_search_by) dispatch(setUserSearchableColumn({user_search_by}));
+        if (employee_search_by) dispatch(setEmployeeSearchableColumn({employee_search_by}));
+        if (!user_search_by && !employee_search_by) {
+            if (tableType === 'active') {
+                // @ts-ignore
+                await dispatch(axiosActiveEmployees({
+                    page: 1,
+                    per_page: perPage,
+                    user_sort_by: userSortBy,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            } else if (tableType === 'working') {
+                // @ts-ignore
+                await dispatch(axiosWorkingEmployeesList({
+                    page: 1,
+                    per_page: perPage,
+                    user_sort_by: userSortBy,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            } else {
+                // @ts-ignore
+                await dispatch(axiosNotActiveEmployees({
+                    page: 1,
+                    per_page: perPage,
+                    user_sort_by: userSortBy,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            }
+        }
+    }
+
+    const searchingByColumn = async (event: string) => {
+        if (event !== '' && event !== searchTerm) {
+            if (tableType === 'active') {
+                // @ts-ignore
+                await dispatch(axiosActiveEmployees({
+                    page: 1,
+                    per_page: perPage,
+                    user_search_by: userSearchBy,
+                    employee_search_by: employeeSearchBy,
+                    search_term: event,
+                    user_sort_by: userSortBy,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            } else if (tableType === 'working') {
+                // @ts-ignore
+                await dispatch(axiosWorkingEmployeesList({
+                    page: 1,
+                    per_page: perPage,
+                    user_sort_by: userSortBy,
+                    user_search_by: userSearchBy,
+                    employee_search_by: employeeSearchBy,
+                    search_term: event,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            } else {
+                // @ts-ignore
+                await dispatch(axiosNotActiveEmployees({
+                    page: 1,
+                    per_page: perPage,
+                    user_search_by: userSearchBy,
+                    employee_search_by: employeeSearchBy,
+                    search_term: event,
+                    user_sort_by: userSortBy,
+                    employee_sort_by: employeeSortBy,
+                    sort_direction: sortDirection
+                }));
+            }
+        } else {
+            beginSearchBy({user_search_by: null, employee_search_by: null});
+        }
+    }
+    const sortingBy = async ({user_sort_by, employee_sort_by}: {
+        user_sort_by?: string,
+        employee_sort_by?: string
+    }) => {
+        let sortDir = 'desc';
+        if ((user_sort_by === userSortBy || employee_sort_by === employeeSortBy) && sortDirection === sortDir) {
+            sortDir = 'asc'
+        }
+        if (tableType === 'active') {
+            // @ts-ignore
+            await dispatch(axiosActiveEmployees({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm,
+                user_sort_by: user_sort_by ?? userSortBy,
+                employee_sort_by: employee_sort_by ?? employeeSortBy,
+                sort_direction: sortDir
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            await dispatch(axiosWorkingEmployeesList({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm,
+                user_sort_by: user_sort_by ?? userSortBy,
+                employee_sort_by: employee_sort_by ?? employeeSortBy,
+                sort_direction: sortDir
+            }));
+        } else {
+            // @ts-ignore
+            await dispatch(axiosNotActiveEmployees({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm,
+                user_sort_by: user_sort_by ?? userSortBy,
+                employee_sort_by: employee_sort_by ?? employeeSortBy,
+                sort_direction: sortDir
+            }));
+        }
+    }
+    const cancelSortingBy = async () => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            await dispatch(axiosActiveEmployees({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            await dispatch(axiosWorkingEmployeesList({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else {
+            // @ts-ignore
+            await dispatch(axiosNotActiveEmployees({
+                page: 1,
+                per_page: perPage,
+                user_search_by: userSearchBy,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        }
     }
     return (
         <>
             <div className="overflow-x-auto">
-                {employeesList.length === 0
+                {employeesList.length === 0 && !userSearchBy && !employeeSearchBy
                     ?
                     <p>Тут поки що немає нічого </p>
                     :
-                    <table className="min-w-full bg-white">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b">
-                                <div className="flex items-center justify-between">
-                                    <span>ПІБ</span>
-                                    <button className="text-gray-500 hover:text-gray-700">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M5 9l5-5 5 5H5z"/>
-                                        </svg>
-                                    </button>
+                    <>
+                        <div className="flex items-center justify-between">
+                            <div className="w-1/12">
+                                <div className="mt-2">
+                                    <select
+                                        title={"Кількість на одній сторінці"}
+                                        id="country"
+                                        name="country"
+                                        autoComplete="country-name"
+                                        value={[10, 15, 20, 50].includes(perPage) ? perPage : 'all'}
+                                        onChange={changePerPage}
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                    >
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="all">Всі</option>
+                                    </select>
                                 </div>
-                            </th>
-                            <th className="py-2 px-4 border-b">
-                                <div className="flex items-center justify-between">
-                                    <span>Email</span>
-                                    <button className="text-gray-500 hover:text-gray-700">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M5 9l5-5 5 5H5z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </th>
-                            <th className="py-2 px-4 border-b">
-                                <div className="flex items-center justify-between">
-                                    <span>Адреса</span>
-                                    <button className="text-gray-500 hover:text-gray-700">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M5 9l5-5 5 5H5z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </th>
-                            <th className="py-2 px-4 border-b">
-                                <div className="flex items-center justify-between">
-                                    <span>Телефон</span>
-                                </div>
-                            </th>
-                            <th className="py-2 px-4 border-b"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        {
-                            // @ts-ignore
-                            employeesList.map((employee) => {
-                                return (
-                                    <tr key={employee?.id} className="hover:bg-gray-100">
-                                        <td className="py-2 px-4 border-b">{employee?.last_name ?? ''} {employee?.first_name ?? ''} {employee?.patronymic_name ?? ''}</td>
-                                        <td className="py-2 px-4 border-b">{employee?.email}</td>
-                                        <td className="py-2 px-4 border-b">{employee?.city ?? ''} {employee?.street ?? ''} {employee?.house_number ?? ''} {employee?.apartment_number ?? ''}</td>
-                                        <td className="py-2 px-4 border-b">{employee?.phone ?? ''}</td>
-                                        <td className="py-2 px-4 border-b">
+                            </div>
+                            <SearchComponent
+                                title={"Шукати за всіма полями"}
+                                isInputVisible={userSearchBy === 'all' || employeeSearchBy === 'all'}
+                                // @ts-ignore
+                                onBeganSearch={() => {
+                                    beginSearchBy({user_search_by: "all", employee_search_by: "all"})
+                                }}
+                                // @ts-ignore
+                                onCancelSearch={() => {
+                                    beginSearchBy({})
+                                }}
+                                onChange={searchingByColumn}
+                                search_value={searchTerm}
+                            />
+                        </div>
+                        <table className="min-w-full bg-white">
+                            <thead>
+                            <tr>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>ПІБ</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за ПІБ"}
+                                                isInputVisible={userSearchBy === 'user_name'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({user_search_by: "user_name"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
                                             {
-                                                tableType === 'active' ?
-                                                    <button className="text-blue-500 hover:text-blue-700 mr-2"
-                                                            onClick={async () => {
-                                                                // @ts-ignore
-                                                                await dispatch(axiosGetEmployeeInfo({employeeId: employee?.id, type: 'update'}));
-                                                                dispatch(openCloseModal({open: true}));
-                                                            }}
-                                                            title="Редагувати інформацію про співробітника"
-                                                    >
-                                                        <PencilSquareIcon className="w-6"/>
-
-                                                    </button> : <></>}
-                                            <button className="text-red-500 hover:text-red-700"
-                                                    onClick={() => onDeletingEmployee(employee?.id)}
-                                                    title="Видалити інформацію про співробітника"
-                                            >
-                                                <TrashIcon className="w-6"/>
-                                            </button>
-                                            {
-                                                tableType === 'active' || tableType === 'working' ?
+                                                employeeSortBy === 'last_name' ?
                                                     <>
-                                                        <button className="text-orange-500 hover:text-red-700"
-                                                                onClick={() => onDeacttivatingEmployee(employee?.id)}
-                                                                title="Деактивувати співробітника"
-                                                        >
-                                                            <MinusCircleIcon className="w-6"/>
-                                                        </button>
-                                                        {
-                                                            employee?.employment_date !== null
-                                                                ?
-                                                                <button
-                                                                    className="text-purple-500 hover:text-purple-700"
-                                                                    onClick={async () => {
-                                                                        // @ts-ignore
-                                                                        await dispatch(axiosGetEmployeeInfo({employeeId: employee?.id, type: 'fire'}))
-                                                                        dispatch(openCloseModal({open: true}))
-                                                                    }}
-                                                                    title="Звільнити співробітника"
-                                                                ><XMarkIcon className="w-6"/>
-                                                                </button>
-                                                                :
-                                                                <button
-                                                                    className="text-purple-500 disabled:text-gray-700"
-                                                                    disabled={true}
-                                                                    title="Співробітника неможливо звільнити"
-                                                                ><XMarkIcon className="w-6"/>
-                                                                </button>
-                                                        }
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'last_name'})}
+                                                            title={`Сортувати за ПІБ ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
                                                     </>
                                                     :
-                                                    <></>
-
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'last_name'})}
+                                                        title={"Сортувати за ПІБ"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
                                             }
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>Email</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за email"}
+                                                isInputVisible={userSearchBy === 'email'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({user_search_by: "email"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
                                             {
-                                                tableType === 'not-active' && employee?.date_dismissal === null ?
-                                                    <button className="text-green-500 hover:text-green-700"
-                                                            onClick={() => onReacttivatingEmployee(employee?.id)}
-                                                            title="Активувати співробітника"
-                                                    >
-                                                        <UserPlusIcon className="w-6"/>
-                                                    </button>
+                                                employeeSortBy === 'email' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'email'})}
+                                                            title={`Сортувати за email ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
                                                     :
-                                                    <></>
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'email'})}
+                                                        title={"Сортувати за email"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
                                             }
-                                        </td>
-                                    </tr>
-                                )
-                            }
-                        )}
-                        </tbody>
-                    </table>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>Адреса</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за адресою"}
+                                                isInputVisible={userSearchBy === 'address'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({user_search_by: "address"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                employeeSortBy === 'city' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'city'})}
+                                                            title={`Сортувати за адресою ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'city'})}
+                                                        title={"Сортувати за адресою"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>Телефон</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за телефоном"}
+                                                isInputVisible={employeeSearchBy === 'phone'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({employee_search_by: "phone"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                employeeSortBy === 'phone' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'phone'})}
+                                                            title={`Сортувати за телефоном ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'phone'})}
+                                                        title={"Сортувати за телефоном"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="py-2 px-4 border-b"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {
+                                // @ts-ignore
+                                employeesList.map((employee) => {
+                                    return (
+                                        <tr key={employee?.id} className={`${employee?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
+                                            <td className="py-2 px-4 border-b">{employee?.last_name ?? ''} {employee?.first_name ?? ''} {employee?.patronymic_name ?? ''}</td>
+                                            <td className="py-2 px-4 border-b">{employee?.email}</td>
+                                            <td className="py-2 px-4 border-b">{employee?.city ?? ''} {employee?.street ?? ''} {employee?.house_number ?? ''} {employee?.apartment_number ?? ''}</td>
+                                            <td className="py-2 px-4 border-b">{employee?.phone ?? ''}</td>
+                                            <td className="py-2 px-4 border-b">
+                                                {
+                                                    tableType === 'active' ?
+                                                        <button className="text-blue-500 hover:text-blue-700 mr-2"
+                                                                onClick={async () => {
+                                                                    // @ts-ignore
+                                                                    await dispatch(axiosGetEmployeeInfo({
+                                                                        employeeId: employee?.id,
+                                                                        type: 'update'
+                                                                    }));
+                                                                    dispatch(openCloseModal({open: true}));
+                                                                }}
+                                                                title="Редагувати інформацію про співробітника"
+                                                            >
+                                                                <PencilSquareIcon className="w-6"/>
+
+                                                            </button> : <></>}
+                                                    <button className="text-red-500 hover:text-red-700"
+                                                            onClick={() => onDeletingEmployee(employee?.id)}
+                                                            title="Видалити інформацію про співробітника"
+                                                    >
+                                                        <TrashIcon className="w-6"/>
+                                                    </button>
+                                                    {
+                                                        tableType === 'active' || tableType === 'working' ?
+                                                            <>
+                                                                <button className="text-orange-500 hover:text-red-700"
+                                                                        onClick={() => onDeacttivatingEmployee(employee?.id)}
+                                                                        title="Деактивувати співробітника"
+                                                                >
+                                                                    <MinusCircleIcon className="w-6"/>
+                                                                </button>
+                                                                {
+                                                                    employee?.employment_date !== null
+                                                                        ?
+                                                                        <button
+                                                                            className="text-purple-500 hover:text-purple-700"
+                                                                            onClick={async () => {
+                                                                                // @ts-ignore
+                                                                                await dispatch(axiosGetEmployeeInfo({
+                                                                                    employeeId: employee?.id,
+                                                                                    type: 'fire'
+                                                                                }))
+                                                                                dispatch(openCloseModal({open: true}))
+                                                                            }}
+                                                                            title="Звільнити співробітника"
+                                                                        ><XMarkIcon className="w-6"/>
+                                                                        </button>
+                                                                        :
+                                                                        <button
+                                                                            className="text-purple-500 disabled:text-gray-700"
+                                                                            disabled={true}
+                                                                            title="Співробітника неможливо звільнити"
+                                                                        ><XMarkIcon className="w-6"/>
+                                                                        </button>
+                                                                }
+                                                            </>
+                                                            :
+                                                            <></>
+
+                                                    }
+                                                    {
+                                                        tableType === 'not-active' && employee?.date_dismissal === null ?
+                                                            <button className="text-green-500 hover:text-green-700"
+                                                                    onClick={() => onReacttivatingEmployee(employee?.id)}
+                                                                    title="Активувати співробітника"
+                                                            >
+                                                                <UserPlusIcon className="w-6"/>
+                                                            </button>
+                                                            :
+                                                            <></>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        )
+                                    }
+                                )}
+                            </tbody>
+                        </table>
+                    </>
                 }
             </div>
         </>

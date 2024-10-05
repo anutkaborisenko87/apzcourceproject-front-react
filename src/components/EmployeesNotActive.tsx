@@ -20,18 +20,20 @@ const EmployeesNotActive = () => {
             // @ts-ignore
             last_page: state.employees?.employees.last_page ?? 0,
             // @ts-ignore
-            current_page: state.employees?.employees.current_page ?? 1
+            current_page: state.employees?.employees.current_page ?? 1,
+            // @ts-ignore
+            per_page: state.employees?.employees.per_page ?? 10
         }
 
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosNotActiveEmployees());
+        dispatch(axiosNotActiveEmployees({per_page: paginationData.per_page}));
     }, [dispatch]);
 
     const changePage = (page: number) => {
         // @ts-ignore
-        dispatch(axiosNotActiveEmployees(page));
+        dispatch(axiosNotActiveEmployees({page, per_page: paginationData.per_page}));
 
     }
     return (
@@ -44,9 +46,9 @@ const EmployeesNotActive = () => {
                 :
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <div className="flex justify-between mb-4">
-                        <h2 className="text-2xl font-bold">Неактивні користувачі</h2>
+                        <h2 className="text-2xl font-bold">Неактивні співробітники</h2>
                     </div>
-                    <EmployeesTable page={paginationData?.current_page} tableType={'not-active'}/>
+                    <EmployeesTable tableType={'not-active'}/>
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

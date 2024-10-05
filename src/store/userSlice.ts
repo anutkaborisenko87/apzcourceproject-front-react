@@ -199,9 +199,9 @@ const userSlice = createSlice({
             last_page: 0,
             current_page: 1,
             per_page: 10,
-            sort_by: 'user_id',
+            user_sort_by: 'user_id',
             sort_direction: 'asc',
-            search_by: null,
+            user_search_by: null,
             search_term: null
         },
         userToUpdate: null,
@@ -241,7 +241,7 @@ const userSlice = createSlice({
         },
         setSearchableColumn: (state, action) => {
             // @ts-ignore
-            state.users.search_by = action.payload.columnName;
+            state.users.user_search_by = action.payload.columnName;
         },
         cleanUserNotification: (state) => {
             state.notification = {type: '', message: ''}

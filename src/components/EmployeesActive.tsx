@@ -27,13 +27,15 @@ const EmployeesActive = () => {
             // @ts-ignore
             last_page: state.employees?.employees.last_page ?? 0,
             // @ts-ignore
-            current_page: state.employees?.employees.current_page ?? 1
+            current_page: state.employees?.employees.current_page ?? 1,
+            // @ts-ignore
+            per_page: state.employees?.employees.per_page ?? 10
         }
 
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosActiveEmployees());
+        dispatch(axiosActiveEmployees({per_page: paginationData.per_page}));
     }, [dispatch]);
     const handleOpenEmployeeModal = async () => {
         // @ts-ignore
@@ -42,7 +44,7 @@ const EmployeesActive = () => {
     };
     const changePage = async (page: number) => {
         // @ts-ignore
-        dispatch(axiosActiveEmployees(page));
+        dispatch(axiosActiveEmployees({page, per_page: paginationData.per_page}));
     }
     return (
         <div className="container mx-auto">
@@ -64,10 +66,10 @@ const EmployeesActive = () => {
                     <div className="container mx-auto mt-10">
 
                         <Modal>
-                            <AddUpdateEmployeeForm  tableType={'active'}/>
+                            <AddUpdateEmployeeForm tableType={'active'}/>
                         </Modal>
                     </div>
-                    <EmployeesTable  page={paginationData?.current_page} tableType={'active'} />
+                    <EmployeesTable tableType={'active'} />
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}
                                 from={paginationData?.from}

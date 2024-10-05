@@ -9,11 +9,38 @@ import {
     getWorkingEmployeesList, reactivateEmployee, updateEmployeeInfo
 } from "../apiServices/employeesApiServices.ts";
 
-
 export const axiosActiveEmployees = createAsyncThunk(
     'employees/axiosActiveEmployees',
-    async function (page?: number) {
-        return await getActiveEmployeesList(page);
+    async function ({
+                        page,
+                        per_page,
+                        user_sort_by,
+                        employee_sort_by,
+                        sort_direction,
+                        user_search_by,
+                        employee_search_by,
+                        search_term
+                    }:
+                        {
+                            page?: number,
+                            per_page?: string,
+                            user_sort_by?: string,
+                            employee_sort_by?: string,
+                            sort_direction?: string,
+                            user_search_by?: string,
+                            employee_search_by?: string,
+                            search_term?: string
+                        }) {
+        return await getActiveEmployeesList({
+            page,
+            per_page,
+            user_sort_by,
+            employee_sort_by,
+            sort_direction,
+            user_search_by,
+            employee_search_by,
+            search_term
+        });
     }
 );
 
@@ -27,22 +54,78 @@ export const axiosTeachers = createAsyncThunk(
 
 export const axiosNotActiveEmployees = createAsyncThunk(
     'employees/axiosNotActiveEmployees',
-    async function (page?: number) {
-        return await getNotActiveEmployeesList(page);
+    async function ({
+                        page,
+                        per_page,
+                        user_sort_by,
+                        employee_sort_by,
+                        sort_direction,
+                        user_search_by,
+                        employee_search_by,
+                        search_term
+                    }:
+                        {
+                            page?: number,
+                            per_page?: string,
+                            user_sort_by?: string,
+                            employee_sort_by?: string,
+                            sort_direction?: string,
+                            user_search_by?: string,
+                            employee_search_by?: string,
+                            search_term?: string
+                        }) {
+        return await getNotActiveEmployeesList({
+            page,
+            per_page,
+            user_sort_by,
+            employee_sort_by,
+            sort_direction,
+            user_search_by,
+            employee_search_by,
+            search_term
+        });
     }
 );
 
 export const axiosWorkingEmployeesList = createAsyncThunk(
     'employees/axiosWorkingEmployeesList',
-    async function (page?: number) {
-        return await getWorkingEmployeesList(page);
+    async function ({
+                        page,
+                        per_page,
+                        user_sort_by,
+                        employee_sort_by,
+                        sort_direction,
+                        user_search_by,
+                        employee_search_by,
+                        search_term
+                    }:
+                        {
+                            page?: number,
+                            per_page?: string,
+                            user_sort_by?: string,
+                            employee_sort_by?: string,
+                            sort_direction?: string,
+                            user_search_by?: string,
+                            employee_search_by?: string,
+                            search_term?: string
+                        }) {
+        return await getWorkingEmployeesList({
+            page,
+            per_page,
+            user_sort_by,
+            employee_sort_by,
+            sort_direction,
+            user_search_by,
+            employee_search_by,
+            search_term
+        });
     }
 );
 
 export const axiosGetEmployeeInfo = createAsyncThunk(
     'employees/axiosGetEmployeeInfo',
     // @ts-ignore
-    async function ({employeeId, type }: {employeeId?: number, type?: string }, {rejectWithValue, dispatch}) {
+    async function ({employeeId, type}: { employeeId?: number, type?: string }, {rejectWithValue, dispatch}) {
         // @ts-ignore
         dispatch(cleanEmployeeErrors());
         if (!employeeId && !type) {
@@ -67,18 +150,30 @@ export const axiosGetEmployeeInfo = createAsyncThunk(
 
 export const axiosDeactivateEmployee = createAsyncThunk(
     'employees/axiosDeactivateEmployee',
-    async function ({employeeId, page, tableType}: { employeeId: number, page: number, tableType: string }, {
+    async function ({employeeId, tableType}: { employeeId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {employees} = getState();
             const resp = await deactivateEmployee(employeeId);
             if (tableType == 'active') {
-                dispatch(axiosActiveEmployees(page));
+                dispatch(axiosActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             } else if (tableType == 'working') {
-                dispatch(axiosWorkingEmployeesList(page))
+                dispatch(axiosWorkingEmployeesList({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }))
             } else {
-                dispatch(axiosNotActiveEmployees(page));
+                dispatch(axiosNotActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             }
             return resp;
         } catch (error) {
@@ -94,18 +189,30 @@ export const axiosFireEmployee = createAsyncThunk(
         tableType: string,
         payload?: { date_dismissal: string }
     }, {
+                        getState,
                         rejectWithValue,
                         dispatch
                     }) {
         try {
             // @ts-ignore
+            const {employees} = getState();
+            // @ts-ignore
             const resp = await fireEmployee(employeeId, payload);
             if (tableType == 'active') {
-                dispatch(axiosActiveEmployees());
+                dispatch(axiosActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             } else if (tableType == 'working') {
-                dispatch(axiosWorkingEmployeesList());
+                dispatch(axiosWorkingEmployeesList({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             } else {
-                dispatch(axiosNotActiveEmployees());
+                dispatch(axiosNotActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             }
             dispatch(openCloseModal({open: false}));
             return resp;
@@ -117,18 +224,30 @@ export const axiosFireEmployee = createAsyncThunk(
 
 export const axiosReactivateEmployee = createAsyncThunk(
     'employees/axiosReactivateEmployee',
-    async function ({employeeId, page, tableType}: { employeeId: number, page: number, tableType: string }, {
+    async function ({employeeId, tableType}: { employeeId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {employees} = getState();
             const resp = await reactivateEmployee(employeeId);
             if (tableType == 'active') {
-                dispatch(axiosActiveEmployees(page));
+                dispatch(axiosActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             } else if (tableType == 'working') {
-                dispatch(axiosWorkingEmployeesList(page))
+                dispatch(axiosWorkingEmployeesList({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }))
             } else {
-                dispatch(axiosNotActiveEmployees(page));
+                dispatch(axiosNotActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             }
             return resp;
         } catch (error) {
@@ -139,18 +258,30 @@ export const axiosReactivateEmployee = createAsyncThunk(
 
 export const axiosDeleteEmployee = createAsyncThunk(
     'employees/axiosDeleteEmployee',
-    async function ({employeeId, page, tableType}: { employeeId: number, page: number, tableType: string }, {
+    async function ({employeeId, tableType}: { employeeId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {employees} = getState();
             const resp = await deleteEmployeeInfo(employeeId);
             if (tableType == 'active') {
-                dispatch(axiosActiveEmployees(page));
+                dispatch(axiosActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             } else if (tableType == 'working') {
-                dispatch(axiosWorkingEmployeesList(page))
+                dispatch(axiosWorkingEmployeesList({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }))
             } else {
-                dispatch(axiosNotActiveEmployees(page));
+                dispatch(axiosNotActiveEmployees({
+                    page: employees.employees.current_page,
+                    per_page: employees.employees.per_page
+                }));
             }
             return resp;
         } catch (error) {
@@ -161,10 +292,19 @@ export const axiosDeleteEmployee = createAsyncThunk(
 
 export const axiosCreateEmployeeInfo = createAsyncThunk(
     'employees/axiosCreateEmployeeInfo',
-    async function (employeeFormData: EmployeeFormData, {rejectWithValue, dispatch}) {
+    async function (employeeFormData: EmployeeFormData, {
+        getState,
+        rejectWithValue,
+        dispatch
+    }) {
         try {
+            // @ts-ignore
+            const {employees} = getState();
             const resp = await addNewEmployeeInfo(employeeFormData);
-            dispatch(axiosActiveEmployees());
+            dispatch(axiosActiveEmployees({
+                page: employees.employees.current_page,
+                per_page: employees.employees.per_page
+            }));
             dispatch(openCloseModal({open: false}))
             return resp;
         } catch (error) {
@@ -178,10 +318,19 @@ export const axiosUpdateEmployeeInfo = createAsyncThunk(
     async function ({employeeId, employeeFormData}: {
         employeeId: number,
         employeeFormData: EmployeeFormData
-    }, {rejectWithValue, dispatch}) {
+    }, {
+                        getState,
+                        rejectWithValue,
+                        dispatch
+                    }) {
         try {
+            // @ts-ignore
+            const {employees} = getState();
             const resp = await updateEmployeeInfo(employeeId, employeeFormData);
-            dispatch(axiosActiveEmployees());
+            dispatch(axiosActiveEmployees({
+                page: employees.employees.current_page,
+                per_page: employees.employees.per_page
+            }));
             dispatch(openCloseModal({open: false}))
             return resp;
         } catch (error) {
@@ -280,7 +429,21 @@ const setFormErrors = (state: {
 const employeesSlice = createSlice({
     name: 'employees',
     initialState: {
-        employees: [],
+        employees: {
+            data: [],
+            links: [],
+            to: 0,
+            from: 0,
+            last_page: 0,
+            current_page: 1,
+            per_page: 10,
+            user_sort_by: null,
+            employee_sort_by: null,
+            sort_direction: 'asc',
+            user_search_by: null,
+            employee_search_by: null,
+            search_term: null
+        },
         employeeToUpdate: null,
         employee: null,
         firingEmployee: null,
@@ -357,6 +520,14 @@ const employeesSlice = createSlice({
             }
             state.error = null
 
+        },
+        setUserSearchableColumn: (state, action) => {
+            // @ts-ignore
+            state.employees.user_search_by = action.payload.user_search_by;
+        },
+        setEmployeeSearchableColumn: (state, action) => {
+            // @ts-ignore
+            state.employees.employee_search_by = action.payload.employee_search_by;
         },
         cleanEmployeeNotification: (state) => {
             state.notification = {type: '', message: ''}
@@ -562,6 +733,8 @@ const employeesSlice = createSlice({
 });
 
 export const {
+    setUserSearchableColumn,
+    setEmployeeSearchableColumn,
     getEmployeeToUpdate,
     cleanEmployeeErrors,
     getEmployeeToFire,

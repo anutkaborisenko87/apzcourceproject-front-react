@@ -7,7 +7,6 @@ import {
     axiosReactivateParrent,
 } from "../store/parrentsSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
 type PropsType = {
     tableType: string;
@@ -115,7 +114,7 @@ const ParrentsTable = ({
                                     <td className="py-2 px-4 border-b">{parrent?.work_place ?? ''}</td>
                                     <td className="py-2 px-4 border-b">{parrent?.marital_status ?? ''}</td>
                                     <td className="py-2 px-4 border-b">{parrent?.children && parrent?.children.length > 0 ?
-                                        parrent?.children.map((child: { id: Key | null | undefined; child_name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; relations: any; }) => {
+                                        parrent?.children.map((child: { id: number; child_name: string; relations: any; }) => {
                                                 return (
                                                     <button key={child.id}
                                                             className="border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
