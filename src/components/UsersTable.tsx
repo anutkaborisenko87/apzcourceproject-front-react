@@ -4,7 +4,8 @@ import {
     PencilSquareIcon,
     TrashIcon,
     UserPlusIcon,
-    XCircleIcon
+    XCircleIcon,
+    FunnelIcon
 } from "@heroicons/react/24/outline";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -16,6 +17,9 @@ import {
 } from "../store/userSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 import SearchComponent from "./SearchComponent.tsx";
+import FiltersComponent from "./FiltersComponent.tsx";
+import {useCallback, useEffect, useState} from "react";
+import * as _ from "lodash";
 
 type PropsType = {
     tableType: string;
@@ -24,7 +28,8 @@ const UsersTable = ({tableType}: PropsType) => {
     // @ts-ignore
     const usersList = useSelector(state => state.users?.users?.data ?? []);
     const dispatch = useDispatch();
-
+    // @ts-ignore
+    const filterUsersBy = useSelector(state => state.users?.users?.filter_users_by ?? null)
     // @ts-ignore
     const perPage = useSelector(state => state.users?.users?.per_page ?? 10);
     // @ts-ignore
@@ -37,7 +42,49 @@ const UsersTable = ({tableType}: PropsType) => {
     const sortBy = useSelector(state => state.users?.users?.user_sort_by);
     // @ts-ignore
     const sortDirection = useSelector(state => state.users?.users?.sort_direction);
+    const [showFilters, setShowFilters] = useState(filterUsersBy !== null && Object.keys(filterUsersBy).length > 0);
+    // @ts-ignore
+    const filters = useSelector(state => state.users?.users?.filters);
+    const [selectedFilters, setSelectedFilters] = useState(filters);
+    const handleFilterChange = useCallback(async (sectionId: string, optionValue: string, checked: boolean) => {
+        setSelectedFilters((prevFilters: { id: string; options: { value: string; }[]; }[]) =>
+            prevFilters.map((section: { id: string; options: { value: string; }[]; }) =>
+                section.id === sectionId
+                    ? {
+                        ...section,
+                        options: section.options.map((option: { value: string; }) =>
+                            option.value === optionValue ? {...option, checked} : option
+                        ),
+                    }
+                    : section
+            )
+        );
+    }, []);
 
+    const filterBy = () => {
+        let localfilters = {};
+        selectedFilters.forEach((item: {
+            options: { checked: boolean; value: string; label: string; }[];
+            id: string;
+            name: string;
+        }): void => {
+            let selectedOptions: string[] = [];
+            item.options.forEach((option: { checked: boolean; value: string; label: string; }): void => {
+                if (option.checked) selectedOptions.push(option.value);
+            });
+            // @ts-ignore
+            if (selectedOptions.length > 0) localfilters[item.id] = selectedOptions;
+        });
+        return Object.keys(localfilters).length > 0 ? localfilters : null;
+    };
+    useEffect(() => {
+        let formedFilters = filterBy();
+        if (!_.isEqual(filterUsersBy, formedFilters)) {
+            (async () => {
+                await filteringBy(formedFilters);
+            })();
+        }
+    }, [selectedFilters, filterUsersBy]);
     const ondeletingUser = async (userId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього користувача?")) {
             // @ts-ignore
@@ -57,30 +104,25 @@ const UsersTable = ({tableType}: PropsType) => {
             await dispatch(axiosReactivateUser({userId, tableType}));
         }
     }
-    const changePerPage = async (e: any) => {
-        if (tableType === 'active') {
-            // @ts-ignore
-            await dispatch(axiosActiveUsers({
-                page: 1,
-                per_page: e.target.value,
-                sort_by: sortBy,
-                sort_direction: sortDirection,
-                search_by: sarchBy,
-                search_term: sarchTerm
-            }));
-        } else {
-            // @ts-ignore
-            await dispatch(axiosNotActiveUsers({
-                page: 1,
-                per_page: e.target.value,
-                sort_by: sortBy,
-                sort_direction: sortDirection,
-                search_by: sarchBy,
-                search_term: sarchTerm
-            }));
+    const changePerPage = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newPerPage = e.target.value;
+        if (newPerPage !== perPage) {
+            if (tableType === 'active') {
+                // @ts-ignore
+                await dispatch(axiosActiveUsers({
+                    page: 1,
+                    per_page: newPerPage,
+                }));
+            } else {
+                // @ts-ignore
+                await dispatch(axiosNotActiveUsers({
+                    page: 1,
+                    per_page: newPerPage,
+                    // Остальные параметры остаются неизменными
+                }));
+            }
         }
-
-    }
+    }, [dispatch, perPage, tableType]);
 
     const sortingBy = async (columnName: string) => {
         let sortDir = 'desc';
@@ -95,7 +137,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_by: columnName,
                 sort_direction: sortDir,
                 search_by: sarchBy,
-                search_term: sarchTerm
+                search_term: sarchTerm,
+                filter_users_by: filterUsersBy
             }))
         } else {
             // @ts-ignore
@@ -105,11 +148,11 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_by: columnName,
                 sort_direction: sortDir,
                 search_by: sarchBy,
-                search_term: sarchTerm
+                search_term: sarchTerm,
+                filter_users_by: filterUsersBy
             }))
         }
     }
-
     const cancelSortingBy = async () => {
         if (tableType === 'active') {
             // @ts-ignore
@@ -119,7 +162,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_by: 'user_id',
                 sort_direction: 'asc',
                 search_by: sarchBy,
-                search_term: sarchTerm
+                search_term: sarchTerm,
+                filter_users_by: filterUsersBy
             }));
         } else {
             // @ts-ignore
@@ -128,6 +172,30 @@ const UsersTable = ({tableType}: PropsType) => {
                 per_page: perPage,
                 sort_by: 'user_id',
                 sort_direction: 'asc',
+                search_by: sarchBy,
+                search_term: sarchTerm,
+                filter_users_by: filterUsersBy
+            }));
+        }
+    }
+    const cancelFiltering = async () => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            await dispatch(axiosActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                search_by: sarchBy,
+                search_term: sarchTerm
+            }));
+        } else {
+            // @ts-ignore
+            await dispatch(axiosNotActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
                 search_by: sarchBy,
                 search_term: sarchTerm
             }));
@@ -144,7 +212,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     sort_by: sortBy,
                     sort_direction: sortDirection,
                     search_by: sarchBy,
-                    search_term: event
+                    search_term: event,
+                    filter_users_by: filterUsersBy
                 }));
             } else {
                 // @ts-ignore
@@ -154,13 +223,43 @@ const UsersTable = ({tableType}: PropsType) => {
                     sort_by: sortBy,
                     sort_direction: sortDirection,
                     search_by: sarchBy,
-                    search_term: event
+                    search_term: event,
+                    filter_users_by: filterUsersBy
                 }));
             }
         } else {
             beginSearchBy();
         }
     }
+    // @ts-ignore
+    const filteringBy = useCallback(async (filters: any) => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            dispatch(axiosActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                search_by: sarchBy,
+                search_term: sarchTerm,
+                // @ts-ignore
+                filter_users_by: filters,
+            }));
+        } else {
+            // @ts-ignore
+            dispatch(axiosNotActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                search_by: sarchBy,
+                search_term: sarchTerm,
+                // @ts-ignore
+                filter_users_by: filters,
+            }));
+        }
+    }, [selectedFilters])
+
     const beginSearchBy = (columnName?: string) => {
         dispatch(setSearchableColumn({columnName: columnName}));
         if (!columnName) {
@@ -170,7 +269,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     page: currPage,
                     per_page: perPage,
                     sort_by: sortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    filter_users_by: filterUsersBy
                 }));
             } else {
                 // @ts-ignore
@@ -178,20 +278,44 @@ const UsersTable = ({tableType}: PropsType) => {
                     page: currPage,
                     per_page: perPage,
                     sort_by: sortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    filter_users_by: filterUsersBy
                 }));
             }
         }
     }
+
     return (
         <>
             <div className="overflow-x-auto">
-                {usersList.length === 0 && !sarchBy
-                    ?
-                    <p>Тут поки що немає нічого </p>
-                    :
-                    <>
-                        <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap">
+                    <div className="w-full mb-2">
+                        <div className="-flex mr-auto">
+                            <FunnelIcon onClick={() => setShowFilters(showFilters => !showFilters)}
+                                        className={`w-6 cursor-pointer ${showFilters ? 'text-violet-600 hover:text-gray-800' : 'hover:text-violet-600'}`}/>
+                            {
+                                filterUsersBy !== null ?
+                                    <XCircleIcon
+                                        className="w-6 text-violet-600 hover:text-gray-800 cursor-pointer"
+                                        onClick={cancelFiltering} title="Скинути всі фільтри"/>
+                                    : null
+                            }
+
+                        </div>
+                    </div>
+                    {
+                        showFilters ?
+                            <div className="w-full mb-2">
+                                <FiltersComponent filters={selectedFilters}
+                                                  onFilterChange={handleFilterChange}/>
+                            </div>
+                            : <></>
+                    }
+                    {usersList.length === 0 && !sarchBy
+                        ?
+                        null
+                        :
+                        <>
                             <div className="w-1/12">
                                 <div className="mt-2">
                                     <select
@@ -216,16 +340,22 @@ const UsersTable = ({tableType}: PropsType) => {
                                 isInputVisible={sarchBy === 'all'}
                                 // @ts-ignore
                                 onBeganSearch={() => {
-                                    beginSearchBy("all")
+                                    beginSearchBy("all");
                                 }}
                                 // @ts-ignore
                                 onCancelSearch={() => {
-                                    beginSearchBy()
+                                    beginSearchBy();
                                 }}
                                 onChange={searchingByColumn}
-                                search_value={sarchTerm}
-                            />
-                        </div>
+                                search_value={sarchTerm}/>
+                        </>
+                    }
+                </div>
+                {usersList.length === 0 && !sarchBy
+                    ?
+                    <p>Тут поки що немає нічого </p>
+                    :
+                    <>
                         <table className="min-w-full bg-white">
                             <thead>
                             <tr>
@@ -362,7 +492,8 @@ const UsersTable = ({tableType}: PropsType) => {
                                     user_category: string;
                                 }) => {
                                     return (
-                                        <tr key={user?.user_id} className={`${user?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100' } `}>
+                                        <tr key={user?.user_id}
+                                            className={`${user?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
                                             <td className="py-2 px-4 border-b">{user?.last_name ?? ''} {user?.first_name ?? ''} {user?.patronymic_name ?? ''}</td>
                                             <td className="py-2 px-4 border-b">{user?.email}</td>
                                             <td className="py-2 px-4 border-b">{user?.birthdate ?? ''}</td>

@@ -10,6 +10,16 @@ import TabsForms from "./TabsForms.tsx";
 
 const UsersActive = () => {
     // @ts-ignore
+    const filterUsersBy =  useSelector(state => state.users?.users?.filter_users_by ?? null)
+    // @ts-ignore
+    const sarchBy = useSelector(state => state.users?.users?.user_search_by);
+    // @ts-ignore
+    const sarchTerm = useSelector(state => state.users?.users?.search_term);
+    // @ts-ignore
+    const sortBy = useSelector(state => state.users?.users?.user_sort_by);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.users?.users?.sort_direction);
+    // @ts-ignore
     const user = useSelector(state => state.users.userToUpdate);
     const dispatch = useDispatch();
     // @ts-ignore
@@ -38,6 +48,9 @@ const UsersActive = () => {
         dispatch(axiosActiveUsers({}));
     }, [dispatch]);
 
+    useEffect(() => {
+    }, [user]);
+
     const handleOpenModal = async () => {
         // @ts-ignore
         await dispatch(axiosGetUserInfo(false))
@@ -46,13 +59,19 @@ const UsersActive = () => {
     };
 
     const changePage = (page: number) => {
-
         // @ts-ignore
-        dispatch(axiosActiveUsers({page: page, per_page: paginationData.per_page}));
+        dispatch(axiosActiveUsers({
+            page: page,
+            per_page: paginationData.per_page,
+            sort_by: sortBy,
+            sort_direction: sortDirection,
+            search_by: sarchBy,
+            search_term: sarchTerm,
+            filter_users_by: filterUsersBy
+        }));
     }
     return (
         <div className="container mx-auto">
-
             {isLoading ?
                 <div className="w-screen h-screen flex justify-center items-center bg-gray-200">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>

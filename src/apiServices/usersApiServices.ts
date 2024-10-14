@@ -1,13 +1,14 @@
 import axiosClient from "../axios-client.ts";
 import {UserFormData} from "./apiServicesTypes.ts";
 
-export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
     page?: number,
     per_page?: string,
     sort_by?: string,
     sort_direction?: string,
     search_by?: string,
-    search_term?: string
+    search_term?: string,
+    filter_users_by?: {}
 }) => {
     let url = page ? `/users/active?page=${page}` : `/users/active`;
     url = formatUrlString({
@@ -16,7 +17,8 @@ export const getUsersList = async ({page, per_page, sort_by, sort_direction, sea
         user_sort_by: sort_by,
         sort_direction,
         user_search_by: search_by,
-        search_term
+        search_term,
+        filter_users_by
     })
     // eslint-disable-next-line no-useless-catch
     try {
@@ -27,13 +29,14 @@ export const getUsersList = async ({page, per_page, sort_by, sort_direction, sea
     }
 }
 
-export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
     page?: number,
     per_page?: string,
     sort_by?: string,
     sort_direction?: string,
     search_by?: string,
-    search_term?: string
+    search_term?: string,
+    filter_users_by?: {}
 }) => {
     let url = page ? `/users/not_active?page=${page}` : `/users/not_active`;
     url = formatUrlString({
@@ -42,7 +45,8 @@ export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direc
         user_sort_by: sort_by,
         sort_direction,
         user_search_by: search_by,
-        search_term
+        search_term,
+        filter_users_by
     })
     // eslint-disable-next-line no-useless-catch
     try {
@@ -112,13 +116,14 @@ export const getUserInfo = async (userId: number) => {
     }
 }
 
-const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_search_by, search_term}: {
+const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_search_by, search_term, filter_users_by}: {
     url: string,
     per_page?: string,
     user_sort_by?: string,
     sort_direction?: string,
     user_search_by?: string,
-    search_term?: string
+    search_term?: string,
+    filter_users_by?: {}
 }) => {
     let respUrl = url;
     if (per_page) {
@@ -135,6 +140,24 @@ const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_sear
     }
     if (search_term) {
         respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`;
+    }
+    if (filter_users_by) {
+        const queryParams = new URLSearchParams();
+        Object.keys(filter_users_by).forEach((key: string): void => {
+            // @ts-ignore
+            const value = filter_users_by[key];
+            if (Array.isArray(value)) {
+                value.forEach((item, i) => {
+                    queryParams.append(`filter_users_by[${key}][${i}]`, item);
+                });
+            } else {
+                queryParams.append(`filter_users_by[${key}]`, value);
+            }
+        });
+
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
     }
     return respUrl;
 }

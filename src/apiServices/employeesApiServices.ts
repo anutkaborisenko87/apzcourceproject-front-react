@@ -4,34 +4,33 @@ import {EmployeeFormData} from "./apiServicesTypes.ts";
 export const getActiveEmployeesList = async ({
                                                  page,
                                                  per_page,
-                                                 user_sort_by,
                                                  employee_sort_by,
                                                  sort_direction,
-                                                 user_search_by,
                                                  employee_search_by,
+                                                 filter_employees_by,
                                                  search_term
                                              }:
 {
     page? : number,
     per_page?: string,
-    user_sort_by?: string,
     employee_sort_by?: string,
     sort_direction?: string,
-    user_search_by?: string,
     employee_search_by?: string,
+    filter_employees_by?: {},
     search_term?: string
 }) => {
+    console.log('getActiveEmployeesList before formatUrlString', filter_employees_by);
     let url = page ? `/employees/active?page=${page}` : `/employees/active`;
     url = formatUrlString({
         url,
         per_page,
-        user_sort_by,
         employee_sort_by,
         sort_direction,
-        user_search_by,
         employee_search_by,
+        filter_employees_by,
         search_term
     });
+    console.log('url getActiveEmployeesList', url);
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);
@@ -56,32 +55,29 @@ export const getTeachersList = async () => {
 export const getNotActiveEmployeesList = async ({
                                                     page,
                                                     per_page,
-                                                    user_sort_by,
                                                     employee_sort_by,
                                                     sort_direction,
-                                                    user_search_by,
                                                     employee_search_by,
+                                                    filter_employees_by,
                                                     search_term
                                                 }:
                                                     {
                                                         page? : number,
                                                         per_page?: string,
-                                                        user_sort_by?: string,
                                                         employee_sort_by?: string,
                                                         sort_direction?: string,
-                                                        user_search_by?: string,
                                                         employee_search_by?: string,
+                                                        filter_employees_by?: {},
                                                         search_term?: string
                                                     }) => {
     let url = page ? `/employees/not_active?page=${page}` : `/employees/not_active`;
     url = formatUrlString({
         url,
         per_page,
-        user_sort_by,
         employee_sort_by,
         sort_direction,
-        user_search_by,
         employee_search_by,
+        filter_employees_by,
         search_term
     });
     // eslint-disable-next-line no-useless-catch
@@ -96,32 +92,29 @@ export const getNotActiveEmployeesList = async ({
 export const getWorkingEmployeesList = async ({
                                                   page,
                                                   per_page,
-                                                  user_sort_by,
                                                   employee_sort_by,
                                                   sort_direction,
-                                                  user_search_by,
                                                   employee_search_by,
+                                                  filter_employees_by,
                                                   search_term
                                               }:
                                                   {
                                                       page? : number,
                                                       per_page?: string,
-                                                      user_sort_by?: string,
                                                       employee_sort_by?: string,
                                                       sort_direction?: string,
-                                                      user_search_by?: string,
                                                       employee_search_by?: string,
+                                                      filter_employees_by?: {},
                                                       search_term?: string
                                                   }) => {
     let url = page ? `/employees/working?page=${page}` : `/employees/working`;
     url = formatUrlString({
         url,
         per_page,
-        user_sort_by,
         employee_sort_by,
         sort_direction,
-        user_search_by,
         employee_search_by,
+        filter_employees_by,
         search_term
     });
     // eslint-disable-next-line no-useless-catch
@@ -217,28 +210,23 @@ export const reactivateEmployee = async (employeeId: number) => {
 const formatUrlString = ({
                              url,
                              per_page,
-                             user_sort_by,
                              employee_sort_by,
                              sort_direction,
-                             user_search_by,
                              employee_search_by,
+                             filter_employees_by,
                              search_term
                          }: {
     url: string,
     per_page?: string,
-    user_sort_by?: string,
     employee_sort_by?: string,
     sort_direction?: string,
-    user_search_by?: string,
     employee_search_by?: string,
+    filter_employees_by?: {},
     search_term?: string
 }) => {
     let respUrl = url;
     if (per_page) {
         respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`;
-    }
-    if (user_sort_by) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&user_sort_by=${user_sort_by}` : `${respUrl}?user_sort_by=${user_sort_by}`;
     }
     if (employee_sort_by) {
         respUrl = respUrl.includes('?') ? `${respUrl}&employee_sort_by=${employee_sort_by}` : `${respUrl}?employee_sort_by=${employee_sort_by}`;
@@ -246,14 +234,29 @@ const formatUrlString = ({
     if (sort_direction) {
         respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`;
     }
-    if (user_search_by) {
-        respUrl = respUrl.includes('?') ? `${respUrl}&user_search_by=${user_search_by}` : `${respUrl}?user_search_by=${user_search_by}`
-    }
     if (employee_search_by) {
         respUrl = respUrl.includes('?') ? `${respUrl}&employee_search_by=${employee_search_by}` : `${respUrl}?employee_search_by=${employee_search_by}`
     }
     if (search_term) {
         respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`
     }
+    if (filter_employees_by) {
+        const queryParams = new URLSearchParams();
+        Object.keys(filter_employees_by).forEach((key: string): void => {
+            // @ts-ignore
+            const value = filter_employees_by[key];
+            if (Array.isArray(value)) {
+                value.forEach((item, i) => {
+                    queryParams.append(`filter_employees_by[${key}][${i}]`, item);
+                });
+            } else {
+                queryParams.append(`filter_employees_by[${key}]`, value);
+            }
+        });
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
+    }
+    console.log('respUrl formatUrlString', respUrl);
     return respUrl;
 }

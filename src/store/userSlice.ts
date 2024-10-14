@@ -14,29 +14,30 @@ import {openCloseModal} from "./modalSlice.ts";
 
 export const axiosActiveUsers = createAsyncThunk(
     'users/axiosActiveUsers',
-    async function ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+    async function ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
         page?: number,
         per_page?: string,
         sort_by?: string,
         sort_direction?: string,
         search_by?: string,
-        search_term?: string
+        search_term?: string,
+        filter_users_by?: {}
     }) {
-
-        return await getUsersList({page, per_page, sort_by, sort_direction, search_by, search_term});
+        return await getUsersList({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by});
     }
 );
 export const axiosNotActiveUsers = createAsyncThunk(
     'users/axiosNotActiveUsers',
-    async function ({page, per_page, sort_by, sort_direction, search_by, search_term}: {
+    async function ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
         page?: number,
         per_page?: string,
         sort_by?: string,
         sort_direction?: string,
         search_by?: string,
-        search_term?: string
+        search_term?: string,
+        filter_users_by?: {}
     }) {
-        return await getNotActiveUsersList({page, per_page, sort_by, sort_direction, search_by, search_term});
+        return await getNotActiveUsersList({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by});
     }
 );
 export const axiosDeactivateUser = createAsyncThunk(
@@ -202,7 +203,9 @@ const userSlice = createSlice({
             user_sort_by: 'user_id',
             sort_direction: 'asc',
             user_search_by: null,
-            search_term: null
+            search_term: null,
+            filters: [],
+            filter_users_by: []
         },
         userToUpdate: null,
         user: null,

@@ -1,6 +1,6 @@
 import {
     ChevronUpDownIcon,
-    ChevronUpIcon,
+    ChevronUpIcon, FunnelIcon,
     MinusCircleIcon,
     PencilSquareIcon,
     TrashIcon,
@@ -20,6 +20,9 @@ import {
 } from "../store/employeesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 import SearchComponent from "./SearchComponent.tsx";
+import FiltersComponent from "./FiltersComponent.tsx";
+import {useCallback, useEffect, useState} from "react";
+import * as _ from "lodash";
 
 type PropsType = {
     tableType: string;
@@ -31,19 +34,136 @@ const EmployeesTable = ({tableType}: PropsType) => {
     // @ts-ignore
     const perPage = useSelector(state => state.employees?.employees?.per_page ?? 10);
     // @ts-ignore
-    const currPage = useSelector(state => state.employees?.employees?.current_page ?? 1);
+    const filterEmployeesBy = useSelector(state => state.employees?.employees?.filter_employees_by ?? null)
     // @ts-ignore
-    const userSortBy = useSelector(state => state.employees?.employees?.user_sort_by ?? null);
+    const currPage = useSelector(state => state.employees?.employees?.current_page ?? 1);
     // @ts-ignore
     const employeeSortBy = useSelector(state => state.employees?.employees?.employee_sort_by ?? null);
     // @ts-ignore
     const sortDirection = useSelector(state => state.employees?.employees?.sort_direction ?? 'asc');
     // @ts-ignore
-    const userSearchBy = useSelector(state => state.employees?.employees?.user_search_by ?? null);
-    // @ts-ignore
     const employeeSearchBy = useSelector(state => state.employees?.employees?.employee_search_by ?? null);
     // @ts-ignore
     const searchTerm = useSelector(state => state.employees?.employees?.search_term ?? null);
+    const [showEmployeesFilters, setShowEmployeesFilters] = useState(filterEmployeesBy !== null && Object.keys(filterEmployeesBy).length > 0);
+    // @ts-ignore
+    const filters = useSelector(state => state.employees?.employees?.filters ?? []);
+    const [selectedEmployeesFilters, setSelectedEmployeesFilters] = useState(filters);
+    // @ts-ignore
+    const handleEmployeesFilterChange = useCallback(async (sectionId: string, optionValue: string, checked: boolean) => {
+        setSelectedEmployeesFilters((prevFilters: { id: string; options: { value: string; }[]; }[]) =>
+            prevFilters.map((section: { id: string; options: { value: string; }[]; }) =>
+                section.id === sectionId
+                    ? {
+                        ...section,
+                        options: section.options.map((option: { value: string; }) =>
+                            option.value === optionValue ? {...option, checked} : option
+                        ),
+                    }
+                    : section
+            )
+        );
+    }, []);
+
+    const filterBy = () => {
+        let localfilters = {};
+        if (selectedEmployeesFilters) {
+            selectedEmployeesFilters.forEach((item: {
+                options: { checked: boolean; value: string; label: string; }[];
+                id: string;
+                name: string;
+            }): void => {
+                let selectedOptions: string[] = [];
+                item.options.forEach((option: { checked: boolean; value: string; label: string; }): void => {
+                    if (option.checked) selectedOptions.push(option.value);
+                });
+                // @ts-ignore
+                if (selectedOptions.length > 0) localfilters[item.id] = selectedOptions;
+            });
+        }
+        return Object.keys(localfilters).length > 0 ? localfilters : null;
+    };
+    useEffect(() => {
+        let formedFilters = filterBy();
+        if (!_.isEqual(filterEmployeesBy, formedFilters)) {
+            (async () => {
+                await filteringBy(formedFilters);
+            })();
+        }
+    }, [selectedEmployeesFilters, filterEmployeesBy]);
+    // @ts-ignore
+    const filteringBy = useCallback(async (filters: any) => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            dispatch(axiosActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filters,
+                search_term: searchTerm
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            dispatch(axiosWorkingEmployeesList({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filters,
+                search_term: searchTerm
+            }));
+        } else {
+            // @ts-ignore
+            dispatch(axiosNotActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filters,
+                search_term: searchTerm
+            }));
+        }
+    }, [selectedEmployeesFilters])
+    const cancelFiltering = async () => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            await dispatch(axiosActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            await dispatch(axiosWorkingEmployeesList({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        } else {
+            // @ts-ignore
+            await dispatch(axiosNotActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                search_term: searchTerm
+            }));
+        }
+    }
     const onDeletingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього співробітника?")) {
             // @ts-ignore
@@ -71,10 +191,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosActiveEmployees({
                 page: 1,
                 per_page: e.target.value,
-                user_sort_by: userSortBy,
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -83,10 +201,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosWorkingEmployeesList({
                 page: 1,
                 per_page: e.target.value,
-                user_sort_by: userSortBy,
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -95,10 +211,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosNotActiveEmployees({
                 page: 1,
                 per_page: e.target.value,
-                user_sort_by: userSortBy,
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -117,7 +231,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosActiveEmployees({
                     page: 1,
                     per_page: perPage,
-                    user_sort_by: userSortBy,
                     employee_sort_by: employeeSortBy,
                     sort_direction: sortDirection
                 }));
@@ -126,7 +239,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosWorkingEmployeesList({
                     page: 1,
                     per_page: perPage,
-                    user_sort_by: userSortBy,
                     employee_sort_by: employeeSortBy,
                     sort_direction: sortDirection
                 }));
@@ -135,7 +247,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosNotActiveEmployees({
                     page: 1,
                     per_page: perPage,
-                    user_sort_by: userSortBy,
                     employee_sort_by: employeeSortBy,
                     sort_direction: sortDirection
                 }));
@@ -150,10 +261,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosActiveEmployees({
                     page: 1,
                     per_page: perPage,
-                    user_search_by: userSearchBy,
                     employee_search_by: employeeSearchBy,
                     search_term: event,
-                    user_sort_by: userSortBy,
                     employee_sort_by: employeeSortBy,
                     sort_direction: sortDirection
                 }));
@@ -162,8 +271,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosWorkingEmployeesList({
                     page: 1,
                     per_page: perPage,
-                    user_sort_by: userSortBy,
-                    user_search_by: userSearchBy,
                     employee_search_by: employeeSearchBy,
                     search_term: event,
                     employee_sort_by: employeeSortBy,
@@ -174,10 +281,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 await dispatch(axiosNotActiveEmployees({
                     page: 1,
                     per_page: perPage,
-                    user_search_by: userSearchBy,
                     employee_search_by: employeeSearchBy,
                     search_term: event,
-                    user_sort_by: userSortBy,
                     employee_sort_by: employeeSortBy,
                     sort_direction: sortDirection
                 }));
@@ -186,12 +291,12 @@ const EmployeesTable = ({tableType}: PropsType) => {
             beginSearchBy({user_search_by: null, employee_search_by: null});
         }
     }
-    const sortingBy = async ({user_sort_by, employee_sort_by}: {
+    const sortingBy = async ({employee_sort_by}: {
         user_sort_by?: string,
         employee_sort_by?: string
     }) => {
         let sortDir = 'desc';
-        if ((user_sort_by === userSortBy || employee_sort_by === employeeSortBy) && sortDirection === sortDir) {
+        if ((employee_sort_by === employeeSortBy) && sortDirection === sortDir) {
             sortDir = 'asc'
         }
         if (tableType === 'active') {
@@ -199,10 +304,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosActiveEmployees({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
-                user_sort_by: user_sort_by ?? userSortBy,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
                 sort_direction: sortDir
             }));
@@ -211,10 +314,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosWorkingEmployeesList({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
-                user_sort_by: user_sort_by ?? userSortBy,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
                 sort_direction: sortDir
             }));
@@ -223,10 +324,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosNotActiveEmployees({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
-                user_sort_by: user_sort_by ?? userSortBy,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
                 sort_direction: sortDir
             }));
@@ -238,7 +337,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosActiveEmployees({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -247,7 +345,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosWorkingEmployeesList({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -256,7 +353,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
             await dispatch(axiosNotActiveEmployees({
                 page: 1,
                 per_page: perPage,
-                user_search_by: userSearchBy,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
             }));
@@ -265,12 +361,34 @@ const EmployeesTable = ({tableType}: PropsType) => {
     return (
         <>
             <div className="overflow-x-auto">
-                {employeesList.length === 0 && !userSearchBy && !employeeSearchBy
-                    ?
-                    <p>Тут поки що немає нічого </p>
-                    :
-                    <>
-                        <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between  flex-wrap">
+                    <div className="w-full mb-2">
+                        <div className="flex mr-auto">
+                            <FunnelIcon
+                                onClick={() => setShowEmployeesFilters(showEmployeesFilters => !showEmployeesFilters)}
+                                className={`w-6 cursor-pointer ${showEmployeesFilters ? 'text-violet-600 hover:text-gray-800' : 'hover:text-violet-600'}`}/>
+                            {
+                                filterEmployeesBy !== null ?
+                                    <XCircleIcon
+                                        className="w-6 text-violet-600 hover:text-gray-800 cursor-pointer"
+                                        onClick={cancelFiltering} title="Скинути всі фільтри"/>
+                                    : null
+                            }
+
+                        </div>
+                    </div>
+                    {
+                        showEmployeesFilters ?
+                            <div className="w-full mb-2">
+                                <FiltersComponent filters={selectedEmployeesFilters}
+                                                  onFilterChange={handleEmployeesFilterChange}/>
+                            </div>
+                            : <></>
+                    }
+                    {employeesList.length === 0 && !employeeSearchBy
+                        ? null
+                        :
+                        <>
                             <div className="w-1/12">
                                 <div className="mt-2">
                                     <select
@@ -292,7 +410,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
                             </div>
                             <SearchComponent
                                 title={"Шукати за всіма полями"}
-                                isInputVisible={userSearchBy === 'all' || employeeSearchBy === 'all'}
+                                isInputVisible={employeeSearchBy === 'all'}
                                 // @ts-ignore
                                 onBeganSearch={() => {
                                     beginSearchBy({user_search_by: "all", employee_search_by: "all"})
@@ -304,7 +422,16 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                 onChange={searchingByColumn}
                                 search_value={searchTerm}
                             />
-                        </div>
+                        </>
+                    }
+                </div>
+                {employeesList.length === 0 && !employeeSearchBy
+                    ?
+                    <>
+                        <p>Тут поки що немає нічого </p>
+                    </>
+                    :
+                    <>
                         <table className="min-w-full bg-white">
                             <thead>
                             <tr>
@@ -314,10 +441,10 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                         <div className="ml-auto flex">
                                             <SearchComponent
                                                 title={"Шукати за ПІБ"}
-                                                isInputVisible={userSearchBy === 'user_name'}
+                                                isInputVisible={employeeSearchBy === 'user_name'}
                                                 // @ts-ignore
                                                 onBeganSearch={() => {
-                                                    beginSearchBy({user_search_by: "user_name"})
+                                                    beginSearchBy({employee_search_by: "user_name"})
                                                 }}
                                                 // @ts-ignore
                                                 onCancelSearch={() => {
@@ -352,10 +479,10 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                         <div className="ml-auto flex">
                                             <SearchComponent
                                                 title={"Шукати за email"}
-                                                isInputVisible={userSearchBy === 'email'}
+                                                isInputVisible={employeeSearchBy === 'email'}
                                                 // @ts-ignore
                                                 onBeganSearch={() => {
-                                                    beginSearchBy({user_search_by: "email"})
+                                                    beginSearchBy({employee_search_by: "email"})
                                                 }}
                                                 // @ts-ignore
                                                 onCancelSearch={() => {
@@ -390,10 +517,10 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                         <div className="ml-auto flex">
                                             <SearchComponent
                                                 title={"Шукати за адресою"}
-                                                isInputVisible={userSearchBy === 'address'}
+                                                isInputVisible={employeeSearchBy === 'address'}
                                                 // @ts-ignore
                                                 onBeganSearch={() => {
-                                                    beginSearchBy({user_search_by: "address"})
+                                                    beginSearchBy({employee_search_by: "address"})
                                                 }}
                                                 // @ts-ignore
                                                 onCancelSearch={() => {
@@ -468,25 +595,26 @@ const EmployeesTable = ({tableType}: PropsType) => {
                             {
                                 // @ts-ignore
                                 employeesList.map((employee) => {
-                                    return (
-                                        <tr key={employee?.id} className={`${employee?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
-                                            <td className="py-2 px-4 border-b">{employee?.last_name ?? ''} {employee?.first_name ?? ''} {employee?.patronymic_name ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{employee?.email}</td>
-                                            <td className="py-2 px-4 border-b">{employee?.city ?? ''} {employee?.street ?? ''} {employee?.house_number ?? ''} {employee?.apartment_number ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{employee?.phone ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">
-                                                {
-                                                    tableType === 'active' ?
-                                                        <button className="text-blue-500 hover:text-blue-700 mr-2"
-                                                                onClick={async () => {
-                                                                    // @ts-ignore
-                                                                    await dispatch(axiosGetEmployeeInfo({
-                                                                        employeeId: employee?.id,
-                                                                        type: 'update'
-                                                                    }));
-                                                                    dispatch(openCloseModal({open: true}));
-                                                                }}
-                                                                title="Редагувати інформацію про співробітника"
+                                        return (
+                                            <tr key={employee?.id}
+                                                className={`${employee?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
+                                                <td className="py-2 px-4 border-b">{employee?.last_name ?? ''} {employee?.first_name ?? ''} {employee?.patronymic_name ?? ''}</td>
+                                                <td className="py-2 px-4 border-b">{employee?.email}</td>
+                                                <td className="py-2 px-4 border-b">{employee?.city ?? ''} {employee?.street ?? ''} {employee?.house_number ?? ''} {employee?.apartment_number ?? ''}</td>
+                                                <td className="py-2 px-4 border-b">{employee?.phone ?? ''}</td>
+                                                <td className="py-2 px-4 border-b">
+                                                    {
+                                                        tableType === 'active' ?
+                                                            <button className="text-blue-500 hover:text-blue-700 mr-2"
+                                                                    onClick={async () => {
+                                                                        // @ts-ignore
+                                                                        await dispatch(axiosGetEmployeeInfo({
+                                                                            employeeId: employee?.id,
+                                                                            type: 'update'
+                                                                        }));
+                                                                        dispatch(openCloseModal({open: true}));
+                                                                    }}
+                                                                    title="Редагувати інформацію про співробітника"
                                                             >
                                                                 <PencilSquareIcon className="w-6"/>
 

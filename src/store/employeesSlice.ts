@@ -14,31 +14,29 @@ export const axiosActiveEmployees = createAsyncThunk(
     async function ({
                         page,
                         per_page,
-                        user_sort_by,
                         employee_sort_by,
                         sort_direction,
-                        user_search_by,
                         employee_search_by,
+                        filter_employees_by,
                         search_term
                     }:
                         {
                             page?: number,
                             per_page?: string,
-                            user_sort_by?: string,
                             employee_sort_by?: string,
                             sort_direction?: string,
-                            user_search_by?: string,
                             employee_search_by?: string,
+                            filter_employees_by?: {},
                             search_term?: string
                         }) {
+        console.log('axiosActiveEmployees filter_employees_by', filter_employees_by);
         return await getActiveEmployeesList({
             page,
             per_page,
-            user_sort_by,
             employee_sort_by,
             sort_direction,
-            user_search_by,
             employee_search_by,
+            filter_employees_by,
             search_term
         });
     }
@@ -57,31 +55,28 @@ export const axiosNotActiveEmployees = createAsyncThunk(
     async function ({
                         page,
                         per_page,
-                        user_sort_by,
                         employee_sort_by,
                         sort_direction,
-                        user_search_by,
                         employee_search_by,
+                        filter_employees_by,
                         search_term
                     }:
                         {
                             page?: number,
                             per_page?: string,
-                            user_sort_by?: string,
                             employee_sort_by?: string,
                             sort_direction?: string,
-                            user_search_by?: string,
                             employee_search_by?: string,
+                            filter_employees_by?: {},
                             search_term?: string
                         }) {
         return await getNotActiveEmployeesList({
             page,
             per_page,
-            user_sort_by,
             employee_sort_by,
             sort_direction,
-            user_search_by,
             employee_search_by,
+            filter_employees_by,
             search_term
         });
     }
@@ -92,31 +87,28 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
     async function ({
                         page,
                         per_page,
-                        user_sort_by,
                         employee_sort_by,
                         sort_direction,
-                        user_search_by,
                         employee_search_by,
+                        filter_employees_by,
                         search_term
                     }:
                         {
                             page?: number,
                             per_page?: string,
-                            user_sort_by?: string,
                             employee_sort_by?: string,
                             sort_direction?: string,
-                            user_search_by?: string,
                             employee_search_by?: string,
+                            filter_employees_by?: {},
                             search_term?: string
                         }) {
         return await getWorkingEmployeesList({
             page,
             per_page,
-            user_sort_by,
             employee_sort_by,
             sort_direction,
-            user_search_by,
             employee_search_by,
+            filter_employees_by,
             search_term
         });
     }
@@ -437,10 +429,10 @@ const employeesSlice = createSlice({
             last_page: 0,
             current_page: 1,
             per_page: 10,
-            user_sort_by: null,
+            filter_employees_by: null,
+            filters: [],
             employee_sort_by: null,
             sort_direction: 'asc',
-            user_search_by: null,
             employee_search_by: null,
             search_term: null
         },
