@@ -513,10 +513,6 @@ const employeesSlice = createSlice({
             state.error = null
 
         },
-        setUserSearchableColumn: (state, action) => {
-            // @ts-ignore
-            state.employees.user_search_by = action.payload.user_search_by;
-        },
         setEmployeeSearchableColumn: (state, action) => {
             // @ts-ignore
             state.employees.employee_search_by = action.payload.employee_search_by;
@@ -725,7 +721,6 @@ const employeesSlice = createSlice({
 });
 
 export const {
-    setUserSearchableColumn,
     setEmployeeSearchableColumn,
     getEmployeeToUpdate,
     cleanEmployeeErrors,

@@ -9,6 +9,16 @@ import AddUpdateEmployeeForm from "./AddUpdatEmployeeForm.tsx";
 const EmployeesWorking = () => {
     const dispatch = useDispatch();
     // @ts-ignore
+    const filterEmployeesBy = useSelector(state => state.employees?.employees?.filter_employees_by ?? null)
+    // @ts-ignore
+    const employeeSortBy = useSelector(state => state.employees?.employees?.employee_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.employees?.employees?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const employeeSearchBy = useSelector(state => state.employees?.employees?.employee_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.employees?.employees?.search_term ?? null);
+    // @ts-ignore
     const isLoading = useSelector(state => state.employees.status === 'loading');
     const paginationData = useSelector(state => {
         return {
@@ -31,11 +41,26 @@ const EmployeesWorking = () => {
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosWorkingEmployeesList({per_page: paginationData.per_page}));
+        dispatch(axiosWorkingEmployeesList({
+            per_page: paginationData.per_page,
+            employee_sort_by: employeeSortBy,
+            sort_direction: sortDirection,
+            employee_search_by: employeeSearchBy,
+            filter_employees_by: filterEmployeesBy,
+            search_term: searchTerm
+        }));
     }, [dispatch]);
     const changePage = (page: number) => {
         // @ts-ignore
-        dispatch(axiosWorkingEmployeesList({page: page, per_page: paginationData.per_page}));
+        dispatch(axiosWorkingEmployeesList({
+            page,
+            per_page: paginationData.per_page,
+            employee_sort_by: employeeSortBy,
+            sort_direction: sortDirection,
+            employee_search_by: employeeSearchBy,
+            filter_employees_by: filterEmployeesBy,
+            search_term: searchTerm
+        }));
     }
     return (
         <div className="container mx-auto">

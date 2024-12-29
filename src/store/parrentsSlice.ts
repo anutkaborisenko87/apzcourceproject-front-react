@@ -22,15 +22,65 @@ export const axiosParrentsSelect = createAsyncThunk(
 
 export const axiosActiveParrents = createAsyncThunk(
     'parrents/axiosActiveParrents',
-    async function (page?: number) {
-        return await getActiveParrentsList(page);
+    async function ({
+                        page,
+                        per_page,
+                        parrent_sort_by,
+                        sort_direction,
+                        parrent_search_by,
+                        filter_parrents_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        parrent_sort_by?: string,
+                        sort_direction?: string,
+                        parrent_search_by?: string,
+                        filter_parrents_by?: {},
+                        search_term?: string
+                    }) {
+        return await getActiveParrentsList({
+            page,
+            per_page,
+            parrent_sort_by,
+            sort_direction,
+            parrent_search_by,
+            filter_parrents_by,
+            search_term
+        });
     }
 );
 
 export const axiosNotActiveParrents = createAsyncThunk(
     'parrents/axiosNotActiveParrents',
-    async function (page?: number) {
-        return await getNotActiveParrentsList(page);
+    async function ({
+                        page,
+                        per_page,
+                        parrent_sort_by,
+                        sort_direction,
+                        parrent_search_by,
+                        filter_parrents_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        parrent_sort_by?: string,
+                        sort_direction?: string,
+                        parrent_search_by?: string,
+                        filter_parrents_by?: {},
+                        search_term?: string
+                    }) {
+        return await getNotActiveParrentsList({
+            page,
+            per_page,
+            parrent_sort_by,
+            sort_direction,
+            parrent_search_by,
+            filter_parrents_by,
+            search_term
+        });
     }
 );
 
@@ -53,16 +103,19 @@ export const axiosGetParrentInfo = createAsyncThunk(
 
 export const axiosDeactivateParrent = createAsyncThunk(
     'parrents/axiosDeactivateParrent',
-    async function ({parrentId, page, tableType}: { parrentId: number, page: number, tableType: string }, {
+    async function ({parrentId, tableType}: { parrentId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {parrents} = getState();
             const resp = await deactivateParrent(parrentId);
             if (tableType == 'active') {
-                dispatch(axiosActiveParrents(page));
+                dispatch(axiosActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             } else {
-                dispatch(axiosNotActiveParrents(page));
+                dispatch(axiosNotActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             }
             return resp;
         } catch (error) {
@@ -73,16 +126,19 @@ export const axiosDeactivateParrent = createAsyncThunk(
 
 export const axiosReactivateParrent = createAsyncThunk(
     'parrents/axiosReactivateParrent',
-    async function ({parrentId, page, tableType}: { parrentId: number, page: number, tableType: string }, {
+    async function ({parrentId, tableType}: { parrentId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {parrents} = getState();
             const resp = await reactivateParrent(parrentId);
             if (tableType == 'active') {
-                dispatch(axiosActiveParrents(page));
+                dispatch(axiosActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             } else {
-                dispatch(axiosNotActiveParrents(page));
+                dispatch(axiosNotActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             }
             return resp;
         } catch (error) {
@@ -93,16 +149,19 @@ export const axiosReactivateParrent = createAsyncThunk(
 
 export const axiosDeleteParrent = createAsyncThunk(
     'parrents/axiosDeleteParrent',
-    async function ({parrentId, page, tableType}: { parrentId: number, page: number, tableType: string }, {
+    async function ({parrentId, tableType}: { parrentId: number, tableType: string }, {
+        getState,
         rejectWithValue,
         dispatch
     }) {
         try {
+            // @ts-ignore
+            const {parrents} = getState();
             const resp = await deleteParrentInfo(parrentId);
             if (tableType == 'active') {
-                dispatch(axiosActiveParrents(page));
+                dispatch(axiosActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             } else {
-                dispatch(axiosNotActiveParrents(page));
+                dispatch(axiosNotActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             }
             return resp;
         } catch (error) {
@@ -113,10 +172,16 @@ export const axiosDeleteParrent = createAsyncThunk(
 
 export const axiosCreateParrentInfo = createAsyncThunk(
     'parrents/axiosCreateParrentInfo',
-    async function (parrentFormData: ParrentFormData, {rejectWithValue, dispatch}) {
+    async function (parrentFormData: ParrentFormData, {
+        getState,
+        rejectWithValue,
+        dispatch
+    }) {
         try {
+            // @ts-ignore
+            const {parrents} = getState();
             const resp = await createParrentInfo(parrentFormData);
-            dispatch(axiosActiveParrents());
+            dispatch(axiosActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             dispatch(openCloseModal({open: false}))
             return resp;
         } catch (error) {
@@ -130,10 +195,16 @@ export const axiosUpdateParrentInfo = createAsyncThunk(
     async function ({parrentId, parrentFormData}: {
         parrentId: number,
         parrentFormData: ParrentFormData
-    }, {rejectWithValue, dispatch}) {
+    }, {
+        getState,
+        rejectWithValue,
+        dispatch
+    }) {
         try {
+            // @ts-ignore
+            const {parrents} = getState();
             const resp = await updateParrentInfo(parrentId, parrentFormData);
-            dispatch(axiosActiveParrents());
+            dispatch(axiosActiveParrents({page: parrents.parrents.current_page, per_page: parrents.parrents.per_page}));
             dispatch(openCloseModal({open: false}))
             return resp;
         } catch (error) {
@@ -192,7 +263,21 @@ const setFormErrors = (state: {
 const parrentSlice = createSlice({
     name: 'parrents',
     initialState: {
-        parrents: [],
+        parrents: {
+            data: [],
+            links: [],
+            to: 0,
+            from: 0,
+            last_page: 0,
+            current_page: 1,
+            per_page: 10,
+            filter_parrents_by: null,
+            filters: [],
+            parrent_sort_by: null,
+            sort_direction: 'asc',
+            parrent_search_by: null,
+            search_term: null
+        },
         parrentsforSelect: [],
         parrentToUpdate: null,
         parrent: null,
@@ -258,7 +343,11 @@ const parrentSlice = createSlice({
         },
         cleanParrentNotification: (state) => {
             state.notification = {type: '', message: ''}
-        }
+        },
+        setParrentSearchableColumn: (state, action) => {
+            // @ts-ignore
+            state.parrents.parrent_search_by = action.payload.parrent_search_by;
+        },
     },
     extraReducers: builder => {
         builder.addCase(axiosParrentsSelect.pending, (state) => {
@@ -421,6 +510,7 @@ const parrentSlice = createSlice({
 });
 
 export const {
+    setParrentSearchableColumn,
     getParrentToUpdate,
     cleanParrentNotification,
     cleanParrentErrors

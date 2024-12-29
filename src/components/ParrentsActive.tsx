@@ -30,19 +30,19 @@ const ParrentsActive = () => {
     });
     useEffect(() => {
        // @ts-ignore
-        dispatch(axiosActiveParrents());
+        dispatch(axiosActiveParrents({per_page: paginationData.per_page}));
     }, [dispatch]);
 
 
     const handleOpenModal = async () => {
         // @ts-ignore
-        await dispatch(axiosGetParrentInfo());
+        dispatch(axiosGetParrentInfo({parrentId: false}));
         dispatch(openCloseModal({open: true}));
     };
 
     const changePage = (page: number) => {
         // @ts-ignore
-        dispatch(axiosActiveParrents(page));
+        dispatch(axiosActiveParrents({page, per_page: paginationData.per_page}));
 
     }
     return (
@@ -64,12 +64,11 @@ const ParrentsActive = () => {
                         </button>
                     </div>
                     <div className="container mx-auto mt-10">
-
                         <Modal>
                             <AddUpdateParrentForm/>
                         </Modal>
                     </div>
-                    <ParrentsTable  page={paginationData?.current_page} tableType={'active'} />
+                    <ParrentsTable tableType={'active'} />
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

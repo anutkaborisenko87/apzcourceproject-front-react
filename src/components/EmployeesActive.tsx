@@ -13,6 +13,16 @@ import {openCloseModal} from "../store/modalSlice.ts";
 const EmployeesActive = () => {
     const dispatch = useDispatch();
     // @ts-ignore
+    const filterEmployeesBy = useSelector(state => state.employees?.employees?.filter_employees_by ?? null)
+    // @ts-ignore
+    const employeeSortBy = useSelector(state => state.employees?.employees?.employee_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.employees?.employees?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const employeeSearchBy = useSelector(state => state.employees?.employees?.employee_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.employees?.employees?.search_term ?? null);
+    // @ts-ignore
     const isLoading = useSelector(state => state.employees.status === 'loading');
     const paginationData = useSelector(state => {
         return {
@@ -35,16 +45,31 @@ const EmployeesActive = () => {
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosActiveEmployees({per_page: paginationData.per_page}));
+        dispatch(axiosActiveEmployees({
+            per_page: paginationData.per_page,
+            employee_sort_by: employeeSortBy,
+            sort_direction: sortDirection,
+            employee_search_by: employeeSearchBy,
+            filter_employees_by: filterEmployeesBy,
+            search_term: searchTerm
+        }));
     }, [dispatch]);
     const handleOpenEmployeeModal = async () => {
         // @ts-ignore
-        await dispatch(axiosGetEmployeeInfo({employeeId: false, type: false }));
+        dispatch(axiosGetEmployeeInfo({employeeId: false, type: false}));
         dispatch(openCloseModal({open: true}));
     };
     const changePage = async (page: number) => {
         // @ts-ignore
-        dispatch(axiosActiveEmployees({page, per_page: paginationData.per_page}));
+        dispatch(axiosActiveEmployees({
+            page,
+            per_page: paginationData.per_page,
+            employee_sort_by: employeeSortBy,
+            sort_direction: sortDirection,
+            employee_search_by: employeeSearchBy,
+            filter_employees_by: filterEmployeesBy,
+            search_term: searchTerm
+        }));
     }
     return (
         <div className="container mx-auto">
@@ -64,12 +89,11 @@ const EmployeesActive = () => {
                         </button>
                     </div>
                     <div className="container mx-auto mt-10">
-
                         <Modal>
                             <AddUpdateEmployeeForm tableType={'active'}/>
                         </Modal>
                     </div>
-                    <EmployeesTable tableType={'active'} />
+                    <EmployeesTable tableType={'active'}/>
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}
                                 from={paginationData?.from}

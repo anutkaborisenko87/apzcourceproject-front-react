@@ -16,7 +16,7 @@ import {
     axiosActiveEmployees,
     axiosWorkingEmployeesList,
     axiosNotActiveEmployees,
-    setUserSearchableColumn, setEmployeeSearchableColumn,
+    setEmployeeSearchableColumn,
 } from "../store/employeesSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 import SearchComponent from "./SearchComponent.tsx";
@@ -219,13 +219,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
         }
 
     }
-    const beginSearchBy = async ({user_search_by, employee_search_by}: {
-        user_search_by?: string | null,
+    const beginSearchBy = async ({employee_search_by}: {
         employee_search_by?: string | null
     }) => {
-        if (user_search_by) dispatch(setUserSearchableColumn({user_search_by}));
         if (employee_search_by) dispatch(setEmployeeSearchableColumn({employee_search_by}));
-        if (!user_search_by && !employee_search_by) {
+        if (!employee_search_by) {
             if (tableType === 'active') {
                 // @ts-ignore
                 await dispatch(axiosActiveEmployees({
@@ -288,11 +286,10 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 }));
             }
         } else {
-            beginSearchBy({user_search_by: null, employee_search_by: null});
+            beginSearchBy({employee_search_by: null});
         }
     }
     const sortingBy = async ({employee_sort_by}: {
-        user_sort_by?: string,
         employee_sort_by?: string
     }) => {
         let sortDir = 'desc';
@@ -302,7 +299,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         if (tableType === 'active') {
             // @ts-ignore
             await dispatch(axiosActiveEmployees({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
@@ -312,7 +309,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         } else if (tableType === 'working') {
             // @ts-ignore
             await dispatch(axiosWorkingEmployeesList({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
@@ -322,7 +319,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         } else {
             // @ts-ignore
             await dispatch(axiosNotActiveEmployees({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
@@ -335,7 +332,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         if (tableType === 'active') {
             // @ts-ignore
             await dispatch(axiosActiveEmployees({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
@@ -343,7 +340,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         } else if (tableType === 'working') {
             // @ts-ignore
             await dispatch(axiosWorkingEmployeesList({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
@@ -351,7 +348,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
         } else {
             // @ts-ignore
             await dispatch(axiosNotActiveEmployees({
-                page: 1,
+                page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm
@@ -413,7 +410,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                 isInputVisible={employeeSearchBy === 'all'}
                                 // @ts-ignore
                                 onBeganSearch={() => {
-                                    beginSearchBy({user_search_by: "all", employee_search_by: "all"})
+                                    beginSearchBy({employee_search_by: "all"})
                                 }}
                                 // @ts-ignore
                                 onCancelSearch={() => {
@@ -587,6 +584,82 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                         </div>
                                     </div>
                                 </th>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>Дата народження</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за датою народження"}
+                                                isInputVisible={employeeSearchBy === 'birth_date'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({employee_search_by: "birth_date"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                employeeSortBy === 'birth_date' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'birth_date'})}
+                                                            title={`Сортувати за датою народження ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'birth_date'})}
+                                                        title={"Сортувати за датою народження"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="py-2 px-4 border-b">
+                                    <div className="flex items-center justify-between">
+                                        <span>Дата прийому на роботу</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за датою прийому на роботу"}
+                                                isInputVisible={employeeSearchBy === 'employment_date'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({employee_search_by: "employment_date"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                employeeSortBy === 'employment_date' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({employee_sort_by: 'employment_date'})}
+                                                            title={`Сортувати за датою прийому на роботу ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({employee_sort_by: 'employment_date'})}
+                                                        title={"Сортувати за датою прийому на роботу"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
+                                    </div>
+                                </th>
                                 <th className="py-2 px-4 border-b"></th>
                             </tr>
                             </thead>
@@ -602,6 +675,8 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                                 <td className="py-2 px-4 border-b">{employee?.email}</td>
                                                 <td className="py-2 px-4 border-b">{employee?.city ?? ''} {employee?.street ?? ''} {employee?.house_number ?? ''} {employee?.apartment_number ?? ''}</td>
                                                 <td className="py-2 px-4 border-b">{employee?.phone ?? ''}</td>
+                                                <td className="py-2 px-4 border-b">{employee?.birthdate ?? ''}</td>
+                                                <td className="py-2 px-4 border-b">{employee?.employment_date ?? ''}</td>
                                                 <td className="py-2 px-4 border-b">
                                                     {
                                                         tableType === 'active' ?

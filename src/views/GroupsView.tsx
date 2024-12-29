@@ -84,10 +84,7 @@ const GroupsView = () => {
                                                 <div className='grid grid-cols-2 text-gray-700 text-base gap-4'>
                                                     <div>Дітей у групі</div>
                                                     <div>{group.children}</div>
-                                                    <div>Програма навчання</div>
-                                                    <div>
-                                                        {group.educationalPrograms }
-                                                    </div>
+
                                                     <div>Вихователі</div>
                                                     <div>
                                                         {group.teachers}

@@ -257,6 +257,5 @@ const formatUrlString = ({
             ? `${respUrl}&${queryParams.toString()}`
             : `${respUrl}?${queryParams.toString()}`;
     }
-    console.log('respUrl formatUrlString', respUrl);
     return respUrl;
 }
