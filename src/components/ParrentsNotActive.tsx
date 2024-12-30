@@ -7,9 +7,21 @@ import {axiosNotActiveParrents} from "../store/parrentsSlice.ts";
 const ParrentsNotActive = () => {
     const dispatch = useDispatch();
     // @ts-ignore
+    const filterParrentsBy = useSelector(state => state.parrents?.parrents?.filter_parrents_by ?? null);
+    // @ts-ignore
+    const parrentSortBy = useSelector(state => state.parrents?.parrents?.parrent_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.parrents?.parrents?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const parrentSearchBy = useSelector(state => state.parrents?.parrents?.parrent_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.parrents?.parrents?.search_term ?? null);
+    // @ts-ignore
     const isLoading = useSelector(state => state.parrents.status === 'loading');
     const paginationData = useSelector(state => {
         return {
+            // @ts-ignore
+            per_page: state.parrents?.parrents.per_page ?? 10,
             // @ts-ignore
             to: state.parrents?.parrents.to ?? 0,
             // @ts-ignore
@@ -27,12 +39,27 @@ const ParrentsNotActive = () => {
     });
     useEffect(() => {
         // @ts-ignore
-        dispatch(axiosNotActiveParrents());
+        dispatch(axiosNotActiveParrents({
+            per_page: paginationData.per_page,
+            parrent_sort_by: parrentSortBy,
+            sort_direction: sortDirection,
+            parrent_search_by: parrentSearchBy,
+            filter_parrents_by: filterParrentsBy,
+            search_term: searchTerm
+        }));
     }, [dispatch]);
 
     const changePage = (page: number) => {
         // @ts-ignore
-        dispatch(axiosNotActiveParrents(page));
+        dispatch(axiosNotActiveParrents({
+            page,
+            per_page: paginationData.per_page,
+            parrent_sort_by: parrentSortBy,
+            sort_direction: sortDirection,
+            parrent_search_by: parrentSearchBy,
+            filter_parrents_by: filterParrentsBy,
+            search_term: searchTerm
+        }));
     }
     return (
         <div className="container mx-auto">
@@ -45,7 +72,7 @@ const ParrentsNotActive = () => {
                     <div className="flex justify-between mb-4">
                         <h2 className="text-2xl font-bold">Деактивовані батьки</h2>
                     </div>
-                    <ParrentsTable page={paginationData?.current_page} tableType={'not-active'} />
+                    <ParrentsTable tableType={'not-active'} />
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

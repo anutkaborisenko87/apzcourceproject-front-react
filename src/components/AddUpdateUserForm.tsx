@@ -39,7 +39,7 @@ export default function AddUpdateUserForm() {
         street: userInfo?.street ?? '',
         house_number: userInfo?.house_number ?? '',
         apartment_number: userInfo?.apartment_number ?? '',
-        birth_date: userInfo?.birth_date ?? '',
+        birth_date: userInfo?.birthdate ?? '',
         user_id: userInfo?.user_id ?? ''
     });
     const clearErrors = (field: string) => {

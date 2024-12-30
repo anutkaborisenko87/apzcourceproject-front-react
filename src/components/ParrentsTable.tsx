@@ -100,7 +100,6 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                // @ts-ignore
                 filter_parrents_by: filters,
                 search_term: searchTerm
             }));
@@ -112,7 +111,6 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                // @ts-ignore
                 filter_parrents_by: filters,
                 search_term: searchTerm
             }));
@@ -127,7 +125,6 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                // @ts-ignore
                 filter_parrents_by: filters,
                 search_term: searchTerm
             }));
@@ -139,7 +136,6 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                // @ts-ignore
                 filter_parrents_by: filters,
                 search_term: searchTerm
             }));
@@ -168,7 +164,7 @@ const ParrentsTable = ({
         if (tableType === 'active') {
             // @ts-ignore
             await dispatch(axiosActiveParrents({
-                page: currPage,
+                page: 1,
                 per_page: e.target.value,
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
@@ -180,7 +176,7 @@ const ParrentsTable = ({
         } else {
             // @ts-ignore
             await dispatch(axiosNotActiveParrents({
-                page: currPage,
+                page: 1,
                 per_page: e.target.value,
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
@@ -411,36 +407,191 @@ const ParrentsTable = ({
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Email</span>
-                                        <button className="text-gray-500 hover:text-gray-700">
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M5 9l5-5 5 5H5z"/>
-                                            </svg>
-                                        </button>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за email"}
+                                                isInputVisible={parrentSearchBy === 'email'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({parrent_search_by: "email"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                parrentSortBy === 'email' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({parrent_sort_by: 'email'})}
+                                                            title={`Сортувати за email ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({parrent_sort_by: 'email'})}
+                                                        title={"Сортувати за email"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Адреса</span>
-                                        <button className="text-gray-500 hover:text-gray-700">
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M5 9l5-5 5 5H5z"/>
-                                            </svg>
-                                        </button>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за адресою"}
+                                                isInputVisible={parrentSearchBy === 'address'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({parrent_search_by: "address"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                parrentSortBy === 'city' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({parrent_sort_by: 'city'})}
+                                                            title={`Сортувати за адресою ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({parrent_sort_by: 'city'})}
+                                                        title={"Сортувати за адресою"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Телефон</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за телефоном"}
+                                                isInputVisible={parrentSearchBy === 'phone'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({parrent_search_by: "phone"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                parrentSortBy === 'phone' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({parrent_sort_by: 'phone'})}
+                                                            title={`Сортувати за телефоном ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({parrent_sort_by: 'phone'})}
+                                                        title={"Сортувати за телефоном"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Місце роботи</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за місцем роботи"}
+                                                isInputVisible={parrentSearchBy === 'work_place'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({parrent_search_by: "work_place"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                parrentSortBy === 'work_place' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({parrent_sort_by: 'work_place'})}
+                                                            title={`Сортувати за місцем роботи ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({parrent_sort_by: 'work_place'})}
+                                                        title={"Сортувати за місцем роботи"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Соціальний статус</span>
+                                        <div className="ml-auto flex">
+                                            <SearchComponent
+                                                title={"Шукати за соціальним статусом"}
+                                                isInputVisible={parrentSearchBy === 'marital_status'}
+                                                // @ts-ignore
+                                                onBeganSearch={() => {
+                                                    beginSearchBy({parrent_search_by: "marital_status"})
+                                                }}
+                                                // @ts-ignore
+                                                onCancelSearch={() => {
+                                                    beginSearchBy({})
+                                                }}
+                                                onChange={searchingByColumn}
+                                                search_value={searchTerm}
+                                            />
+                                            {
+                                                parrentSortBy === 'marital_status' ?
+                                                    <>
+                                                        <ChevronUpIcon
+                                                            onClick={() => sortingBy({parrent_sort_by: 'marital_status'})}
+                                                            title={`Сортувати за соціальним статусом ${sortDirection === 'desc' ? 'за зростанням' : 'за спаданням'}`}
+                                                            className={`w-4 h-4 text-blue-500 hover:text-blue-700 cursor-pointer ${sortDirection === 'desc' ? 'transform rotate-180' : ''}`}/>
+                                                        <XCircleIcon
+                                                            className="w-4 text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                            onClick={cancelSortingBy} title="Скинути сортування"/>
+                                                    </>
+                                                    :
+                                                    <ChevronUpDownIcon
+                                                        onClick={() => sortingBy({parrent_sort_by: 'marital_status'})}
+                                                        title={"Сортувати за соціальним статусом"}
+                                                        className={`w-4 h-4 cursor-pointer`}/>
+                                            }
+                                        </div>
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
@@ -454,27 +605,28 @@ const ParrentsTable = ({
                             <tbody>
 
                             {parrentsList.map((parrent: any) => {
-                                    return (
-                                        <tr key={parrent?.id} className={`${parrent?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
-                                            <td className="py-2 px-4 border-b">{parrent?.last_name ?? ''} {parrent?.first_name ?? ''} {parrent?.patronymic_name ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.email}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.city ?? ''} {parrent?.street ?? ''} {parrent?.house_number ?? ''} {parrent?.apartment_number ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.phone ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.work_place ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.marital_status ?? ''}</td>
-                                            <td className="py-2 px-4 border-b">{parrent?.children && parrent?.children.length > 0 ?
-                                                parrent?.children.map((child: {
-                                                    id: number;
-                                                    child_name: string;
-                                                    relations: any;
-                                                }) => {
-                                                    return (
-                                                        <button key={child.id}
-                                                                className="border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
-                                                            {child.child_name} {`(${child.relations})`}
-                                                        </button>
-                                                    )
-                                                })
+                                return (
+                                    <tr key={parrent?.id}
+                                        className={`${parrent?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
+                                        <td className="py-2 px-4 border-b">{parrent?.last_name ?? ''} {parrent?.first_name ?? ''} {parrent?.patronymic_name ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.email}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.city ?? ''} {parrent?.street ?? ''} {parrent?.house_number ?? ''} {parrent?.apartment_number ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.phone ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.work_place ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.marital_status ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{parrent?.children && parrent?.children.length > 0 ?
+                                            parrent?.children.map((child: {
+                                                id: number;
+                                                child_name: string;
+                                                relations: any;
+                                            }) => {
+                                                return (
+                                                    <button key={child.id}
+                                                            className="border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
+                                                        {child.child_name} {`(${child.relations})`}
+                                                    </button>
+                                                )
+                                            })
                                                 : ''}</td>
                                             <td className="py-2 px-4 border-b">
                                                 {

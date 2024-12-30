@@ -10,9 +10,21 @@ import {openCloseModal} from "../store/modalSlice.ts";
 const ParrentsActive = () => {
     const dispatch = useDispatch();
     // @ts-ignore
+    const filterParrentsBy = useSelector(state => state.parrents?.parrents?.filter_parrents_by ?? null);
+    // @ts-ignore
+    const parrentSortBy = useSelector(state => state.parrents?.parrents?.parrent_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.parrents?.parrents?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const parrentSearchBy = useSelector(state => state.parrents?.parrents?.parrent_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.parrents?.parrents?.search_term ?? null);
+    // @ts-ignore
     const isLoading = useSelector(state => state.parrents.status === 'loading');
     const paginationData = useSelector(state => {
         return {
+            // @ts-ignore
+            per_page: state.parrents?.parrents.per_page ?? 10,
             // @ts-ignore
             to: state.parrents?.parrents.to ?? 0,
             // @ts-ignore
@@ -30,7 +42,14 @@ const ParrentsActive = () => {
     });
     useEffect(() => {
        // @ts-ignore
-        dispatch(axiosActiveParrents({per_page: paginationData.per_page}));
+        dispatch(axiosActiveParrents({
+            per_page: paginationData.per_page,
+            parrent_sort_by: parrentSortBy,
+            sort_direction: sortDirection,
+            parrent_search_by: parrentSearchBy,
+            filter_parrents_by: filterParrentsBy,
+            search_term: searchTerm
+        }));
     }, [dispatch]);
 
 
@@ -42,7 +61,15 @@ const ParrentsActive = () => {
 
     const changePage = (page: number) => {
         // @ts-ignore
-        dispatch(axiosActiveParrents({page, per_page: paginationData.per_page}));
+        dispatch(axiosActiveParrents({
+            page,
+            per_page: paginationData.per_page,
+            parrent_sort_by: parrentSortBy,
+            sort_direction: sortDirection,
+            parrent_search_by: parrentSearchBy,
+            filter_parrents_by: filterParrentsBy,
+            search_term: searchTerm
+        }));
 
     }
     return (

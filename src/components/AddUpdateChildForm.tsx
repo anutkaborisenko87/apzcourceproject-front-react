@@ -51,7 +51,7 @@ export default function AddUpdateChildForm({tableType}: {tableType: string}) {
         street: childInfo?.street ?? '',
         house_number: childInfo?.house_number ?? '',
         apartment_number: childInfo?.apartment_number ?? '',
-        birth_date: childInfo?.birth_date ?? '',
+        birth_date: childInfo?.birthdate ?? '',
         user_id: childInfo?.user_id ?? ''
     });
     const dispatch = useDispatch();

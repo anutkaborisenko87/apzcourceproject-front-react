@@ -42,7 +42,7 @@ export default function AddUpdateParrentForm() {
         street: parrentInfo?.street ?? '',
         house_number: parrentInfo?.house_number ?? '',
         apartment_number: parrentInfo?.apartment_number ?? '',
-        birth_date: parrentInfo?.birth_date ?? '',
+        birth_date: parrentInfo?.birthdate ?? '',
         user_id: parrentInfo?.user_id ?? ''
     });
     const dispatch = useDispatch();

@@ -52,7 +52,7 @@ export default function AddUpdateEmployeeForm({tableType} : {tableType: string})
         street:  employeeInfo?.street ?? '',
         house_number:  employeeInfo?.house_number ?? '',
         apartment_number:  employeeInfo?.apartment_number ?? '',
-        birth_date:  employeeInfo?.birth_date ?? '',
+        birth_date:  employeeInfo?.birthdate ?? '',
         user_id:  employeeInfo?.user_id ?? ''
     });
 
