@@ -15,6 +15,16 @@ import AddUpdateChildForm from "./AddUpdateChildForm.tsx";
 const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: string}) => {
     const dispatch = useDispatch();
     // @ts-ignore
+    const filterChildrensBy = useSelector(state => state.childrenList?.childrenList?.filter_childrens_by ?? null);
+    // @ts-ignore
+    const childSortBy = useSelector(state => state.childrenList?.childrenList?.child_sort_by ?? null);
+    // @ts-ignore
+    const sortDirection = useSelector(state => state.childrenList?.childrenList?.sort_direction ?? 'asc');
+    // @ts-ignore
+    const childSearchBy = useSelector(state => state.childrenList?.childrenList?.child_search_by ?? null);
+    // @ts-ignore
+    const searchTerm = useSelector(state => state.childrenList?.childrenList?.search_term ?? null);
+    // @ts-ignore
     const isLoading = useSelector(state => state.childrenList.status === 'loading');
     const paginationData = useSelector(state => {
         return {
@@ -29,7 +39,9 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
             // @ts-ignore
             last_page: state.childrenList?.childrenList.last_page ?? 0,
             // @ts-ignore
-            current_page: state.childrenList?.childrenList.current_page ?? 1
+            current_page: state.childrenList?.childrenList.current_page ?? 1,
+            // @ts-ignore
+            per_page: state.childrenList?.childrenList.per_page ?? 10
         }
 
     });
@@ -37,23 +49,23 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
         switch (tabType) {
             case 'all':
                 // @ts-ignore
-                dispatch(axiosChildrenAllList());
+                dispatch(axiosChildrenAllList({page: paginationData.current_page, per_page: paginationData.per_page}));
                 break;
             case 'for-enrollment':
                 // @ts-ignore
-                dispatch(axiosForEnrolmentChildrenList());
+                dispatch(axiosForEnrolmentChildrenList({page: paginationData.current_page, per_page: paginationData.per_page}));
                 break;
             case 'in-training':
                 // @ts-ignore
-                dispatch(axiosInTrainingChildrenList());
+                dispatch(axiosInTrainingChildrenList({page: paginationData.current_page, per_page: paginationData.per_page}));
                 break;
             case 'graduated':
                 // @ts-ignore
-                dispatch(axiosGraduatedChildrenList());
+                dispatch(axiosGraduatedChildrenList({page: paginationData.current_page, per_page: paginationData.per_page}));
                 break;
             default:
                 // @ts-ignore
-                dispatch(axiosChildrenAllList());
+                dispatch(axiosChildrenAllList({page: paginationData.current_page, per_page: paginationData.per_page}));
         }
 
     }, [dispatch]);
@@ -61,7 +73,7 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
 
     const handleOpenModal = async () => {
         // @ts-ignore
-        await dispatch(axiosChildInfo());
+        dispatch(axiosChildInfo());
         // @ts-ignore
         dispatch(cleanChildErrors());
         dispatch(getChildToUpdate(null));
@@ -72,23 +84,63 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
         switch (tabType) {
             case 'all':
                 // @ts-ignore
-                dispatch(axiosChildrenAllList(page));
+                dispatch(axiosChildrenAllList({
+                    page,
+                    per_page: paginationData.per_page,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    search_term: searchTerm
+                }));
                 break;
             case 'for-enrollment':
                 // @ts-ignore
-                dispatch(axiosForEnrolmentChildrenList(page));
+                dispatch(axiosForEnrolmentChildrenList({
+                    page,
+                    per_page: paginationData.per_page,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    search_term: searchTerm
+                }));
                 break;
             case 'in-training':
                 // @ts-ignore
-                dispatch(axiosInTrainingChildrenList(page));
+                dispatch(axiosInTrainingChildrenList({
+                    page,
+                    per_page: paginationData.per_page,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    search_term: searchTerm
+                }));
                 break;
             case 'graduated':
                 // @ts-ignore
-                dispatch(axiosGraduatedChildrenList(page));
+                dispatch(axiosGraduatedChildrenList({
+                    page,
+                    per_page: paginationData.per_page,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    search_term: searchTerm
+                }));
                 break;
             default:
                 // @ts-ignore
-                dispatch(axiosChildrenAllList(page));
+                dispatch(axiosChildrenAllList({
+                    page,
+                    per_page: paginationData.per_page,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    search_term: searchTerm
+                }));
         }
 
     }
@@ -115,7 +167,7 @@ const ChildrenTabsContent = ({tabType, tabTitle}: {tabType: string, tabTitle: st
                             <AddUpdateChildForm tableType={tabType}/>
                         </Modal>
                     </div>
-                    <ChildrenTable  page={paginationData?.current_page} tableType={tabType} />
+                    <ChildrenTable  tableType={tabType} />
 
                     <Pagination currentPage={paginationData?.current_page}
                                 lastPage={paginationData?.last_page}

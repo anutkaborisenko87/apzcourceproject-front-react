@@ -18,36 +18,140 @@ export const getChildrenListForGroupSelect = async () => {
         throw error;
     }
 }
-export const getAllChildrenList = async (page?: number) => {
+export const getAllChildrenList = async ({
+                                             page,
+                                             per_page,
+                                             child_sort_by,
+                                             sort_direction,
+                                             child_search_by,
+                                             filter_childrens_by,
+                                             search_term
+                                         }:
+                                         {
+                                             page?: number,
+                                             per_page?: string,
+                                             child_sort_by?: string,
+                                             sort_direction?: string,
+                                             child_search_by?: string,
+                                             filter_childrens_by?: {},
+                                             search_term?: string
+                                         }) => {
     try {
-        const url = page ? `/children/all?page=${page}` : `/children/all`;
+        let url = page ? `/children/all?page=${page}` : `/children/all`;
+        url = formatUrlString({
+            url,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
         const {data} = await axiosClient.get(url);
         return data;
     } catch (error) {
         throw error;
     }
 }
-export const getForEnrolmentChildrenList = async (page?: number) => {
+export const getForEnrolmentChildrenList = async ({
+                                                      page,
+                                                      per_page,
+                                                      child_sort_by,
+                                                      sort_direction,
+                                                      child_search_by,
+                                                      filter_childrens_by,
+                                                      search_term
+                                                  }:
+                                                  {
+                                                      page?: number,
+                                                      per_page?: string,
+                                                      child_sort_by?: string,
+                                                      sort_direction?: string,
+                                                      child_search_by?: string,
+                                                      filter_childrens_by?: {},
+                                                      search_term?: string
+                                                  }) => {
     try {
-        const url = page ? `/children/for-enrolment?page=${page}` : `/children/for-enrolment`;
+        let url = page ? `/children/for-enrolment?page=${page}` : `/children/for-enrolment`;
+        url = formatUrlString({
+            url,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
         const {data} = await axiosClient.get(url);
         return data;
     } catch (error) {
         throw error;
     }
 }
-export const getInTrainingChildrenList = async (page?: number) => {
+export const getInTrainingChildrenList = async ({
+                                                    page,
+                                                    per_page,
+                                                    child_sort_by,
+                                                    sort_direction,
+                                                    child_search_by,
+                                                    filter_childrens_by,
+                                                    search_term
+                                                }:
+                                                {
+                                                    page?: number,
+                                                    per_page?: string,
+                                                    child_sort_by?: string,
+                                                    sort_direction?: string,
+                                                    child_search_by?: string,
+                                                    filter_childrens_by?: {},
+                                                    search_term?: string
+                                                }) => {
     try {
-        const url = page ? `/children/in-training?page=${page}` : `/children/in-training`;
+        let url = page ? `/children/in-training?page=${page}` : `/children/in-training`;
+        url = formatUrlString({
+            url,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
         const {data} = await axiosClient.get(url);
         return data;
     } catch (error) {
         throw error;
     }
 }
-export const getGraduatedChildrenList = async (page?: number) => {
+export const getGraduatedChildrenList = async ({
+                                                   page,
+                                                   per_page,
+                                                   child_sort_by,
+                                                   sort_direction,
+                                                   child_search_by,
+                                                   filter_childrens_by,
+                                                   search_term
+                                               }:
+                                               {
+                                                   page?: number,
+                                                   per_page?: string,
+                                                   child_sort_by?: string,
+                                                   sort_direction?: string,
+                                                   child_search_by?: string,
+                                                   filter_childrens_by?: {},
+                                                   search_term?: string
+                                               }) => {
     try {
-        const url = page ? `/children/graduated?page=${page}` : `/children/graduated`;
+        let url = page ? `/children/graduated?page=${page}` : `/children/graduated`;
+        url = formatUrlString({
+            url,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
         const {data} = await axiosClient.get(url);
         return data;
     } catch (error) {
@@ -89,4 +193,57 @@ export const deleteChildInfo = async (childId?: number) => {
     } catch (error) {
         throw error;
     }
+}
+
+const formatUrlString = ({
+                             url,
+                             per_page,
+                             child_sort_by,
+                             sort_direction,
+                             child_search_by,
+                             filter_childrens_by,
+                             search_term
+                         }: {
+    url: string,
+    per_page?: string,
+    child_sort_by?: string,
+    sort_direction?: string,
+    child_search_by?: string,
+    filter_childrens_by?: {},
+    search_term?: string
+}) => {
+    let respUrl = url;
+    if (per_page) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&per_page=${per_page}` : `${respUrl}?per_page=${per_page}`;
+    }
+    if (child_sort_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&child_sort_by=${child_sort_by}` : `${respUrl}?child_sort_by=${child_sort_by}`;
+    }
+    if (sort_direction) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&sort_direction=${sort_direction}` : `${respUrl}?sort_direction=${sort_direction}`;
+    }
+    if (child_search_by) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&child_search_by=${child_search_by}` : `${respUrl}?child_search_by=${child_search_by}`
+    }
+    if (search_term) {
+        respUrl = respUrl.includes('?') ? `${respUrl}&search_term=${search_term}` : `${respUrl}?search_term=${search_term}`
+    }
+    if (filter_childrens_by) {
+        const queryParams = new URLSearchParams();
+        Object.keys(filter_childrens_by).forEach((key: string): void => {
+            // @ts-ignore
+            const value = filter_childrens_by[key];
+            if (Array.isArray(value)) {
+                value.forEach((item, i) => {
+                    queryParams.append(`filter_childrens_by[${key}][${i}]`, item);
+                });
+            } else {
+                queryParams.append(`filter_childrens_by[${key}]`, value);
+            }
+        });
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
+    }
+    return respUrl;
 }

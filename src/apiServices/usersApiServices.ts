@@ -1,14 +1,24 @@
 import axiosClient from "../axios-client.ts";
 import {UserFormData} from "./apiServicesTypes.ts";
 
-export const getUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
+export const getUsersList = async ({
+                                       page,
+                                       per_page,
+                                       sort_by,
+                                       sort_direction,
+                                       search_by,
+                                       search_term,
+                                       filter_users_by,
+                                       date_filter_users_by
+                                   }: {
     page?: number,
     per_page?: string,
     sort_by?: string,
     sort_direction?: string,
     search_by?: string,
     search_term?: string,
-    filter_users_by?: {}
+    filter_users_by?: {},
+    date_filter_users_by?: {}
 }) => {
     let url = page ? `/users/active?page=${page}` : `/users/active`;
     url = formatUrlString({
@@ -18,7 +28,8 @@ export const getUsersList = async ({page, per_page, sort_by, sort_direction, sea
         sort_direction,
         user_search_by: search_by,
         search_term,
-        filter_users_by
+        filter_users_by,
+        date_filter_users_by
     })
     // eslint-disable-next-line no-useless-catch
     try {
@@ -29,7 +40,16 @@ export const getUsersList = async ({page, per_page, sort_by, sort_direction, sea
     }
 }
 
-export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
+export const getNotActiveUsersList = async ({
+                                                page,
+                                                per_page,
+                                                sort_by,
+                                                sort_direction,
+                                                search_by,
+                                                search_term,
+                                                filter_users_by,
+                                                date_filter_users_by
+}: {
     page?: number,
     per_page?: string,
     sort_by?: string,
@@ -37,6 +57,7 @@ export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direc
     search_by?: string,
     search_term?: string,
     filter_users_by?: {}
+    date_filter_users_by?: {}
 }) => {
     let url = page ? `/users/not_active?page=${page}` : `/users/not_active`;
     url = formatUrlString({
@@ -46,7 +67,8 @@ export const getNotActiveUsersList = async ({page, per_page, sort_by, sort_direc
         sort_direction,
         user_search_by: search_by,
         search_term,
-        filter_users_by
+        filter_users_by,
+        date_filter_users_by
     })
     // eslint-disable-next-line no-useless-catch
     try {
@@ -116,7 +138,16 @@ export const getUserInfo = async (userId: number) => {
     }
 }
 
-const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_search_by, search_term, filter_users_by}: {
+const formatUrlString = ({
+                             url,
+                             per_page,
+                             user_sort_by,
+                             sort_direction,
+                             user_search_by,
+                             search_term,
+                             filter_users_by,
+                             date_filter_users_by
+                         }: {
     url: string,
     per_page?: string,
     user_sort_by?: string,
@@ -124,6 +155,7 @@ const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_sear
     user_search_by?: string,
     search_term?: string,
     filter_users_by?: {}
+    date_filter_users_by?: {}
 }) => {
     let respUrl = url;
     if (per_page) {
@@ -155,6 +187,27 @@ const formatUrlString = ({url, per_page, user_sort_by, sort_direction, user_sear
             }
         });
 
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
+    }
+    if (date_filter_users_by) {
+        const queryParams = new URLSearchParams();
+        if (Object.keys(date_filter_users_by).length > 0) {
+            Object.keys(date_filter_users_by).forEach((item: any): void => {
+                // @ts-ignore
+                if (Object.keys(date_filter_users_by[item]).length > 0) {
+                    // @ts-ignore
+                    Object.keys(date_filter_users_by[item]).forEach((key: string) => {
+                        // @ts-ignore
+                        const value = date_filter_users_by[item][key];
+                        queryParams.append(`date_filter_users_by[${item}][${key}]`, value);
+
+                    })
+                }
+
+            });
+        }
         respUrl = respUrl.includes('?')
             ? `${respUrl}&${queryParams.toString()}`
             : `${respUrl}?${queryParams.toString()}`;

@@ -245,7 +245,7 @@ const ParrentsTable = ({
         parrent_sort_by?: string
     }) => {
         let sortDir = 'desc';
-        if ((parrent_sort_by === parrentSortBy) && sortDirection === sortDir) {
+        if (parrent_sort_by === parrentSortBy && sortDirection === sortDir) {
             sortDir = 'asc'
         }
         if (tableType === 'active') {

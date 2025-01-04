@@ -54,8 +54,9 @@ export type ParrentChildData = {
 }
 
 export type ChildParrentData = {
-    parrent_id: number;
-    relations: string;
+    parrent_name?: string;
+    parrent_id?: number;
+    relations?: string;
 }
 
 export type ParrentFormData = {

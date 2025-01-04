@@ -1,8 +1,8 @@
-import {ChildFormData} from "../apiServices/apiServicesTypes.ts";
+import {ChildData} from "../apiServices/apiServicesTypes.ts";
 import {useEffect, useState} from "react";
 
 type FormParProps = {
-    childFormData: ChildFormData;
+    childFormData: ChildData;
     setChildFormData: () => void;
     clearChildErrors: (maritalStatus: string) => void;
     childErrors: {
@@ -48,7 +48,6 @@ const ChildFormPart = ({
                 // @ts-ignore
                 return parrent.id == selectedParrent
             });
-            console.log('selectedParrentData', selectedParrentData)
             // @ts-ignore
             setChildFormData((childFormData: any) => {
                 // @ts-ignore
@@ -82,23 +81,87 @@ const ChildFormPart = ({
     }, [selectedParrent, inputValue]);
     return (
         <>
+            {/* Дата вступу */}
+            <div className="sm:col-span-3">
+                <label htmlFor="enrollment_date" className="block text-sm font-medium leading-6 text-gray-900">
+                    Дата вступу
+                </label>
+                <div className="mt-2">
+                    <input
+                        type="date"
+                        name="enrollment_date"
+                        id="enrollment_date"
+                        value={childFormData?.enrollment_date ?? ''}
+                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
+                            childErrors.enrollment_date?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
+                        }`}
+                        onChange={e => {
+                            clearChildErrors('enrollment_date');
+                            // @ts-ignore
+                            setChildFormData(childFormData => ({...childFormData, enrollment_date: e.target.value}));
+                        }}
+                    />
+                </div>
+                {childErrors.enrollment_date.length > 0 && (
+                    <div className="text-red-500 text-xs">
+                        {
+                            // @ts-ignore
+                            childErrors.enrollment_date.map((error, index) => (
+                                <p key={index}>{error}</p>
+                            ))}
+                    </div>
+                )}
+            </div>
+            {/* Дата випуску */}
+            <div className="sm:col-span-3">
+                <label htmlFor="graduation_date" className="block text-sm font-medium leading-6 text-gray-900">
+                    Дата випуску
+                </label>
+                <div className="mt-2">
+                    <input
+                        type="date"
+                        name="graduation_date"
+                        id="graduation_date"
+                        min={childFormData?.enrollment_date ?? ''}
+                        value={childFormData?.graduation_date ?? ''}
+                        className={`block w-full rounded-md border-1 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:leading-6 ${
+                            childErrors.graduation_date?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'
+                        }`}
+                        onChange={e => {
+                            clearChildErrors('enrollment_date');
+                            // @ts-ignore
+                            setChildFormData(childFormData => ({...childFormData, graduation_date: e.target.value}));
+                        }}
+                        disabled={childFormData?.enrollment_date === ''}
+                    />
+                </div>
+                {childErrors.enrollment_date.length > 0 && (
+                    <div className="text-red-500 text-xs">
+                        {
+                            // @ts-ignore
+                            childErrors.graduation_date.map((error, index) => (
+                                <p key={index}>{error}</p>
+                            ))}
+                    </div>
+                )}
+            </div>
             {/* група */}
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-6">
                 <label htmlFor="group_id" className="block text-sm font-medium leading-6 text-gray-900">
                     Група
                 </label>
-                <div className="mt-2">
+                <div className="mt-2 w-full flex">
                     <select
                         id="group_id"
                         name="group_id"
                         // @ts-ignore
-                        value={childFormData?.group?.id ?? ''}
+                        value={childFormData?.group_id ?? ''}
                         onChange={e => {
                             clearChildErrors('group_id');
                             // @ts-ignore
                             setChildFormData(childFormData => ({...childFormData, group_id: e.target.value}));
                         }}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     >
                         <option>не назначено</option>
                         {groups.length > 0 &&

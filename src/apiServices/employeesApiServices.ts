@@ -19,7 +19,6 @@ export const getActiveEmployeesList = async ({
     filter_employees_by?: {},
     search_term?: string
 }) => {
-    console.log('getActiveEmployeesList before formatUrlString', filter_employees_by);
     let url = page ? `/employees/active?page=${page}` : `/employees/active`;
     url = formatUrlString({
         url,
@@ -30,7 +29,6 @@ export const getActiveEmployeesList = async ({
         filter_employees_by,
         search_term
     });
-    console.log('url getActiveEmployeesList', url);
     // eslint-disable-next-line no-useless-catch
     try {
         const {data} = await axiosClient.get(url);

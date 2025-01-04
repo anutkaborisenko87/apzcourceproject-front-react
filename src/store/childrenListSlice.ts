@@ -27,26 +27,126 @@ export const axiosChildrenListForGroupSelect = createAsyncThunk(
 );
 export const axiosChildrenAllList = createAsyncThunk(
     'children/axiosChildrenAllList',
-    async function (page?: number) {
-        return await getAllChildrenList(page);
+    async function ({
+                        page,
+                        per_page,
+                        child_sort_by,
+                        sort_direction,
+                        child_search_by,
+                        filter_childrens_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        child_sort_by?: string,
+                        sort_direction?: string,
+                        child_search_by?: string,
+                        filter_childrens_by?: {},
+                        search_term?: string
+                    }) {
+        return await getAllChildrenList({
+            page,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
     }
 );
 export const axiosForEnrolmentChildrenList = createAsyncThunk(
     'children/axiosForEnrolmentChildrenList',
-    async function (page?: number) {
-        return await getForEnrolmentChildrenList(page);
+    async function ({
+                        page,
+                        per_page,
+                        child_sort_by,
+                        sort_direction,
+                        child_search_by,
+                        filter_childrens_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        child_sort_by?: string,
+                        sort_direction?: string,
+                        child_search_by?: string,
+                        filter_childrens_by?: {},
+                        search_term?: string
+                    }) {
+        return await getForEnrolmentChildrenList({
+            page,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
     }
 );
 export const axiosInTrainingChildrenList = createAsyncThunk(
     'children/axiosInTrainingChildrenList',
-    async function (page?: number) {
-        return await getInTrainingChildrenList(page);
+    async function ({
+                        page,
+                        per_page,
+                        child_sort_by,
+                        sort_direction,
+                        child_search_by,
+                        filter_childrens_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        child_sort_by?: string,
+                        sort_direction?: string,
+                        child_search_by?: string,
+                        filter_childrens_by?: {},
+                        search_term?: string
+                    }) {
+        return await getInTrainingChildrenList({
+            page,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
     }
 );
 export const axiosGraduatedChildrenList = createAsyncThunk(
     'children/axiosGraduatedChildrenList',
-    async function (page?: number) {
-        return await getGraduatedChildrenList(page);
+    async function ({
+                        page,
+                        per_page,
+                        child_sort_by,
+                        sort_direction,
+                        child_search_by,
+                        filter_childrens_by,
+                        search_term
+                    }:
+                    {
+                        page?: number,
+                        per_page?: string,
+                        child_sort_by?: string,
+                        sort_direction?: string,
+                        child_search_by?: string,
+                        filter_childrens_by?: {},
+                        search_term?: string
+                    }) {
+        return await getGraduatedChildrenList({
+            page,
+            per_page,
+            child_sort_by,
+            sort_direction,
+            child_search_by,
+            filter_childrens_by,
+            search_term
+        });
     }
 );
 export const axiosChildInfo = createAsyncThunk(
@@ -68,23 +168,25 @@ export const axiosChildInfo = createAsyncThunk(
 export const axiosCreateChildInfo = createAsyncThunk(
     'children/axiosCreateChildInfo',
     // @ts-ignore
-    async function ({payload, tableType}: {payload: ChildFormData, tableType: string},  {rejectWithValue, dispatch}) {
+    async function ({payload, tableType}: {payload: ChildFormData, tableType: string},  {getState, rejectWithValue, dispatch}) {
         try {
+            // @ts-ignore
+            const {childrenList} = getState();
             const resp = await createChildInfo(payload);
             switch (tableType) {
                 case 'all':
-                    dispatch(axiosChildrenAllList());
+                    dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'for-enrollment':
-                    dispatch(axiosForEnrolmentChildrenList());
+                    dispatch(axiosForEnrolmentChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'in-training':
-                    dispatch(axiosInTrainingChildrenList());
+                    dispatch(axiosInTrainingChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'graduated':
-                    dispatch(axiosGraduatedChildrenList());
+                    dispatch(axiosGraduatedChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
-                default: dispatch(axiosChildrenAllList());
+                default: dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
             }
             dispatch(openCloseModal({open: false}))
             return resp;
@@ -97,23 +199,25 @@ export const axiosCreateChildInfo = createAsyncThunk(
 export const axiosUpdateChildInfo = createAsyncThunk(
     'children/axiosUpdateChildInfo',
     // @ts-ignore
-    async function ({childId, payload, tableType}: {childId: number, payload: ChildFormData, tableType: string},  {rejectWithValue, dispatch}) {
+    async function ({childId, payload, tableType}: {childId: number, payload: ChildFormData, tableType: string},  {getState, rejectWithValue, dispatch}) {
         try {
+            // @ts-ignore
+            const {childrenList} = getState();
             const resp = await updateChildInfo(childId, payload);
             switch (tableType) {
                 case 'all':
-                    dispatch(axiosChildrenAllList());
+                    dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'for-enrollment':
-                    dispatch(axiosForEnrolmentChildrenList());
+                    dispatch(axiosForEnrolmentChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'in-training':
-                    dispatch(axiosInTrainingChildrenList());
+                    dispatch(axiosInTrainingChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'graduated':
-                    dispatch(axiosGraduatedChildrenList());
+                    dispatch(axiosGraduatedChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
-                default: dispatch(axiosChildrenAllList());
+                default: dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
             }
             dispatch(openCloseModal({open: false}))
             return resp;
@@ -126,23 +230,25 @@ export const axiosUpdateChildInfo = createAsyncThunk(
 export const axiosDeleteChildInfo = createAsyncThunk(
     'children/axiosDeleteChildInfo',
     // @ts-ignore
-    async function ({childId, page, tableType}: {childId: number, page: number, tableType: string},  {rejectWithValue, dispatch}) {
+    async function ({childId, tableType}: {childId: number, tableType: string},  {getState, rejectWithValue, dispatch}) {
         try {
+            // @ts-ignore
+            const {childrenList} = getState();
             const resp = await deleteChildInfo(childId);
             switch (tableType) {
                 case 'all':
-                    dispatch(axiosChildrenAllList(page));
+                    dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'for-enrollment':
-                    dispatch(axiosForEnrolmentChildrenList(page));
+                    dispatch(axiosForEnrolmentChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'in-training':
-                    dispatch(axiosInTrainingChildrenList(page));
+                    dispatch(axiosInTrainingChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
                 case 'graduated':
-                    dispatch(axiosGraduatedChildrenList(page));
+                    dispatch(axiosGraduatedChildrenList({page: childrenList.current_page, per_page: childrenList.per_page}));
                     break;
-                default: dispatch(axiosChildrenAllList(page));
+                default: dispatch(axiosChildrenAllList({page: childrenList.current_page, per_page: childrenList.per_page}));
             }
             return resp;
         } catch (error) {
@@ -189,7 +295,21 @@ const childrenListSlice = createSlice({
     name: 'childrenList',
     initialState: {
         childrenforSelect: [],
-        childrenList: [],
+        childrenList: {
+            data: [],
+            links: [],
+            to: 0,
+            from: 0,
+            last_page: 0,
+            current_page: 1,
+            per_page: 10,
+            filter_childrens_by: null,
+            filters: [],
+            child_sort_by: null,
+            sort_direction: 'asc',
+            child_search_by: null,
+            search_term: null
+        },
         childToUpdate: null,
         child: null,
         status: null,
@@ -261,6 +381,10 @@ const childrenListSlice = createSlice({
                 }
                 state.error = null
             }
+        },
+        setChildSearchableColumn: (state, action) => {
+            // @ts-ignore
+            state.childrenList.child_search_by = action.payload.child_search_by;
         },
     },
     extraReducers: builder => {
@@ -434,6 +558,7 @@ const childrenListSlice = createSlice({
 });
 
 export const {
+    setChildSearchableColumn,
     cleanChildrenNotification,
     getChildToUpdate,
     cleanChildErrors

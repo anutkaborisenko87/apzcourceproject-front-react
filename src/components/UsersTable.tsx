@@ -20,6 +20,7 @@ import SearchComponent from "./SearchComponent.tsx";
 import FiltersComponent from "./FiltersComponent.tsx";
 import {useCallback, useEffect, useState} from "react";
 import * as _ from "lodash";
+import DateFiltersComponent from "./DateFiltersComponent.tsx";
 
 type PropsType = {
     tableType: string;
@@ -30,6 +31,8 @@ const UsersTable = ({tableType}: PropsType) => {
     const dispatch = useDispatch();
     // @ts-ignore
     const filterUsersBy = useSelector(state => state.users?.users?.filter_users_by ?? null)
+    // @ts-ignore
+    const dateFilterUsersBy = useSelector(state => state.users?.users?.date_filter_users_by ?? null)
     // @ts-ignore
     const perPage = useSelector(state => state.users?.users?.per_page ?? 10);
     // @ts-ignore
@@ -42,10 +45,13 @@ const UsersTable = ({tableType}: PropsType) => {
     const sortBy = useSelector(state => state.users?.users?.user_sort_by);
     // @ts-ignore
     const sortDirection = useSelector(state => state.users?.users?.sort_direction);
-    const [showFilters, setShowFilters] = useState(filterUsersBy !== null && Object.keys(filterUsersBy).length > 0);
+    const [showFilters, setShowFilters] = useState((filterUsersBy !== null && Object.keys(filterUsersBy).length > 0) || (dateFilterUsersBy !== null && Object.keys(dateFilterUsersBy).length > 0));
     // @ts-ignore
     const filters = useSelector(state => state.users?.users?.filters);
+    // @ts-ignore
+    const dateFilters = useSelector(state => state.users?.users?.dateFilters);
     const [selectedFilters, setSelectedFilters] = useState(filters);
+    const [selectedDateFilters, setDateSelectedFilters] = useState(dateFilters);
     const handleFilterChange = useCallback(async (sectionId: string, optionValue: string, checked: boolean) => {
         setSelectedFilters((prevFilters: { id: string; options: { value: string; }[]; }[]) =>
             prevFilters.map((section: { id: string; options: { value: string; }[]; }) =>
@@ -59,6 +65,22 @@ const UsersTable = ({tableType}: PropsType) => {
                     : section
             )
         );
+    }, []);
+    const handleDateFilterChange = useCallback(async (sectionId: string, fromToKey: string, optionValue: string) => {
+        setDateSelectedFilters((prevFilters: any) => {
+            return prevFilters.map((section: any) => {
+                if (section.id === sectionId) {
+                    return {
+                        ...section,
+                        [fromToKey]: {
+                            ...section[fromToKey],
+                            value: optionValue
+                        }
+                    };
+                }
+                return section;
+            });
+        });
     }, []);
 
     const filterBy = () => {
@@ -77,6 +99,26 @@ const UsersTable = ({tableType}: PropsType) => {
         });
         return Object.keys(localfilters).length > 0 ? localfilters : null;
     };
+
+    const filterByDate = () => {
+        let localfilters = {};
+        selectedDateFilters.forEach((item: any): void => {
+           if (item.from?.value !== null && item.from?.value !== '') {
+               localfilters[item.id] = {
+                   ...localfilters[item.id],
+                   from: item.from.value,
+               };
+           }
+           if (item.to?.value !== null && item.to?.value !== '') {
+               localfilters[item.id] = {
+                   ...localfilters[item.id],
+                   to: item.to.value,
+               };
+           }
+        });
+
+        return Object.keys(localfilters).length > 0 ? localfilters : null;
+    };
     useEffect(() => {
         let formedFilters = filterBy();
         if (!_.isEqual(filterUsersBy, formedFilters)) {
@@ -85,6 +127,15 @@ const UsersTable = ({tableType}: PropsType) => {
             })();
         }
     }, [selectedFilters, filterUsersBy]);
+
+    useEffect(() => {
+        let formedDateFilters = filterByDate();
+        if (!_.isEqual(dateFilterUsersBy, formedDateFilters)) {
+            (async () => {
+                await filteringByDate(formedDateFilters);
+            })();
+        }
+    }, [selectedDateFilters, dateFilterUsersBy]);
     const ondeletingUser = async (userId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете видалити цього користувача?")) {
             // @ts-ignore
@@ -138,7 +189,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_direction: sortDir,
                 search_by: sarchBy,
                 search_term: sarchTerm,
-                filter_users_by: filterUsersBy
+                filter_users_by: filterUsersBy,
+                date_filter_users_by: dateFilterUsersBy
             }))
         } else {
             // @ts-ignore
@@ -149,7 +201,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_direction: sortDir,
                 search_by: sarchBy,
                 search_term: sarchTerm,
-                filter_users_by: filterUsersBy
+                filter_users_by: filterUsersBy,
+                date_filter_users_by: dateFilterUsersBy
             }))
         }
     }
@@ -163,7 +216,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_direction: 'asc',
                 search_by: sarchBy,
                 search_term: sarchTerm,
-                filter_users_by: filterUsersBy
+                filter_users_by: filterUsersBy,
+                date_filter_users_by: dateFilterUsersBy
             }));
         } else {
             // @ts-ignore
@@ -174,7 +228,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 sort_direction: 'asc',
                 search_by: sarchBy,
                 search_term: sarchTerm,
-                filter_users_by: filterUsersBy
+                filter_users_by: filterUsersBy,
+                date_filter_users_by: dateFilterUsersBy
             }));
         }
     }
@@ -213,7 +268,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     sort_direction: sortDirection,
                     search_by: sarchBy,
                     search_term: event,
-                    filter_users_by: filterUsersBy
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             } else {
                 // @ts-ignore
@@ -224,7 +280,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     sort_direction: sortDirection,
                     search_by: sarchBy,
                     search_term: event,
-                    filter_users_by: filterUsersBy
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             }
         } else {
@@ -244,6 +301,8 @@ const UsersTable = ({tableType}: PropsType) => {
                 search_term: sarchTerm,
                 // @ts-ignore
                 filter_users_by: filters,
+                // @ts-ignore
+                date_filter_users_by: dateFilterUsersBy,
             }));
         } else {
             // @ts-ignore
@@ -256,9 +315,43 @@ const UsersTable = ({tableType}: PropsType) => {
                 search_term: sarchTerm,
                 // @ts-ignore
                 filter_users_by: filters,
+                // @ts-ignore
+                date_filter_users_by: dateFilterUsersBy,
             }));
         }
     }, [selectedFilters])
+    // @ts-ignore
+    const filteringByDate = useCallback(async (datefilters: any) => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            dispatch(axiosActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                search_by: sarchBy,
+                search_term: sarchTerm,
+                // @ts-ignore
+                filter_users_by: filterUsersBy,
+                // @ts-ignore
+                date_filter_users_by: datefilters,
+            }));
+        } else {
+            // @ts-ignore
+            dispatch(axiosNotActiveUsers({
+                page: currPage,
+                per_page: perPage,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                search_by: sarchBy,
+                search_term: sarchTerm,
+                // @ts-ignore
+                filter_users_by: filterUsersBy,
+                // @ts-ignore
+                date_filter_users_by: datefilters,
+            }));
+        }
+    }, [selectedDateFilters])
 
     const beginSearchBy = (columnName?: string) => {
         dispatch(setSearchableColumn({columnName: columnName}));
@@ -270,7 +363,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     per_page: perPage,
                     sort_by: sortBy,
                     sort_direction: sortDirection,
-                    filter_users_by: filterUsersBy
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             } else {
                 // @ts-ignore
@@ -279,7 +373,8 @@ const UsersTable = ({tableType}: PropsType) => {
                     per_page: perPage,
                     sort_by: sortBy,
                     sort_direction: sortDirection,
-                    filter_users_by: filterUsersBy
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             }
         }
@@ -308,6 +403,12 @@ const UsersTable = ({tableType}: PropsType) => {
                             <div className="w-full mb-2">
                                 <FiltersComponent filters={selectedFilters}
                                                   onFilterChange={handleFilterChange}/>
+                                {
+                                    selectedDateFilters.length > 0
+                                        ?
+                                    <DateFiltersComponent filters={selectedDateFilters} onFilterChange={handleDateFilterChange}/>
+                                        : <></>
+                                }
                             </div>
                             : <></>
                     }

@@ -29,7 +29,6 @@ export const axiosActiveEmployees = createAsyncThunk(
                             filter_employees_by?: {},
                             search_term?: string
                         }) {
-        console.log('axiosActiveEmployees filter_employees_by', filter_employees_by);
         return await getActiveEmployeesList({
             page,
             per_page,

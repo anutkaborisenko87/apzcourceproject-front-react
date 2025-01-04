@@ -10,7 +10,9 @@ import TabsForms from "./TabsForms.tsx";
 
 const UsersActive = () => {
     // @ts-ignore
-    const filterUsersBy =  useSelector(state => state.users?.users?.filter_users_by ?? null)
+    const filterUsersBy =  useSelector(state => state.users?.users?.filter_users_by ?? null);
+    // @ts-ignore
+    const dateFilterUsersBy = useSelector(state => state.users?.users?.date_filter_users_by ?? null)
     // @ts-ignore
     const sarchBy = useSelector(state => state.users?.users?.user_search_by);
     // @ts-ignore
@@ -67,7 +69,8 @@ const UsersActive = () => {
             sort_direction: sortDirection,
             search_by: sarchBy,
             search_term: sarchTerm,
-            filter_users_by: filterUsersBy
+            filter_users_by: filterUsersBy,
+            date_filter_users_by: dateFilterUsersBy
         }));
     }
     return (

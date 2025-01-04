@@ -14,7 +14,16 @@ import {openCloseModal} from "./modalSlice.ts";
 
 export const axiosActiveUsers = createAsyncThunk(
     'users/axiosActiveUsers',
-    async function ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
+    async function ({
+                        page,
+                        per_page,
+                        sort_by,
+                        sort_direction,
+                        search_by,
+                        search_term,
+                        filter_users_by,
+                        date_filter_users_by
+                    }: {
         page?: number,
         per_page?: string,
         sort_by?: string,
@@ -22,13 +31,34 @@ export const axiosActiveUsers = createAsyncThunk(
         search_by?: string,
         search_term?: string,
         filter_users_by?: {}
+        date_filter_users_by?: {}
     }) {
-        return await getUsersList({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by});
+        // @ts-ignore
+        return await getUsersList({
+            page,
+            per_page,
+            sort_by,
+            sort_direction,
+            search_by,
+            search_term,
+            filter_users_by,
+            // @ts-ignore
+            date_filter_users_by
+        });
     }
 );
 export const axiosNotActiveUsers = createAsyncThunk(
     'users/axiosNotActiveUsers',
-    async function ({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by}: {
+    async function ({
+                        page,
+                        per_page,
+                        sort_by,
+                        sort_direction,
+                        search_by,
+                        search_term,
+                        filter_users_by,
+                        date_filter_users_by
+                    }: {
         page?: number,
         per_page?: string,
         sort_by?: string,
@@ -36,8 +66,20 @@ export const axiosNotActiveUsers = createAsyncThunk(
         search_by?: string,
         search_term?: string,
         filter_users_by?: {}
+        date_filter_users_by?: {}
     }) {
-        return await getNotActiveUsersList({page, per_page, sort_by, sort_direction, search_by, search_term, filter_users_by});
+        // @ts-ignore
+        return await getNotActiveUsersList({
+            page,
+            per_page,
+            sort_by,
+            sort_direction,
+            search_by,
+            search_term,
+            filter_users_by,
+            // @ts-ignore
+            date_filter_users_by
+        });
     }
 );
 export const axiosDeactivateUser = createAsyncThunk(
@@ -205,7 +247,9 @@ const userSlice = createSlice({
             user_search_by: null,
             search_term: null,
             filters: [],
-            filter_users_by: []
+            filter_users_by: [],
+            dateFilters: [],
+            date_filter_users_by: {}
         },
         userToUpdate: null,
         user: null,
