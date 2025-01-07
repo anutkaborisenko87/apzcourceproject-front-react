@@ -14,9 +14,6 @@ const GroupsView = () => {
     const isLoading = useSelector(state => state.groups.status === 'loading');
     // @ts-ignore
     const groupsList = useSelector(state => state.groups.groupsList);
-    const handleOpenModal = () => {
-        dispatch(openCloseModal({open: true}));
-    };
 
     const onDeletingGroup = async (groupId: number) => {
         if (confirm('Віи впевнені, що хочете видалити цю групу')) {
@@ -41,7 +38,11 @@ const GroupsView = () => {
                         <h2 className="text-2xl font-bold">Групи</h2>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                            onClick={() => handleOpenModal()}
+                            onClick={async  () => {
+                                // @ts-ignore
+                                await dispatch(axiosGetGroupInfo({}));
+                                dispatch(openCloseModal({open: true}));
+                            }}
                         >
                             Додати групи
                         </button>
@@ -67,7 +68,7 @@ const GroupsView = () => {
                                                         <button className="text-blue-500 hover:text-blue-700 mr-2"
                                                                 onClick={async () => {
                                                                     // @ts-ignore
-                                                                    await dispatch(axiosGetGroupInfo(group?.id));
+                                                                    await dispatch(axiosGetGroupInfo({groupId: group.id}));
                                                                     dispatch(openCloseModal({open: true}))
                                                                 }}
                                                         >

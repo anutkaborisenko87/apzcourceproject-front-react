@@ -23,6 +23,7 @@ export const axiosGetGroupsList = createAsyncThunk(
 export const axiosGetGroupInfo = createAsyncThunk(
     'groups/axiosGetGroupInfo',
     async function ({groupId, payload}: {groupId?: number, payload?: GroupInfoPayload}, {rejectWithValue, dispatch}) {
+        console.log('axiosGetGroupInfo', groupId);
         // @ts-ignore
         dispatch(cleanGroupErrors());
         if (!groupId) {
@@ -84,7 +85,7 @@ export const axiosDeleteGroupInfo = createAsyncThunk(
     }
 );
 
-const setFormErrors = (state: { groupValidationErrors: { title: any; children: any; teachers: any; educationalPrograms: any; }; error: any; statusForm: string; }, action: { payload: { response: any; }; }) => {
+const setFormErrors = (state: { groupValidationErrors: { title: any; children: any; teachers: any; date_start: any; date_finish: any; }; error: any; statusForm: string; }, action: { payload: { response: any; }; }) => {
     const {response} = action.payload
     // @ts-ignore
     if (response.status === 422) {
@@ -92,14 +93,16 @@ const setFormErrors = (state: { groupValidationErrors: { title: any; children: a
             title: response?.data?.errors.title ?? [],
             children: response?.data?.errors.children ?? [],
             teachers: response?.data?.errors.teachers ?? [],
-            educationalPrograms: response?.data?.errors.educationalPrograms ?? [],
+            date_start: response?.data?.errors.date_start ?? [],
+            date_finish: response?.data?.errors.date_finish ?? []
         }
     } else {
         state.groupValidationErrors = {
             title: [],
             children: [],
             teachers: [],
-            educationalPrograms: []
+            date_start: [],
+            date_finish: []
         };
         state.error = response.data.error;
     }
@@ -116,7 +119,8 @@ const groupsSlice = createSlice({
             title: [],
             children: [],
             teachers: [],
-            educationalPrograms: []
+            date_start: [],
+            date_finish: []
         },
         groupToUpdate: null,
         group: null,
@@ -141,7 +145,8 @@ const groupsSlice = createSlice({
                     title: [],
                     children: [],
                     teachers: [],
-                    educationalPrograms: []
+                    date_start: [],
+                    date_finish: []
                 };
                 state.error = null
             }

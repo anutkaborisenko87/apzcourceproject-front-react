@@ -104,13 +104,17 @@ const UsersTable = ({tableType}: PropsType) => {
         let localfilters = {};
         selectedDateFilters.forEach((item: any): void => {
            if (item.from?.value !== null && item.from?.value !== '') {
+               // @ts-ignore
                localfilters[item.id] = {
+                   // @ts-ignore
                    ...localfilters[item.id],
                    from: item.from.value,
                };
            }
            if (item.to?.value !== null && item.to?.value !== '') {
+               // @ts-ignore
                localfilters[item.id] = {
+                   // @ts-ignore
                    ...localfilters[item.id],
                    to: item.to.value,
                };
@@ -389,7 +393,7 @@ const UsersTable = ({tableType}: PropsType) => {
                             <FunnelIcon onClick={() => setShowFilters(showFilters => !showFilters)}
                                         className={`w-6 cursor-pointer ${showFilters ? 'text-violet-600 hover:text-gray-800' : 'hover:text-violet-600'}`}/>
                             {
-                                filterUsersBy !== null ?
+                                filterUsersBy !== null || dateFilterUsersBy !== null ?
                                     <XCircleIcon
                                         className="w-6 text-violet-600 hover:text-gray-800 cursor-pointer"
                                         onClick={cancelFiltering} title="Скинути всі фільтри"/>

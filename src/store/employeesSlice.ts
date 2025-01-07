@@ -18,7 +18,8 @@ export const axiosActiveEmployees = createAsyncThunk(
                         sort_direction,
                         employee_search_by,
                         filter_employees_by,
-                        search_term
+                        search_term,
+                        date_filter_employees_by
                     }:
                         {
                             page?: number,
@@ -28,6 +29,7 @@ export const axiosActiveEmployees = createAsyncThunk(
                             employee_search_by?: string,
                             filter_employees_by?: {},
                             search_term?: string
+                            date_filter_employees_by?: {},
                         }) {
         return await getActiveEmployeesList({
             page,
@@ -36,7 +38,8 @@ export const axiosActiveEmployees = createAsyncThunk(
             sort_direction,
             employee_search_by,
             filter_employees_by,
-            search_term
+            search_term,
+            date_filter_employees_by
         });
     }
 );
@@ -58,7 +61,8 @@ export const axiosNotActiveEmployees = createAsyncThunk(
                         sort_direction,
                         employee_search_by,
                         filter_employees_by,
-                        search_term
+                        search_term,
+                        date_filter_employees_by
                     }:
                         {
                             page?: number,
@@ -68,6 +72,7 @@ export const axiosNotActiveEmployees = createAsyncThunk(
                             employee_search_by?: string,
                             filter_employees_by?: {},
                             search_term?: string
+                            date_filter_employees_by?: {},
                         }) {
         return await getNotActiveEmployeesList({
             page,
@@ -76,7 +81,8 @@ export const axiosNotActiveEmployees = createAsyncThunk(
             sort_direction,
             employee_search_by,
             filter_employees_by,
-            search_term
+            search_term,
+            date_filter_employees_by
         });
     }
 );
@@ -90,7 +96,8 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
                         sort_direction,
                         employee_search_by,
                         filter_employees_by,
-                        search_term
+                        search_term,
+                        date_filter_employees_by
                     }:
                         {
                             page?: number,
@@ -100,6 +107,7 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
                             employee_search_by?: string,
                             filter_employees_by?: {},
                             search_term?: string
+                            date_filter_employees_by?: {},
                         }) {
         return await getWorkingEmployeesList({
             page,
@@ -108,7 +116,8 @@ export const axiosWorkingEmployeesList = createAsyncThunk(
             sort_direction,
             employee_search_by,
             filter_employees_by,
-            search_term
+            search_term,
+            date_filter_employees_by
         });
     }
 );
@@ -433,7 +442,9 @@ const employeesSlice = createSlice({
             employee_sort_by: null,
             sort_direction: 'asc',
             employee_search_by: null,
-            search_term: null
+            search_term: null,
+            date_filter_employees_by: {},
+            dateFilters: []
         },
         employeeToUpdate: null,
         employee: null,

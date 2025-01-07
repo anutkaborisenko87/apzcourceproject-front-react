@@ -23,6 +23,7 @@ import SearchComponent from "./SearchComponent.tsx";
 import FiltersComponent from "./FiltersComponent.tsx";
 import {useCallback, useEffect, useState} from "react";
 import * as _ from "lodash";
+import DateFiltersComponent from "./DateFiltersComponent.tsx";
 
 type PropsType = {
     tableType: string;
@@ -34,7 +35,9 @@ const EmployeesTable = ({tableType}: PropsType) => {
     // @ts-ignore
     const perPage = useSelector(state => state.employees?.employees?.per_page ?? 10);
     // @ts-ignore
-    const filterEmployeesBy = useSelector(state => state.employees?.employees?.filter_employees_by ?? null)
+    const filterEmployeesBy = useSelector(state => state.employees?.employees?.filter_employees_by ?? null);
+    // @ts-ignore
+    const dateFilterEmployeesBy = useSelector(state => state.employees?.employees?.date_filter_employees_by ?? null);
     // @ts-ignore
     const currPage = useSelector(state => state.employees?.employees?.current_page ?? 1);
     // @ts-ignore
@@ -45,10 +48,13 @@ const EmployeesTable = ({tableType}: PropsType) => {
     const employeeSearchBy = useSelector(state => state.employees?.employees?.employee_search_by ?? null);
     // @ts-ignore
     const searchTerm = useSelector(state => state.employees?.employees?.search_term ?? null);
-    const [showEmployeesFilters, setShowEmployeesFilters] = useState(filterEmployeesBy !== null && Object.keys(filterEmployeesBy).length > 0);
+    const [showEmployeesFilters, setShowEmployeesFilters] = useState((filterEmployeesBy !== null && Object.keys(filterEmployeesBy).length > 0) || (dateFilterEmployeesBy !== null && Object.keys(dateFilterEmployeesBy).length > 0));
+    // @ts-ignore
+    const dateFilters = useSelector(state => state.employees?.employees?.dateFilters ?? []);
     // @ts-ignore
     const filters = useSelector(state => state.employees?.employees?.filters ?? []);
     const [selectedEmployeesFilters, setSelectedEmployeesFilters] = useState(filters);
+    const [selectedDateEmployeesFilters, setDateSelectedEmployeesFilters] = useState(dateFilters);
     // @ts-ignore
     const handleEmployeesFilterChange = useCallback(async (sectionId: string, optionValue: string, checked: boolean) => {
         setSelectedEmployeesFilters((prevFilters: { id: string; options: { value: string; }[]; }[]) =>
@@ -64,6 +70,22 @@ const EmployeesTable = ({tableType}: PropsType) => {
             )
         );
     }, []);
+    const handleDateFilterChange = useCallback(async (sectionId: string, fromToKey: string, optionValue: string) => {
+        setDateSelectedEmployeesFilters((prevFilters: any) => {
+            return prevFilters.map((section: any) => {
+                if (section.id === sectionId) {
+                    return {
+                        ...section,
+                        [fromToKey]: {
+                            ...section[fromToKey],
+                            value: optionValue
+                        }
+                    };
+                }
+                return section;
+            });
+        });
+    }, []);
 
     const filterBy = () => {
         let localfilters = {};
@@ -75,12 +97,35 @@ const EmployeesTable = ({tableType}: PropsType) => {
             }): void => {
                 let selectedOptions: string[] = [];
                 item.options.forEach((option: { checked: boolean; value: string; label: string; }): void => {
-                    if (option.checked) selectedOptions.push(option.value);
+                    if (option.checked) selectedOptions.push(option.value.toString());
                 });
                 // @ts-ignore
                 if (selectedOptions.length > 0) localfilters[item.id] = selectedOptions;
             });
         }
+        return Object.keys(localfilters).length > 0 ? localfilters : null;
+    };
+    const filterByDate = () => {
+        let localfilters = {};
+        selectedDateEmployeesFilters.forEach((item: any): void => {
+            if (item.from?.value !== null && item.from?.value !== '') {
+                // @ts-ignore
+                localfilters[item.id] = {
+                    // @ts-ignore
+                    ...localfilters[item.id],
+                    from: item.from.value,
+                };
+            }
+            if (item.to?.value !== null && item.to?.value !== '') {
+                // @ts-ignore
+                localfilters[item.id] = {
+                    // @ts-ignore
+                    ...localfilters[item.id],
+                    to: item.to.value,
+                };
+            }
+        });
+
         return Object.keys(localfilters).length > 0 ? localfilters : null;
     };
     useEffect(() => {
@@ -91,6 +136,14 @@ const EmployeesTable = ({tableType}: PropsType) => {
             })();
         }
     }, [selectedEmployeesFilters, filterEmployeesBy]);
+    useEffect(() => {
+        let formedDateFilters = filterByDate();
+        if (!_.isEqual(dateFilterEmployeesBy, formedDateFilters)) {
+            (async () => {
+                await filteringByDate(formedDateFilters);
+            })();
+        }
+    }, [selectedDateEmployeesFilters, dateFilterEmployeesBy]);
     // @ts-ignore
     const filteringBy = useCallback(async (filters: any) => {
         if (tableType === 'active') {
@@ -130,7 +183,53 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 search_term: searchTerm
             }));
         }
-    }, [selectedEmployeesFilters])
+    }, [selectedEmployeesFilters]);
+    // @ts-ignore
+    const filteringByDate = useCallback(async (dateFilters: any) => {
+        if (tableType === 'active') {
+            // @ts-ignore
+            dispatch(axiosActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                search_term: searchTerm,
+                // @ts-ignore
+                date_filter_employees_by: dateFilters
+            }));
+        } else if (tableType === 'working') {
+            // @ts-ignore
+            dispatch(axiosWorkingEmployeesList({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                search_term: searchTerm,
+                // @ts-ignore
+                date_filter_employees_by: dateFilters
+            }));
+        } else {
+            // @ts-ignore
+            dispatch(axiosNotActiveEmployees({
+                page: currPage,
+                per_page: perPage,
+                employee_sort_by: employeeSortBy,
+                sort_direction: sortDirection,
+                employee_search_by: employeeSearchBy,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                search_term: searchTerm,
+                // @ts-ignore
+                date_filter_employees_by: dateFilters
+            }));
+        }
+    }, [selectedDateEmployeesFilters]);
     const cancelFiltering = async () => {
         if (tableType === 'active') {
             // @ts-ignore
@@ -365,7 +464,7 @@ const EmployeesTable = ({tableType}: PropsType) => {
                                 onClick={() => setShowEmployeesFilters(showEmployeesFilters => !showEmployeesFilters)}
                                 className={`w-6 cursor-pointer ${showEmployeesFilters ? 'text-violet-600 hover:text-gray-800' : 'hover:text-violet-600'}`}/>
                             {
-                                filterEmployeesBy !== null ?
+                                filterEmployeesBy !== null || dateFilterEmployeesBy !== null ?
                                     <XCircleIcon
                                         className="w-6 text-violet-600 hover:text-gray-800 cursor-pointer"
                                         onClick={cancelFiltering} title="Скинути всі фільтри"/>
@@ -379,6 +478,12 @@ const EmployeesTable = ({tableType}: PropsType) => {
                             <div className="w-full mb-2">
                                 <FiltersComponent filters={selectedEmployeesFilters}
                                                   onFilterChange={handleEmployeesFilterChange}/>
+                                {
+                                    selectedDateEmployeesFilters.length > 0
+                                        ?
+                                        <DateFiltersComponent filters={selectedDateEmployeesFilters} onFilterChange={handleDateFilterChange}/>
+                                        : <></>
+                                }
                             </div>
                             : <></>
                     }

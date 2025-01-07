@@ -8,7 +8,8 @@ export const getActiveEmployeesList = async ({
                                                  sort_direction,
                                                  employee_search_by,
                                                  filter_employees_by,
-                                                 search_term
+                                                 search_term,
+                                                 date_filter_employees_by
                                              }:
 {
     page? : number,
@@ -18,6 +19,7 @@ export const getActiveEmployeesList = async ({
     employee_search_by?: string,
     filter_employees_by?: {},
     search_term?: string
+    date_filter_employees_by?: {},
 }) => {
     let url = page ? `/employees/active?page=${page}` : `/employees/active`;
     url = formatUrlString({
@@ -27,7 +29,8 @@ export const getActiveEmployeesList = async ({
         sort_direction,
         employee_search_by,
         filter_employees_by,
-        search_term
+        search_term,
+        date_filter_employees_by
     });
     // eslint-disable-next-line no-useless-catch
     try {
@@ -57,7 +60,8 @@ export const getNotActiveEmployeesList = async ({
                                                     sort_direction,
                                                     employee_search_by,
                                                     filter_employees_by,
-                                                    search_term
+                                                    search_term,
+                                                    date_filter_employees_by
                                                 }:
                                                     {
                                                         page? : number,
@@ -67,6 +71,7 @@ export const getNotActiveEmployeesList = async ({
                                                         employee_search_by?: string,
                                                         filter_employees_by?: {},
                                                         search_term?: string
+                                                        date_filter_employees_by?: {},
                                                     }) => {
     let url = page ? `/employees/not_active?page=${page}` : `/employees/not_active`;
     url = formatUrlString({
@@ -76,7 +81,8 @@ export const getNotActiveEmployeesList = async ({
         sort_direction,
         employee_search_by,
         filter_employees_by,
-        search_term
+        search_term,
+        date_filter_employees_by
     });
     // eslint-disable-next-line no-useless-catch
     try {
@@ -94,7 +100,8 @@ export const getWorkingEmployeesList = async ({
                                                   sort_direction,
                                                   employee_search_by,
                                                   filter_employees_by,
-                                                  search_term
+                                                  search_term,
+                                                  date_filter_employees_by
                                               }:
                                                   {
                                                       page? : number,
@@ -104,6 +111,7 @@ export const getWorkingEmployeesList = async ({
                                                       employee_search_by?: string,
                                                       filter_employees_by?: {},
                                                       search_term?: string
+                                                      date_filter_employees_by?: {},
                                                   }) => {
     let url = page ? `/employees/working?page=${page}` : `/employees/working`;
     url = formatUrlString({
@@ -113,7 +121,8 @@ export const getWorkingEmployeesList = async ({
         sort_direction,
         employee_search_by,
         filter_employees_by,
-        search_term
+        search_term,
+        date_filter_employees_by
     });
     // eslint-disable-next-line no-useless-catch
     try {
@@ -212,7 +221,8 @@ const formatUrlString = ({
                              sort_direction,
                              employee_search_by,
                              filter_employees_by,
-                             search_term
+                             search_term,
+                             date_filter_employees_by
                          }: {
     url: string,
     per_page?: string,
@@ -221,6 +231,7 @@ const formatUrlString = ({
     employee_search_by?: string,
     filter_employees_by?: {},
     search_term?: string
+    date_filter_employees_by?: {},
 }) => {
     let respUrl = url;
     if (per_page) {
@@ -251,6 +262,27 @@ const formatUrlString = ({
                 queryParams.append(`filter_employees_by[${key}]`, value);
             }
         });
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
+    }
+    if (date_filter_employees_by) {
+        const queryParams = new URLSearchParams();
+        if (Object.keys(date_filter_employees_by).length > 0) {
+            Object.keys(date_filter_employees_by).forEach((item: any): void => {
+                // @ts-ignore
+                if (Object.keys(date_filter_employees_by[item]).length > 0) {
+                    // @ts-ignore
+                    Object.keys(date_filter_employees_by[item]).forEach((key: string) => {
+                        // @ts-ignore
+                        const value = date_filter_employees_by[item][key];
+                        queryParams.append(`date_filter_employees_by[${item}][${key}]`, value);
+
+                    })
+                }
+
+            });
+        }
         respUrl = respUrl.includes('?')
             ? `${respUrl}&${queryParams.toString()}`
             : `${respUrl}?${queryParams.toString()}`;
