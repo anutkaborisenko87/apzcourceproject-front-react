@@ -17,7 +17,7 @@ const GroupsView = () => {
 
     const onDeletingGroup = async (groupId: number) => {
         if (confirm('Віи впевнені, що хочете видалити цю групу')) {
-           // @ts-ignore
+            // @ts-ignore
             await dispatch(axiosDeleteGroupInfo(groupId))
         }
     }
@@ -38,7 +38,7 @@ const GroupsView = () => {
                         <h2 className="text-2xl font-bold">Групи</h2>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                            onClick={async  () => {
+                            onClick={async () => {
                                 // @ts-ignore
                                 await dispatch(axiosGetGroupInfo({}));
                                 dispatch(openCloseModal({open: true}));
@@ -57,10 +57,20 @@ const GroupsView = () => {
                         {
                             groupsList.length === 0 ? <h3>Інформація відсутня</h3>
                                 :
-                                groupsList.map((group: { id: number; title: string ; children: number; educationalPrograms: number; teachers: number; }) => {
+                                groupsList.map((group: {
+                                    id: number;
+                                    title: string;
+                                    children: number;
+                                    educationalPrograms: number;
+                                    teachers: number;
+                                    date_start: string;
+                                    date_finish: string;
+                                    average_estimation_mark: number;
+                                    past_events_percentage: number;
+                                }) => {
                                     return (
                                         <div key={group.id}
-                                            className='mx-auto max-w-sm rounded overflow-hidden shadow-lg m-4 bg-white'>
+                                             className='mx-auto max-w-sm rounded overflow-hidden shadow-lg m-4 bg-white'>
                                             <div className='px-6 py-4'>
                                                 <div className='grid grid-cols-2 font-bold text-xl mb-2'>
                                                     <div>{group.title}</div>
@@ -82,7 +92,7 @@ const GroupsView = () => {
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div className='grid grid-cols-2 text-gray-700 text-base gap-4'>
+                                                <div className='grid grid-cols-2 text-gray-700 text-base gap-4 items-end'>
                                                     <div>Дітей у групі</div>
                                                     <div>{group.children}</div>
 
@@ -90,6 +100,15 @@ const GroupsView = () => {
                                                     <div>
                                                         {group.teachers}
                                                     </div>
+
+                                                    <div>Період навчання групи:</div>
+                                                    <div><p>{group.date_start}</p> - <p>{group.date_finish}</p></div>
+
+                                                    <div>Середня успішність дітей групи:</div>
+                                                    <div>{group.average_estimation_mark}</div>
+
+                                                    <div>Відсоток пройденого навчальногоматеріалу групи:</div>
+                                                    <div>{group.past_events_percentage} %</div>
 
                                                 </div>
                                             </div>
