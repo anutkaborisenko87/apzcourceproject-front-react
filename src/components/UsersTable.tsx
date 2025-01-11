@@ -167,13 +167,24 @@ const UsersTable = ({tableType}: PropsType) => {
                 await dispatch(axiosActiveUsers({
                     page: 1,
                     per_page: newPerPage,
+                    sort_by: sortBy,
+                    sort_direction: sortDirection,
+                    search_by: sarchBy,
+                    search_term: sarchTerm,
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             } else {
                 // @ts-ignore
                 await dispatch(axiosNotActiveUsers({
                     page: 1,
                     per_page: newPerPage,
-                    // Остальные параметры остаются неизменными
+                    sort_by: sortBy,
+                    sort_direction: sortDirection,
+                    search_by: sarchBy,
+                    search_term: sarchTerm,
+                    filter_users_by: filterUsersBy,
+                    date_filter_users_by: dateFilterUsersBy
                 }));
             }
         }

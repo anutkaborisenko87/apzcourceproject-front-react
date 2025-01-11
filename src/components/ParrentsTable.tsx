@@ -125,7 +125,6 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                filter_parrents_by: filters,
                 search_term: searchTerm
             }));
         } else {
@@ -136,14 +135,12 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                filter_parrents_by: filters,
                 search_term: searchTerm
             }));
         }
     }
     const onDeletingParrent = async (parrentId: number) => {
         if (confirm("Ви впевнені, що хочете видалити цього батька?")) {
-            // @ts-ignore
             await dispatch(axiosDeleteParrent({parrentId, tableType}));
         }
     }
@@ -170,7 +167,7 @@ const ParrentsTable = ({
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
                 // @ts-ignore
-                filter_parrents_by: filters,
+                filter_parrents_by: filterParrentsBy,
                 search_term: searchTerm
             }));
         } else {
@@ -181,7 +178,7 @@ const ParrentsTable = ({
                 parrent_sort_by: parrentSortBy,
                 sort_direction: sortDirection,
                 parrent_search_by: parrentSearchBy,
-                filter_parrents_by: filters,
+                filter_parrents_by: filterParrentsBy,
                 search_term: searchTerm
             }));
         }
@@ -199,6 +196,7 @@ const ParrentsTable = ({
                     per_page: perPage,
                     parrent_sort_by: parrentSortBy,
                     sort_direction: sortDirection,
+                    filter_parrents_by: filterParrentsBy
                 }));
             } else {
                 // @ts-ignore
@@ -207,6 +205,7 @@ const ParrentsTable = ({
                     per_page: perPage,
                     parrent_sort_by: parrentSortBy,
                     sort_direction: sortDirection,
+                    filter_parrents_by: filterParrentsBy
                 }));
             }
         }
@@ -222,7 +221,7 @@ const ParrentsTable = ({
                     parrent_sort_by: parrentSortBy,
                     sort_direction: sortDirection,
                     parrent_search_by: parrentSearchBy,
-                    filter_parrents_by: filters,
+                    filter_parrents_by: filterParrentsBy,
                     search_term: event
                 }));
             } else {
@@ -233,7 +232,7 @@ const ParrentsTable = ({
                     parrent_sort_by: parrentSortBy,
                     sort_direction: sortDirection,
                     parrent_search_by: parrentSearchBy,
-                    filter_parrents_by: filters,
+                    filter_parrents_by: filterParrentsBy,
                     search_term: event
                 }));
             }
@@ -256,7 +255,8 @@ const ParrentsTable = ({
                 parrent_search_by: parrentSearchBy,
                 search_term: searchTerm,
                 parrent_sort_by: parrent_sort_by ?? parrentSearchBy,
-                sort_direction: sortDir
+                sort_direction: sortDir,
+                filter_parrents_by: filterParrentsBy
             }));
         } else {
             // @ts-ignore
@@ -266,7 +266,8 @@ const ParrentsTable = ({
                 parrent_search_by: parrentSearchBy,
                 search_term: searchTerm,
                 parrent_sort_by: parrent_sort_by ?? parrentSearchBy,
-                sort_direction: sortDir
+                sort_direction: sortDir,
+                filter_parrents_by: filterParrentsBy
             }));
         }
     }
@@ -277,7 +278,8 @@ const ParrentsTable = ({
                 page: currPage,
                 per_page: perPage,
                 parrent_search_by: parrentSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                filter_parrents_by: filterParrentsBy
             }));
         } else {
             // @ts-ignore
@@ -285,7 +287,8 @@ const ParrentsTable = ({
                 page: currPage,
                 per_page: perPage,
                 parrent_search_by: parrentSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                filter_parrents_by: filterParrentsBy
             }));
         }
     }

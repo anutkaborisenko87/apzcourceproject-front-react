@@ -293,7 +293,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else if (tableType === 'working') {
             // @ts-ignore
@@ -303,7 +307,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else {
             // @ts-ignore
@@ -313,7 +321,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_sort_by: employeeSortBy,
                 sort_direction: sortDirection,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         }
 
@@ -329,7 +341,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     page: 1,
                     per_page: perPage,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             } else if (tableType === 'working') {
                 // @ts-ignore
@@ -337,7 +353,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     page: 1,
                     per_page: perPage,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             } else {
                 // @ts-ignore
@@ -345,7 +365,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     page: 1,
                     per_page: perPage,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             }
         }
@@ -361,7 +385,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     employee_search_by: employeeSearchBy,
                     search_term: event,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             } else if (tableType === 'working') {
                 // @ts-ignore
@@ -371,7 +399,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     employee_search_by: employeeSearchBy,
                     search_term: event,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             } else {
                 // @ts-ignore
@@ -381,7 +413,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                     employee_search_by: employeeSearchBy,
                     search_term: event,
                     employee_sort_by: employeeSortBy,
-                    sort_direction: sortDirection
+                    sort_direction: sortDirection,
+                    // @ts-ignore
+                    filter_employees_by: filterEmployeesBy,
+                    // @ts-ignore
+                    date_filter_employees_by: dateFilterEmployeesBy
                 }));
             }
         } else {
@@ -403,7 +439,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
-                sort_direction: sortDir
+                sort_direction: sortDir,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else if (tableType === 'working') {
             // @ts-ignore
@@ -413,7 +453,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
-                sort_direction: sortDir
+                sort_direction: sortDir,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else {
             // @ts-ignore
@@ -423,7 +467,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 employee_search_by: employeeSearchBy,
                 search_term: searchTerm,
                 employee_sort_by: employee_sort_by ?? employeeSortBy,
-                sort_direction: sortDir
+                sort_direction: sortDir,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         }
     }
@@ -434,7 +482,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else if (tableType === 'working') {
             // @ts-ignore
@@ -442,7 +494,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         } else {
             // @ts-ignore
@@ -450,7 +506,11 @@ const EmployeesTable = ({tableType}: PropsType) => {
                 page: currPage,
                 per_page: perPage,
                 employee_search_by: employeeSearchBy,
-                search_term: searchTerm
+                search_term: searchTerm,
+                // @ts-ignore
+                filter_employees_by: filterEmployeesBy,
+                // @ts-ignore
+                date_filter_employees_by: dateFilterEmployeesBy
             }));
         }
     }
