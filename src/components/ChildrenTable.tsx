@@ -18,6 +18,7 @@ import {useState, useCallback, useEffect} from "react";
 import * as _ from "lodash";
 import FiltersComponent from "./FiltersComponent.tsx";
 import SearchComponent from "./SearchComponent.tsx";
+import DateFiltersComponent from "./DateFiltersComponent.tsx";
 
 type PropsType = {
     tableType: string;
@@ -25,7 +26,6 @@ type PropsType = {
 const ChildrenTable = ({
                            tableType,
                        }: PropsType) => {
-
 
 
     const dispatch = useDispatch();
@@ -36,6 +36,8 @@ const ChildrenTable = ({
     // @ts-ignore
     const filterChildrensBy = useSelector(state => state.childrenList?.childrenList?.filter_childrens_by ?? null);
     // @ts-ignore
+    const dateFilterChildrensBy = useSelector(state => state.childrenList?.childrenList?.date_filter_childrens_by ?? null);
+    // @ts-ignore
     const currPage = useSelector(state => state.childrenList?.childrenList?.current_page ?? 1);
     // @ts-ignore
     const childSortBy = useSelector(state => state.childrenList?.childrenList?.child_sort_by ?? null);
@@ -45,10 +47,13 @@ const ChildrenTable = ({
     const childSearchBy = useSelector(state => state.childrenList?.childrenList?.child_search_by ?? null);
     // @ts-ignore
     const searchTerm = useSelector(state => state.childrenList?.childrenList?.search_term ?? null);
-    const [showChildrensFilters, setShowChildrensFilters] = useState(filterChildrensBy !== null && Object.keys(filterChildrensBy).length > 0);
+    const [showChildrensFilters, setShowChildrensFilters] = useState((filterChildrensBy !== null && Object.keys(filterChildrensBy).length > 0) || (dateFilterChildrensBy !== null && Object.keys(dateFilterChildrensBy).length > 0));
     // @ts-ignore
     const filters = useSelector(state => state.childrenList?.childrenList?.filters ?? []);
+    // @ts-ignore
+    const dateFilters = useSelector(state => state.childrenList?.childrenList?.dateFilters ?? []);
     const [selectedChildrensFilters, setSelectedChildrensFilters] = useState(filters);
+    const [selectedChildrensDateFilters, setSelectedChildrensDateFilters] = useState(dateFilters);
     // @ts-ignore
     const handleChildrensFilterChange = useCallback(async (sectionId: string, optionValue: string, checked: boolean) => {
         setSelectedChildrensFilters((prevFilters: { id: string; options: { value: string; }[]; }[]) =>
@@ -64,6 +69,22 @@ const ChildrenTable = ({
             )
         );
     }, []);
+    const handleDateFilterChange = useCallback(async (sectionId: string, fromToKey: string, optionValue: string) => {
+        setSelectedChildrensDateFilters((prevFilters: any) => {
+            return prevFilters.map((section: any) => {
+                if (section.id === sectionId) {
+                    return {
+                        ...section,
+                        [fromToKey]: {
+                            ...section[fromToKey],
+                            value: optionValue
+                        }
+                    };
+                }
+                return section;
+            });
+        });
+    }, []);
     const filterBy = () => {
         let localfilters = {};
         if (selectedChildrensFilters) {
@@ -74,12 +95,35 @@ const ChildrenTable = ({
             }): void => {
                 let selectedOptions: string[] = [];
                 item.options.forEach((option: { checked: boolean; value: string; label: string; }): void => {
-                    if (option.checked) selectedOptions.push(option.value);
+                    if (option.checked) selectedOptions.push(option.value.toString());
                 });
                 // @ts-ignore
                 if (selectedOptions.length > 0) localfilters[item.id] = selectedOptions;
             });
         }
+        return Object.keys(localfilters).length > 0 ? localfilters : null;
+    };
+    const filterByDate = () => {
+        let localfilters = {};
+        selectedChildrensDateFilters.forEach((item: any): void => {
+            if (item.from?.value !== null && item.from?.value !== '') {
+                // @ts-ignore
+                localfilters[item.id] = {
+                    // @ts-ignore
+                    ...localfilters[item.id],
+                    from: item.from.value,
+                };
+            }
+            if (item.to?.value !== null && item.to?.value !== '') {
+                // @ts-ignore
+                localfilters[item.id] = {
+                    // @ts-ignore
+                    ...localfilters[item.id],
+                    to: item.to.value,
+                };
+            }
+        });
+
         return Object.keys(localfilters).length > 0 ? localfilters : null;
     };
     useEffect(() => {
@@ -89,7 +133,15 @@ const ChildrenTable = ({
                 await filteringBy(formedFilters);
             })();
         }
-    }, [setSelectedChildrensFilters, filterChildrensBy]);
+    }, [selectedChildrensFilters, filterChildrensBy]);
+    useEffect(() => {
+        let formedDateFilters = filterByDate();
+        if (!_.isEqual(dateFilterChildrensBy, formedDateFilters)) {
+            (async () => {
+                await filteringByDate(formedDateFilters);
+            })();
+        }
+    }, [selectedChildrensDateFilters, dateFilterChildrensBy]);
     // @ts-ignore
     const filteringBy = useCallback(async (filters: any) => {
         switch (tableType) {
@@ -102,6 +154,7 @@ const ChildrenTable = ({
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
                     filter_childrens_by: filters,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -114,6 +167,7 @@ const ChildrenTable = ({
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
                     filter_childrens_by: filters,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -126,6 +180,7 @@ const ChildrenTable = ({
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
                     filter_childrens_by: filters,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -138,6 +193,7 @@ const ChildrenTable = ({
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
                     filter_childrens_by: filters,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -150,10 +206,80 @@ const ChildrenTable = ({
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
                     filter_childrens_by: filters,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
         }
     }, [selectedChildrensFilters]);
+    // @ts-ignore
+    const filteringByDate = useCallback(async (dateFilters: any) => {
+        switch (tableType) {
+            case 'all':
+                // @ts-ignore
+                dispatch(axiosChildrenAllList({
+                    page: currPage,
+                    per_page: perPage,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilters,
+                    search_term: searchTerm
+                }));
+                break;
+            case 'for-enrollment':
+                // @ts-ignore
+                dispatch(axiosForEnrolmentChildrenList({
+                    page: currPage,
+                    per_page: perPage,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilters,
+                    search_term: searchTerm
+                }));
+                break;
+            case 'in-training':
+                // @ts-ignore
+                dispatch(axiosInTrainingChildrenList({
+                    page: currPage,
+                    per_page: perPage,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilters,
+                    search_term: searchTerm
+                }));
+                break;
+            case 'graduated':
+                // @ts-ignore
+                dispatch(axiosGraduatedChildrenList({
+                    page: currPage,
+                    per_page: perPage,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilters,
+                    search_term: searchTerm
+                }));
+                break;
+            default:
+                // @ts-ignore
+                dispatch(axiosChildrenAllList({
+                    page: currPage,
+                    per_page: perPage,
+                    child_sort_by: childSortBy,
+                    sort_direction: sortDirection,
+                    child_search_by: childSearchBy,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilters,
+                    search_term: searchTerm
+                }));
+        }
+    }, [selectedChildrensDateFilters]);
     const cancelFiltering = async () => {
         switch (tableType) {
             case 'all':
@@ -164,7 +290,6 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
                     search_term: searchTerm
                 }));
                 break;
@@ -176,7 +301,6 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
                     search_term: searchTerm
                 }));
                 break;
@@ -188,7 +312,6 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
                     search_term: searchTerm
                 }));
                 break;
@@ -200,7 +323,6 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
                     search_term: searchTerm
                 }));
                 break;
@@ -212,7 +334,6 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
                     search_term: searchTerm
                 }));
         }
@@ -233,7 +354,8 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -245,7 +367,8 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -257,7 +380,8 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -269,7 +393,8 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -281,12 +406,13 @@ const ChildrenTable = ({
                     child_sort_by: childSortBy,
                     sort_direction: sortDirection,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
         }
     }
-    const beginSearchBy = async ({child_search_by}: {child_search_by?: string|null}) => {
+    const beginSearchBy = async ({child_search_by}: { child_search_by?: string | null }) => {
         if (child_search_by) dispatch(setChildSearchableColumn({child_search_by}));
         if (!child_search_by) {
             switch (tableType) {
@@ -297,7 +423,8 @@ const ChildrenTable = ({
                         per_page: perPage,
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy
                     }));
                     break;
                 case 'for-enrollment':
@@ -307,7 +434,8 @@ const ChildrenTable = ({
                         per_page: perPage,
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy
                     }));
                     break;
                 case 'in-training':
@@ -317,7 +445,8 @@ const ChildrenTable = ({
                         per_page: perPage,
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy
                     }));
                     break;
                 case 'graduated':
@@ -327,7 +456,8 @@ const ChildrenTable = ({
                         per_page: perPage,
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy
                     }));
                     break;
                 default:
@@ -337,7 +467,8 @@ const ChildrenTable = ({
                         per_page: perPage,
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy
                     }));
             }
         }
@@ -353,7 +484,8 @@ const ChildrenTable = ({
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
                         child_search_by: childSearchBy,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy,
                         search_term: event
                     }));
                     break;
@@ -365,7 +497,8 @@ const ChildrenTable = ({
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
                         child_search_by: childSearchBy,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy,
                         search_term: event
                     }));
                     break;
@@ -377,7 +510,8 @@ const ChildrenTable = ({
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
                         child_search_by: childSearchBy,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy,
                         search_term: event
                     }));
                     break;
@@ -389,7 +523,8 @@ const ChildrenTable = ({
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
                         child_search_by: childSearchBy,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy,
                         search_term: event
                     }));
                     break;
@@ -401,7 +536,8 @@ const ChildrenTable = ({
                         child_sort_by: childSortBy,
                         sort_direction: sortDirection,
                         child_search_by: childSearchBy,
-                        filter_childrens_by: filters,
+                        filter_childrens_by: filterChildrensBy,
+                        date_filter_childrens_by: dateFilterChildrensBy,
                         search_term: event
                     }));
             }
@@ -423,7 +559,8 @@ const ChildrenTable = ({
                     child_sort_by: child_sort_by ?? childSortBy,
                     sort_direction: sortDir,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -435,7 +572,8 @@ const ChildrenTable = ({
                     child_sort_by: child_sort_by ?? childSortBy,
                     sort_direction: sortDir,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -447,7 +585,8 @@ const ChildrenTable = ({
                     child_sort_by: child_sort_by ?? childSortBy,
                     sort_direction: sortDir,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -459,7 +598,8 @@ const ChildrenTable = ({
                     child_sort_by: child_sort_by ?? childSortBy,
                     sort_direction: sortDir,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -471,7 +611,8 @@ const ChildrenTable = ({
                     child_sort_by: child_sort_by ?? childSortBy,
                     sort_direction: sortDir,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
         }
@@ -484,7 +625,8 @@ const ChildrenTable = ({
                     page: currPage,
                     per_page: perPage,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -494,7 +636,8 @@ const ChildrenTable = ({
                     page: currPage,
                     per_page: perPage,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -504,7 +647,8 @@ const ChildrenTable = ({
                     page: currPage,
                     per_page: perPage,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -514,7 +658,8 @@ const ChildrenTable = ({
                     page: currPage,
                     per_page: perPage,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
                 break;
@@ -524,7 +669,8 @@ const ChildrenTable = ({
                     page: currPage,
                     per_page: perPage,
                     child_search_by: childSearchBy,
-                    filter_childrens_by: filters,
+                    filter_childrens_by: filterChildrensBy,
+                    date_filter_childrens_by: dateFilterChildrensBy,
                     search_term: searchTerm
                 }));
         }
@@ -539,7 +685,7 @@ const ChildrenTable = ({
                                 onClick={() => setShowChildrensFilters(showChildrensFilters => !showChildrensFilters)}
                                 className={`w-6 cursor-pointer ${showChildrensFilters ? 'text-violet-600 hover:text-gray-800' : 'hover:text-violet-600'}`}/>
                             {
-                                filterChildrensBy !== null ?
+                                filterChildrensBy !== null || dateFilterChildrensBy !== null ?
                                     <XCircleIcon
                                         className="w-6 text-violet-600 hover:text-gray-800 cursor-pointer"
                                         onClick={cancelFiltering} title="Скинути всі фільтри"/>
@@ -553,6 +699,12 @@ const ChildrenTable = ({
                             <div className="w-full mb-2">
                                 <FiltersComponent filters={selectedChildrensFilters}
                                                   onFilterChange={handleChildrensFilterChange}/>
+                                {
+                                    selectedChildrensDateFilters.length > 0
+                                        ?
+                                        <DateFiltersComponent filters={selectedChildrensDateFilters} onFilterChange={handleDateFilterChange}/>
+                                        : <></>
+                                }
                             </div>
                             : <></>
                     }
@@ -772,51 +924,51 @@ const ChildrenTable = ({
                         <tbody>
 
                         {childrenList.map((child: any) => {
-                            return (
-                                <tr key={child?.id}
-                                    className={`${child?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
-                                    <td className="py-2 px-4 border-b">{child?.last_name ?? ''} {child?.first_name ?? ''} {child?.patronymic_name ?? ''}</td>
-                                    <td className="py-2 px-4 border-b">{child?.birthdate}</td>
-                                    <td className="py-2 px-4 border-b"><span
-                                        title={child?.enrollment_date ?? "Немає інформації про дату вступу"}>{child?.enrollment_year ?? ''}</span>
-                                    </td>
-                                    <td className="py-2 px-4 border-b"><span
-                                        title={child?.graduation_date ?? "Немає інформації про дату випуску"}>{child?.graduation_year ?? ''}</span>
-                                    </td>
-                                    <td className="py-2 px-4 border-b">{child?.group ? child?.group?.title : ''} </td>
-                                    <td className="py-2 px-4 border-b">{child?.parrents && child?.parrents.length > 0 ?
-                                        child?.parrents.map((parrent: {
-                                            id: number;
-                                            parrent_name: string;
-                                            relations: string;
-                                        }) => {
-                                            return (
-                                                <button key={parrent.id}
-                                                        className="border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
-                                                    {parrent.parrent_name} {`(${parrent.relations})`}
-                                                </button>
-                                            )
-                                        })
-                                        : ''}</td>
-                                    <td className="py-2 px-4 border-b">
-                                        <button className="text-blue-500 hover:text-blue-700 mr-2"
-                                                onClick={async () => {
-                                                    // @ts-ignore
-                                                    await dispatch(axiosChildInfo(child?.id));
-                                                    dispatch(openCloseModal({open: true}))
-                                                }}
-                                        >
-                                            <PencilSquareIcon className="w-6"/>
+                                return (
+                                    <tr key={child?.id}
+                                        className={`${child?.founded == true ? 'bg-blue-300 hover:bg-blue-200' : 'hover:bg-gray-100'} `}>
+                                        <td className="py-2 px-4 border-b">{child?.last_name ?? ''} {child?.first_name ?? ''} {child?.patronymic_name ?? ''}</td>
+                                        <td className="py-2 px-4 border-b">{child?.birthdate}</td>
+                                        <td className="py-2 px-4 border-b"><span
+                                            title={child?.enrollment_date ?? "Немає інформації про дату вступу"}>{child?.enrollment_year ?? ''}</span>
+                                        </td>
+                                        <td className="py-2 px-4 border-b"><span
+                                            title={child?.graduation_date ?? "Немає інформації про дату випуску"}>{child?.graduation_year ?? ''}</span>
+                                        </td>
+                                        <td className="py-2 px-4 border-b">{child?.group ? child?.group?.title : ''} </td>
+                                        <td className="py-2 px-4 border-b">{child?.parrents && child?.parrents.length > 0 ?
+                                            child?.parrents.map((parrent: {
+                                                id: number;
+                                                parrent_name: string;
+                                                relations: string;
+                                            }) => {
+                                                return (
+                                                    <button key={parrent.id}
+                                                            className="border border-green-500 text-green-500 hover:border-green-700 hover:text-green-700 mr-2 text-sm">
+                                                        {parrent.parrent_name} {`(${parrent.relations})`}
+                                                    </button>
+                                                )
+                                            })
+                                            : ''}</td>
+                                        <td className="py-2 px-4 border-b">
+                                            <button className="text-blue-500 hover:text-blue-700 mr-2"
+                                                    onClick={async () => {
+                                                        // @ts-ignore
+                                                        await dispatch(axiosChildInfo(child?.id));
+                                                        dispatch(openCloseModal({open: true}))
+                                                    }}
+                                            >
+                                                <PencilSquareIcon className="w-6"/>
 
-                                        </button>
-                                        <button className="text-red-500 hover:text-red-700"
-                                                onClick={() => onDeletingChild(child.id)}
-                                        >
-                                            <TrashIcon className="w-6"/>
-                                        </button>
-                                    </td>
-                                </tr>
-                            )
+                                            </button>
+                                            <button className="text-red-500 hover:text-red-700"
+                                                    onClick={() => onDeletingChild(child.id)}
+                                            >
+                                                <TrashIcon className="w-6"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
                             }
                         )}
                         </tbody>

@@ -34,6 +34,7 @@ export const axiosChildrenAllList = createAsyncThunk(
                         sort_direction,
                         child_search_by,
                         filter_childrens_by,
+                        date_filter_childrens_by,
                         search_term
                     }:
                     {
@@ -43,6 +44,7 @@ export const axiosChildrenAllList = createAsyncThunk(
                         sort_direction?: string,
                         child_search_by?: string,
                         filter_childrens_by?: {},
+                        date_filter_childrens_by?: {},
                         search_term?: string
                     }) {
         return await getAllChildrenList({
@@ -52,6 +54,7 @@ export const axiosChildrenAllList = createAsyncThunk(
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
     }
@@ -65,6 +68,7 @@ export const axiosForEnrolmentChildrenList = createAsyncThunk(
                         sort_direction,
                         child_search_by,
                         filter_childrens_by,
+                        date_filter_childrens_by,
                         search_term
                     }:
                     {
@@ -74,6 +78,7 @@ export const axiosForEnrolmentChildrenList = createAsyncThunk(
                         sort_direction?: string,
                         child_search_by?: string,
                         filter_childrens_by?: {},
+                        date_filter_childrens_by?: {},
                         search_term?: string
                     }) {
         return await getForEnrolmentChildrenList({
@@ -83,6 +88,7 @@ export const axiosForEnrolmentChildrenList = createAsyncThunk(
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
     }
@@ -96,6 +102,7 @@ export const axiosInTrainingChildrenList = createAsyncThunk(
                         sort_direction,
                         child_search_by,
                         filter_childrens_by,
+                        date_filter_childrens_by,
                         search_term
                     }:
                     {
@@ -105,6 +112,7 @@ export const axiosInTrainingChildrenList = createAsyncThunk(
                         sort_direction?: string,
                         child_search_by?: string,
                         filter_childrens_by?: {},
+                        date_filter_childrens_by?: {},
                         search_term?: string
                     }) {
         return await getInTrainingChildrenList({
@@ -114,6 +122,7 @@ export const axiosInTrainingChildrenList = createAsyncThunk(
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
     }
@@ -127,6 +136,7 @@ export const axiosGraduatedChildrenList = createAsyncThunk(
                         sort_direction,
                         child_search_by,
                         filter_childrens_by,
+                        date_filter_childrens_by,
                         search_term
                     }:
                     {
@@ -136,6 +146,7 @@ export const axiosGraduatedChildrenList = createAsyncThunk(
                         sort_direction?: string,
                         child_search_by?: string,
                         filter_childrens_by?: {},
+                        date_filter_childrens_by?: {},
                         search_term?: string
                     }) {
         return await getGraduatedChildrenList({
@@ -145,6 +156,7 @@ export const axiosGraduatedChildrenList = createAsyncThunk(
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
     }
@@ -304,7 +316,9 @@ const childrenListSlice = createSlice({
             current_page: 1,
             per_page: 10,
             filter_childrens_by: null,
+            date_filter_childrens_by: null,
             filters: [],
+            dateFilters: [],
             child_sort_by: null,
             sort_direction: 'asc',
             child_search_by: null,

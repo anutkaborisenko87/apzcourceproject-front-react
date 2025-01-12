@@ -25,6 +25,7 @@ export const getAllChildrenList = async ({
                                              sort_direction,
                                              child_search_by,
                                              filter_childrens_by,
+                                             date_filter_childrens_by,
                                              search_term
                                          }:
                                          {
@@ -34,6 +35,7 @@ export const getAllChildrenList = async ({
                                              sort_direction?: string,
                                              child_search_by?: string,
                                              filter_childrens_by?: {},
+                                             date_filter_childrens_by?: {},
                                              search_term?: string
                                          }) => {
     try {
@@ -45,6 +47,7 @@ export const getAllChildrenList = async ({
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
         const {data} = await axiosClient.get(url);
@@ -60,6 +63,7 @@ export const getForEnrolmentChildrenList = async ({
                                                       sort_direction,
                                                       child_search_by,
                                                       filter_childrens_by,
+                                                      date_filter_childrens_by,
                                                       search_term
                                                   }:
                                                   {
@@ -69,6 +73,7 @@ export const getForEnrolmentChildrenList = async ({
                                                       sort_direction?: string,
                                                       child_search_by?: string,
                                                       filter_childrens_by?: {},
+                                                      date_filter_childrens_by?: {},
                                                       search_term?: string
                                                   }) => {
     try {
@@ -80,6 +85,7 @@ export const getForEnrolmentChildrenList = async ({
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
         const {data} = await axiosClient.get(url);
@@ -95,6 +101,7 @@ export const getInTrainingChildrenList = async ({
                                                     sort_direction,
                                                     child_search_by,
                                                     filter_childrens_by,
+                                                    date_filter_childrens_by,
                                                     search_term
                                                 }:
                                                 {
@@ -104,6 +111,7 @@ export const getInTrainingChildrenList = async ({
                                                     sort_direction?: string,
                                                     child_search_by?: string,
                                                     filter_childrens_by?: {},
+                                                    date_filter_childrens_by?: {},
                                                     search_term?: string
                                                 }) => {
     try {
@@ -115,6 +123,7 @@ export const getInTrainingChildrenList = async ({
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
         const {data} = await axiosClient.get(url);
@@ -130,6 +139,7 @@ export const getGraduatedChildrenList = async ({
                                                    sort_direction,
                                                    child_search_by,
                                                    filter_childrens_by,
+                                                   date_filter_childrens_by,
                                                    search_term
                                                }:
                                                {
@@ -139,6 +149,7 @@ export const getGraduatedChildrenList = async ({
                                                    sort_direction?: string,
                                                    child_search_by?: string,
                                                    filter_childrens_by?: {},
+                                                   date_filter_childrens_by?: {},
                                                    search_term?: string
                                                }) => {
     try {
@@ -150,6 +161,7 @@ export const getGraduatedChildrenList = async ({
             sort_direction,
             child_search_by,
             filter_childrens_by,
+            date_filter_childrens_by,
             search_term
         });
         const {data} = await axiosClient.get(url);
@@ -202,6 +214,7 @@ const formatUrlString = ({
                              sort_direction,
                              child_search_by,
                              filter_childrens_by,
+                             date_filter_childrens_by,
                              search_term
                          }: {
     url: string,
@@ -210,6 +223,7 @@ const formatUrlString = ({
     sort_direction?: string,
     child_search_by?: string,
     filter_childrens_by?: {},
+    date_filter_childrens_by?: {},
     search_term?: string
 }) => {
     let respUrl = url;
@@ -241,6 +255,27 @@ const formatUrlString = ({
                 queryParams.append(`filter_childrens_by[${key}]`, value);
             }
         });
+        respUrl = respUrl.includes('?')
+            ? `${respUrl}&${queryParams.toString()}`
+            : `${respUrl}?${queryParams.toString()}`;
+    }
+    if (date_filter_childrens_by) {
+        const queryParams = new URLSearchParams();
+        if (Object.keys(date_filter_childrens_by).length > 0) {
+            Object.keys(date_filter_childrens_by).forEach((item: any): void => {
+                // @ts-ignore
+                if (Object.keys(date_filter_childrens_by[item]).length > 0) {
+                    // @ts-ignore
+                    Object.keys(date_filter_childrens_by[item]).forEach((key: string) => {
+                        // @ts-ignore
+                        const value = date_filter_childrens_by[item][key];
+                        queryParams.append(`date_filter_childrens_by[${item}][${key}]`, value);
+
+                    })
+                }
+
+            });
+        }
         respUrl = respUrl.includes('?')
             ? `${respUrl}&${queryParams.toString()}`
             : `${respUrl}?${queryParams.toString()}`;

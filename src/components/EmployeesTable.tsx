@@ -279,7 +279,6 @@ const EmployeesTable = ({tableType}: PropsType) => {
     const onReacttivatingEmployee = async (employeeId: React.Key | null | undefined) => {
         if (confirm("Ви впевнені, що хочете активувати цього співробітника?")) {
             // @ts-ignore
-
             await dispatch(axiosReactivateEmployee({employeeId, tableType}));
         }
 
