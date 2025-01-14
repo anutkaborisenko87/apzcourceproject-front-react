@@ -17,7 +17,12 @@ const Breadcrumbs = ({routes}: BreadcrumbsProps) => {
         <div className="p-4 bg-white shadow-blue-500 mb-4">
             <ul className="flex space-x-2">
                 <li>
-                    <Link to="/" className="text-blue-600 hover:text-blue-800">Головна</Link>
+                    {routes.length > 0 ?
+                        <Link to="/" className="text-blue-600 hover:text-blue-800">Головна</Link>
+                        :
+                        <span className="ml-2 text-gray-500">Головна</span>
+                    }
+
                 </li>
                 {routes.map((route, index) => {
                     const isLast = index === routes.length - 1;

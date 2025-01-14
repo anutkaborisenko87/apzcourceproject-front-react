@@ -2,6 +2,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
 import {axiosDashboardData} from "../store/dashbordSlice.ts";
 import DashboardChildrenTable from "./DashboardChildrenTable.tsx";
+import DashboardGroupsTable from "./DashboardGroupsTable.tsx";
+import DashboardTeachersTable from "./DashboardTeachersTable.tsx";
 
 const DashboardComponent = () => {
     const dispatch = useDispatch();
@@ -19,9 +21,18 @@ const DashboardComponent = () => {
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
                 </div>
                 :
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <DashboardChildrenTable/>
-                </div>
+                <>
+                    <div className="bg-white rounded-lg shadow-md p-6 my-2">
+                        <DashboardGroupsTable/>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-md p-6 my-2">
+                        <DashboardTeachersTable/>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-md p-6">
+                        <DashboardChildrenTable/>
+                    </div>
+                </>
+
             }
 
         </div>

@@ -1,12 +1,11 @@
 import DashboardComponent from "../components/DashboardComponent.tsx";
+import Breadcrumbs from "../components/Breadcrumbs.tsx";
 
 const Dashboard = () => {
     return (
         <div>
-            <h1>Dashboard</h1>
-            <div className="mb-6">
-                <DashboardComponent/>
-            </div>
+            <Breadcrumbs routes={[]}/>
+            <DashboardComponent/>
         </div>
     );
 };
