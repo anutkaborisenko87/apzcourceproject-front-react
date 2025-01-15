@@ -284,7 +284,6 @@ const userSlice = createSlice({
             } else {
                 state.error = null
             }
-
         },
         setSearchableColumn: (state, action) => {
             // @ts-ignore

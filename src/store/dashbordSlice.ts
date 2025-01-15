@@ -5,17 +5,75 @@ export const axiosDashboardData = createAsyncThunk('dashboard/axiosDashboardData
    return await getDashboardInfo();
 });
 
+const setFormErrors = (state: {
+    validationDAshboardErrors: {
+        group_id: any;
+        teacher_id: any;
+        from: any;
+        to: any;
+    };
+    error: any;
+    statusForm: string;
+}, action: { payload: { response: any; }; }) => {
+    const {response} = action.payload
+    // @ts-ignore
+    if (response.status === 422) {
+        state.validationDAshboardErrors = {
+            group_id: response?.data?.errors?.group_id ?? [],
+            teacher_id: response?.data?.errors?.teacher_id ?? [],
+            from: response?.data?.errors?.from ?? [],
+            to: response?.data?.errors?.to ?? [],
+        }
+    } else {
+        state.error = response.data.error;
+    }
+    // @ts-ignore
+    state.statusDashboardForm = 'failed';
+}
+
 const dashbordSlice = createSlice({
     name: 'dashboard',
     initialState: {
         groups: [],
         teachers: [],
         childrens: [],
+        groupToReport: null,
+        childrenGroupToReport: null,
+        teacherToReport: null,
         educationPeriod: '',
         status: null,
-        error: null
+        error: null,
+        validationDAshboardErrors: {
+            group_id: [],
+            teacher_id: [],
+            from: [],
+            to: []
+        },
+        notification: {
+            type: '',
+            message: ''
+        },
+        statusDashboardForm: null
     },
-    reducers: {},
+    reducers: {
+        getGroupForReport: (state, action) => {
+            state.groupToReport = action.payload;
+        },
+        getChildrenGroupForReport: (state, action) => {
+            state.childrenGroupToReport = action.payload;
+        },
+        getTeacherForReport: (state, action) => {
+            state.teacherToReport = action.payload;
+        },
+        cleanDashdoardErrors: (state, action) => {
+            if (action.payload?.field) {
+                // @ts-ignore
+                state.validationDAshboardErrors[action.payload.field] = []
+            } else {
+                state.error = null
+            }
+        },
+    },
     extraReducers: builder => {
         builder.addCase(axiosDashboardData.pending, (state) => {
             // @ts-ignore
@@ -38,5 +96,10 @@ const dashbordSlice = createSlice({
         });
     }
 });
-export const {} = dashbordSlice.actions;
+export const {
+    getGroupForReport,
+    getTeacherForReport,
+    getChildrenGroupForReport,
+    cleanDashdoardErrors
+} = dashbordSlice.actions;
 export default dashbordSlice.reducer;

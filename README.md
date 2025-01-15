@@ -1,30 +1,45 @@
-# React + TypeScript + Vite
+## Steps to Set Up the Frontend of the Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+To set up the frontend of the React project, follow these steps:
 
-Currently, two official plugins are available:
+### 1. Clone the Repository
+Clone the React project repository:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+git clone https://github.com/anutkaborisenko87/apzcourceproject-front-react.git <project-name>
+cd <project-name>
+```
+### 2. Install Dependencies
 
-## Expanding the ESLint configuration
+Install the required dependencies using npm:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+```bash
+npm install
+```
+### 3. Configure the Environment
 
-- Configure the top-level `parserOptions` property like this:
+- Create a .env file by copying the example:
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+cp .env.example .env
+```
+- Define environment variables for API connection, for example:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### 4. Start the Development Server
+   For local development, start the development server:
+
+```bash
+npm run dev
+```
+### 5. Deployment to a Remote Server
+   For a production environment, build the project:
+
+```bash
+npm run build
+```
+
+The entry point for deployment is the dist folder.

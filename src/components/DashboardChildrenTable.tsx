@@ -11,14 +11,14 @@ const DashboardChildrenTable = () => {
     return (
         <div className="p-6">
             <div className="">
-                <h2 className="text-2xl font-bold my-3 text-center">Статистика "Прогрес вихованців центру" навчальний рік {educationPeriod}</h2>
+                <h2 className="text-2xl font-bold my-3">Статистика "Прогрес вихованців центру" навчальний рік {educationPeriod}</h2>
                 {dashboardChildrenList.length === 0
                     ?
                     <p>Тут поки що немає нічого </p>
                     :
                     <div className="overflow-x-auto max-h-64">
                         <table className="min-w-full bg-white">
-                            <thead className="sticky top-0 bg-white">
+                            <thead className="top-0 bg-white">
                             <tr>
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
@@ -28,7 +28,6 @@ const DashboardChildrenTable = () => {
                                 <th className="py-2 px-4 border-b">
                                     <div className="flex items-center justify-between">
                                         <span>Рік народження</span>
-
                                     </div>
                                 </th>
                                 <th className="py-2 px-4 border-b">
