@@ -23,7 +23,6 @@ export const axiosGetGroupsList = createAsyncThunk(
 export const axiosGetGroupInfo = createAsyncThunk(
     'groups/axiosGetGroupInfo',
     async function ({groupId, payload}: {groupId?: number, payload?: GroupInfoPayload}, {rejectWithValue, dispatch}) {
-        console.log('axiosGetGroupInfo', groupId);
         // @ts-ignore
         dispatch(cleanGroupErrors());
         if (!groupId) {

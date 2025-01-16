@@ -2,45 +2,29 @@ import {useDispatch, useSelector} from "react-redux";
 import {ListBulletIcon, PrinterIcon} from "@heroicons/react/24/outline";
 import {openCloseModal} from "../store/modalSlice.ts";
 import {getChildrenGroupForReport, getGroupForReport, getTeacherForReport} from "../store/dashbordSlice.ts";
-import Modal from "./Modal.tsx";
-import DashboardGroupReportForm from "./DashboardGroupReportForm.tsx";
-import DashboardChildrenReportForm from "./DashboardChildrenReportForm.tsx";
-
 
 const DashboardGroupsTable = () => {
     const dispatch = useDispatch();
     // @ts-ignore
     const dashboardGroupsList = useSelector(state => state.dashboard?.groups ?? []);
     // @ts-ignore
-    const dashboardGroupToreport = useSelector(state => state.dashboard?.groupToReport ?? null);
-    // @ts-ignore
     const educationPeriod = useSelector(state => state.dashboard?.educationPeriod ?? '');
     const onGetGroupReport = (group: {group_id: number, title: string}) => {
+        dispatch(openCloseModal({open: true}))
         dispatch(getChildrenGroupForReport(null));
         dispatch(getTeacherForReport(null));
         dispatch(getGroupForReport(group));
-        dispatch(openCloseModal({open: true}))
     }
     const onGetChildrenReport = (group: {group_id: number, title: string}) => {
+        dispatch(openCloseModal({open: true}))
         dispatch(getGroupForReport(null));
         dispatch(getTeacherForReport(null));
         dispatch(getChildrenGroupForReport(group));
-        dispatch(openCloseModal({open: true}))
     }
 
     return (
         <div className="p-6">
             <div className="">
-                <div className="container mx-auto mt-10">
-                    <Modal>
-                        {dashboardGroupToreport ?
-                            <DashboardGroupReportForm/>
-                            :
-                            <DashboardChildrenReportForm/>
-                        }
-
-                    </Modal>
-                </div>
                 <h2 className="text-2xl font-bold my-3">Статистика "Cклад груп дітей" навчальний
                     рік {educationPeriod}</h2>
                 {dashboardGroupsList.length === 0

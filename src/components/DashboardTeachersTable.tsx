@@ -1,7 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
 import {PresentationChartBarIcon} from "@heroicons/react/24/outline";
-import Modal from "./Modal.tsx";
-import DashboardTeacherReportForm from "./DashboardTeacherReportForm.tsx";
 import {getChildrenGroupForReport, getGroupForReport, getTeacherForReport} from "../store/dashbordSlice.ts";
 import {openCloseModal} from "../store/modalSlice.ts";
 
@@ -12,8 +10,6 @@ const DashboardTeachersTable = () => {
     const dashboardTeachersList = useSelector(state => state.dashboard?.teachers ?? []);
     // @ts-ignore
     const educationPeriod = useSelector(state => state.dashboard?.educationPeriod ?? '');
-    // @ts-ignore
-    const dashboardTeacherToReport = useSelector(state => state.dashboard?.teacherToReport ?? null);
     const onGetTeacherReport = (teacher: {teacher_id: number, teacher_name: string}) => {
         dispatch(getTeacherForReport(teacher));
         dispatch(getGroupForReport(null));
@@ -25,11 +21,6 @@ const DashboardTeachersTable = () => {
     return (
         <div className="p-6">
             <div className="">
-                <div className="container mx-auto mt-10">
-                    <Modal>
-                        <DashboardTeacherReportForm/>
-                    </Modal>
-                </div>
                 <h2 className="text-2xl font-bold">Статистика "Зайнятість викладачів центру" навчальний
                     рік {educationPeriod}</h2>
                 {dashboardTeachersList.length === 0

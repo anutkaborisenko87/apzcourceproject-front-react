@@ -1,9 +1,7 @@
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {openCloseModal} from "../store/modalSlice.ts";
-import {
-    getDashboardGroupReportExcel,
-    getDashboardGroupReportWord, getDashboardTeacherReportExcel,
+import { getDashboardTeacherReportExcel,
     getDashboardTeacherReportWord
 } from "../apiServices/dashboardApiServices.ts";
 import {cleanDashdoardErrors, getGroupForReport} from "../store/dashbordSlice.ts";
@@ -100,7 +98,7 @@ export default function DashboardTeacherReportForm() {
                     </h2>
 
                     <h2 className="text-base font-semibold leading-7 text-gray-900">
-                        Вихователь - {dashboardTeacherToReport?.teacher_full_name ?? ''}
+                        Вихователь - {dashboardTeacherToReport?.teacher_name ?? ''}
                     </h2>
 
 
